@@ -1,0 +1,1 @@
+export const successCode = 200;

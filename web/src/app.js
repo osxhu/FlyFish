@@ -9,6 +9,7 @@ import Router from '@/config/router.config';
 // 国际化
 import zh_antd from 'antd/es/locale/zh_CN';
 import en_antd from 'antd/es/locale/en_US';
+import zh from './locales/zh-ch';
 
 import darkTheme from '../config/themes/dark';
 // import lightTheme from '../config/themes/light';
@@ -26,19 +27,15 @@ import authWrapper from '@/components/authWrapper';
 const locales = {
   zh: {
     antdLocale: zh_antd,
-    momentLocale: 'zh-ch',
+    momentLocale: "zh-ch",
     intlLocale: "zh-Hans-CN",
-    messages: {
-      "a": '我是a'
-    }
+    messages: zh,
   },
   en: {
     antdLocale: en_antd,
-    momentLocale: 'en',
+    momentLocale: "en",
     intlLocale: "en",
-    messages: {
-      "a": 'i m a'
-    }
+    messages: zh,
   },
 };
 
@@ -57,17 +54,11 @@ const App = ({
       themeVars={{
         // light: lightTheme,
         // dark: darkTheme
-        ...darkTheme
+        ...darkTheme,
       }}
     >
-      <ConfigProvider
-        locales={locales}
-        defaultLocal={defaultLocale}
-      >
-        <Router 
-          basename={window.APP_CONFIG.basename}
-          getAuth={getAuth}
-        />
+      <ConfigProvider locales={locales} defaultLocale={defaultLocale}>
+        <Router basename={window.APP_CONFIG.basename} getAuth={getAuth} />
       </ConfigProvider>
     </ThemeProvider>
   );

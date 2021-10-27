@@ -102,7 +102,7 @@ const Layout = ({
   return (
     <BasicLayout
       logo={<img src={logo}/>}
-      headerTitle='DODI' 
+      headerTitle='LCAP' 
       showTopNavigation={false}
       showBack={showBack}
       showBreadcrumb={true}
@@ -117,10 +117,7 @@ const Layout = ({
         // }],
         // 格式化面包屑数据
         formatData: data => {
-          return [{
-            name: 'Home',
-            path: '/'
-          }].concat(data);
+          return data;
         },
       }}
       // headerExtra={ // 可以放置其它功能按钮
