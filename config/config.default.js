@@ -16,7 +16,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1635235048156_3836';
 
   // add your middleware config here
-  config.middleware = [ 'auth_check', 'error_handler' ];
+  config.middleware = [ 'error_handler' ];
 
   // add your user config here
   const userConfig = {
@@ -51,6 +51,16 @@ module.exports = appInfo => {
   config.reqUrlWhiteList = [
 
   ];
+
+  // egg-axios 配置
+  config.http = {
+    headers: {
+      common: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    },
+    timeout: 10000,
+  };
 
   return {
     ...config,
