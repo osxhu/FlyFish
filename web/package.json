@@ -7,7 +7,7 @@
     "@chaoswise/cw-mobx": "^0.0.13",
     "@chaoswise/request": "^0.0.23",
     "@chaoswise/scaffold": "^0.0.51",
-    "@chaoswise/ui": "^0.0.118",
+    "@chaoswise/ui": "^0.0.119",
     "@chaoswise/utils": "^0.0.26",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
