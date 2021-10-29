@@ -63,9 +63,14 @@ module.exports = appInfo => {
     throw: true, // throw immediately when capture exception
     throwHandle: error => { return error; }, // error message format when throw is true
     errorHandle: error => { return error; }, // error message format when throw is false
-    resultHandle: result => { return result; }, // fromat result
+    resultHandle: result => { return result; }, // format result
   };
 
+  config.security = {
+    csrf: {
+      enable: false,
+    },
+  };
 
   // add your user config here
   const userConfig = {

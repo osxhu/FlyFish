@@ -16,8 +16,14 @@ class HomeService extends Service {
     // }).catch((err)=>{
     //   console.error(err);
     // });
-    const result = await ctx.http.post('/web/rbac/user/login', {"user_email": "test@yunzhihui.com",
-    "user_password": "yunzhihui123"});
+    const result = await ctx.http.post('/web/rbac/user/login', {
+      "user_email": "test@yunzhihui.com",
+      "user_password": "yunzhihui123"
+    }).then(data => {
+      console.log(data);
+    }, err => {
+      ctx.throw(err);
+    });
 
     return result;
   }
