@@ -6,7 +6,7 @@
   "dependencies": {
     "@chaoswise/cw-mobx": "^0.0.13",
     "@chaoswise/request": "^0.0.23",
-    "@chaoswise/scaffold": "^0.0.51",
+    "@chaoswise/scaffold": "^0.0.52",
     "@chaoswise/ui": "^0.0.119",
     "@chaoswise/utils": "^0.0.26",
     "react": "^16.14.0",
