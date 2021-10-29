@@ -16,7 +16,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1635235048156_3836';
 
   // add your middleware config here
-  config.middleware = ['error_handler'];
+  config.middleware = [ 'error_handler' ];
 
   config.bodyParser = {
     jsonLimit: '10mb',
@@ -49,11 +49,8 @@ module.exports = appInfo => {
 
   // egg-axios 配置
   config.http = {
-    headers: {
-      common: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    },
+    headers: {},
+    baseURL: 'http://127.0.0.1:7001',
     timeout: 10000,
   };
 
@@ -69,7 +66,7 @@ module.exports = appInfo => {
     resultHandle: result => { return result; }, // fromat result
   };
 
-  
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
