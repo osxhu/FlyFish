@@ -9,21 +9,11 @@ class HomeService extends Service {
     // logger.error(new Error('whoops'));
     // const result = await ctx.model.User.create({ name: 'ju' });
 
-    // http example
-    // ctx.http.post('/post', {postId: 123}).then((data)=>{
-    //   // data is only remote server response data
-    //   console.log(data);
-    // }).catch((err)=>{
-    //   console.error(err);
-    // });
+
     const result = await ctx.http.post('/web/rbac/user/login', {
       "user_email": "test@yunzhihui.com",
       "user_password": "yunzhihui123"
-    }).then(data => {
-      console.log(data);
-    }, err => {
-      ctx.throw(err);
-    });
+    }).catch(e => ctx.throw(e));
 
     return result;
   }

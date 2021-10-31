@@ -16,7 +16,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1635235048156_3836';
 
   // add your middleware config here
-  config.middleware = [ 'error_handler' ];
+  config.middleware = ['errorHandler'];
 
   config.bodyParser = {
     jsonLimit: '10mb',
