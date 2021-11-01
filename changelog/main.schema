@@ -1,0 +1,89 @@
+// 项目
+projects: {
+	create_time: Time,
+  	update_time: Time,
+
+	mark: String,
+	name: String,
+	trades: [String],   					// 行业
+	desc: String,
+	
+	is_delete: false,
+}
+
+// 应用
+applications: {
+	create_time: Time,
+	update_time: Time,
+
+	name: String,
+	project_id: String,
+	tags: [String],
+	status: String, 						// 开发状态
+	type: String,						    // 应用类型
+	cover: String, 							// 封面
+	creator: String,
+	updater: String,
+	is_delete: false, 						// 是否删除
+
+	// 页面编排待定
+	
+}
+
+// 组件分类
+component_categories: {
+	create_time: Time,
+	update_time: Time,
+
+	categories: [{					// 一级分类
+		uid: String,
+		name: String,
+		level: Integer,
+		sub_categories: [{		  	// 二级分类
+			uid: String,
+			name: String,
+			level: Integer,
+		}]
+	}]
+}
+
+// 组件
+components: {
+	create_time: Time,
+	update_time: Time,
+
+	name: String,
+	project_id: String, 			// 项目id
+	category_id: String, 			// 二级分类id
+	type: String, 					// 公共组件/项目组件
+	trades: [String], 				// 行业
+	tags: [String],					// 标签
+	desc: String,			
+	mark: String,
+	versions: [{
+		no: String,
+		desc: String
+	}],
+	cover: String, 					// 封面，效果展示
+	creator: String,
+	status: String, 				// 组件状态
+}
+
+
+// 标签
+tags: {
+	create_time: Time,
+	update_time: Time,
+
+	name: String,
+	status: String,
+}
+
+// 行业
+trades: {
+	create_time: Time,
+	update_time: Time,
+
+	name: String,
+	status: String,
+}
