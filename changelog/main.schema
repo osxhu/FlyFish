@@ -18,7 +18,7 @@ applications: {
 
 	name: String,
 	project_id: String,
-	tags: [String],
+	tags: [String],							// 标签	
 	status: String, 						// 开发状态
 	type: String,						    // 应用类型
 	cover: String, 							// 封面
@@ -28,23 +28,6 @@ applications: {
 
 	// 页面编排待定
 	
-}
-
-// 组件分类
-component_categories: {
-	create_time: Time,
-	update_time: Time,
-
-	categories: [{					// 一级分类
-		uid: String,
-		name: String,
-		level: Integer,
-		sub_categories: [{		  	// 二级分类
-			uid: String,
-			name: String,
-			level: Integer,
-		}]
-	}]
 }
 
 // 组件
@@ -69,6 +52,23 @@ components: {
 	status: String, 				// 组件状态
 }
 
+
+// 组件分类
+component_categories: {
+	create_time: Time,
+	update_time: Time,
+
+	categories: [{					// 一级分类
+		uid: String,
+		name: String,
+		level: Integer,
+		sub_categories: [{		  	// 二级分类
+			uid: String,
+			name: String,
+			level: Integer,
+		}]
+	}]
+}
 
 // 标签
 tags: {
