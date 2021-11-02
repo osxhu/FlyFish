@@ -99,6 +99,7 @@ users: {
 	email: String,
 	phone: String,
 	password: String,
+	status: String,
 	projects: [String]
 }
 
@@ -108,13 +109,16 @@ roles: {
 	update_time: Time,
 
 	name: String,
-	auth: [String],
+	menus: [String],
 }
 
-// 权限
-auth: {
+// 菜单
+menus: {
 	create_time: Time,
 	update_time: Time,
 
+	p_id: String,
 
+	name: String,
+	url: String,
 }
