@@ -17,7 +17,7 @@ applications: {
 	update_time: Time,
 
 	name: String,
-	project_id: String,
+	projects: [String],
 	tags: [String],							// 标签	
 	status: String, 						// 开发状态
 	type: String,						    // 应用类型
@@ -36,9 +36,10 @@ components: {
 	update_time: Time,
 
 	name: String,
-	project_id: String, 			// 项目id
-	category_id: String, 			// 二级分类id
+	category_id: String, 			// 分类id
+	sub_category_id: String, 		// 子分类id
 	type: String, 					// 公共组件/项目组件
+	projects: [String], 			// 所属项目
 	trades: [String], 				// 行业
 	tags: [String],					// 标签
 	desc: String,			
@@ -59,7 +60,7 @@ component_categories: {
 	update_time: Time,
 
 	categories: [{					// 一级分类
-		uid: String,
+		u_id: String,
 		name: String,
 		level: Integer,
 		sub_categories: [{		  	// 二级分类
@@ -86,4 +87,34 @@ trades: {
 
 	name: String,
 	status: String,
+}
+
+// 用户
+users: {
+	create_time: Time,
+	update_time: Time,
+
+	username: String,
+	role: String,
+	email: String,
+	phone: String,
+	password: String,
+	projects: [String]
+}
+
+// 角色
+roles: {
+	create_time: Time,
+	update_time: Time,
+
+	name: String,
+	auth: [String],
+}
+
+// 权限
+auth: {
+	create_time: Time,
+	update_time: Time,
+
+
 }
