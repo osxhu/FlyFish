@@ -1,0 +1,210 @@
+{
+  "common": {
+    "port": 8364,
+    "workers": 1,
+    "stickyCluster": true,
+    "startServerTimeout": 3000,
+    "reloadSignal": "SIGUSR2",
+    "processKillTimeout": 10000,
+    "jsonpCallbackField": "callback",
+    "jsonContentType": "application/json",
+    "jsonpContentType": "application/javascript",
+    "errnoField": "code",
+    "errmsgField": "msg",
+    "defaultErrno": "error",
+    "validateDefaultErrno": 1001,
+    "enableAgent": false,
+    "cookie": {
+      "domain": "",
+      "path": "/",
+      "maxAge": 36000000,
+      "overwrite": true,
+      "signed": true,
+      "httpOnly": false,
+      "keys": [
+        "__login_solution_user_info__"
+      ]
+    },
+    "custom": {
+      "wwwDirPath": "/Users/dwq/Projects/FlyFish/www",
+      "ff_domain": "http://localhost:8360",
+      "appModules": {
+        "web": "web"
+      },
+      "cookieKey": {
+        "login_user_info": "__login_solution_user_info__"
+      },
+      "cacheKeyPrefix": "solution_platform",
+      "screenDownloadUrl": "http://localhost:8360",
+      "screenSourceToken": "0cml1wxqAMx6VTmF"
+    },
+    "cache": {
+      "type": "redis",
+      "redis": {
+        "timeout": 86400000,
+        "port": 6379,
+        "host": "127.0.0.1",
+        "password": ""
+      }
+    },
+    "logger": {
+      "type": "console",
+      "dateFile": {}
+    },
+    "model": {
+      "type": "mysql",
+      "mysql": {
+        "logConnect": "dev",
+        "logSql": "dev",
+        "database": "flyfish",
+        "user": "Rootmaster",
+        "password": "Rootmaster@777",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "prefix": "",
+        "encoding": "utf8",
+        "connectTimeout": 30000,
+        "acquireTimeout": 30000,
+        "connectionLimit": 10,
+        "dateStrings": true,
+        "pageSize": 15
+      }
+    },
+    "session": {
+      "type": "file",
+      "file": {
+        "cookie": {
+          "name": "thinkjs",
+          "maxAge": 5000,
+          "signed": true
+        },
+        "sessionPath": "/Users/dwq/Projects/FlyFish/runtime/session"
+      }
+    },
+    "view": {
+      "type": "nunjucks",
+      "nunjucks": {
+        "viewPath": "/Users/dwq/Projects/FlyFish/view",
+        "sep": "_",
+        "extname": ".html"
+      }
+    }
+  },
+  "web": {
+    "port": 8364,
+    "workers": 1,
+    "stickyCluster": true,
+    "startServerTimeout": 3000,
+    "reloadSignal": "SIGUSR2",
+    "processKillTimeout": 10000,
+    "jsonpCallbackField": "callback",
+    "jsonContentType": "application/json",
+    "jsonpContentType": "application/javascript",
+    "errnoField": "code",
+    "errmsgField": "msg",
+    "defaultErrno": "error",
+    "validateDefaultErrno": 1001,
+    "enableAgent": false,
+    "cookie": {
+      "domain": "",
+      "path": "/",
+      "maxAge": 36000000,
+      "overwrite": true,
+      "signed": true,
+      "httpOnly": false,
+      "keys": [
+        "__login_solution_user_info__"
+      ]
+    },
+    "custom": {
+      "wwwDirPath": "/Users/dwq/Projects/FlyFish/www",
+      "ff_domain": "http://localhost:8360",
+      "appModules": {
+        "web": "web"
+      },
+      "cookieKey": {
+        "login_user_info": "__login_solution_user_info__"
+      },
+      "cacheKeyPrefix": "solution_platform",
+      "screenDownloadUrl": "http://localhost:8360",
+      "screenSourceToken": "0cml1wxqAMx6VTmF"
+    },
+    "platformPrefix": "/",
+    "indexTitle": "",
+    "paasAPIConf": {
+      "accessKeyID": "a04d0daa30fbad5191d794f527084446",
+      "accessKeySecret": "6788991a041734cb794e934f470650f4"
+    },
+    "noCheckIsLoginRoutes": [
+      "/web/rbac/user/login",
+      "/web/components/devComponentIO/compileDevComponent",
+      "/web/visualScreen/screenEditor/getModelList",
+      "/web/visualScreen/screenEditor/getModelData",
+      "/web/visualScreen/screen/downloadScreenSource",
+      "/web/rbac/user/captcha",
+      "/web/rbac/user/registry"
+    ],
+    "authToken": {
+      "private": "nyDAu_3xGrhoJT23HefA",
+      "public": "Y2xvdWR3aXNlLWxvd2NvZGU="
+    },
+    "defaultAccountId": 1,
+    "proxy": {
+      "proxyDataHub": {
+        "targetHost": "http://10.0.3.187:4567",
+        "prefix": "proxyDataHub"
+      }
+    },
+    "cache": {
+      "type": "redis",
+      "redis": {
+        "timeout": 86400000,
+        "port": 6379,
+        "host": "127.0.0.1",
+        "password": ""
+      }
+    },
+    "logger": {
+      "type": "console",
+      "dateFile": {}
+    },
+    "model": {
+      "type": "mysql",
+      "mysql": {
+        "logConnect": "dev",
+        "logSql": "dev",
+        "database": "flyfish",
+        "user": "Rootmaster",
+        "password": "Rootmaster@777",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "prefix": "",
+        "encoding": "utf8",
+        "connectTimeout": 30000,
+        "acquireTimeout": 30000,
+        "connectionLimit": 10,
+        "dateStrings": true,
+        "pageSize": 15
+      }
+    },
+    "session": {
+      "type": "file",
+      "file": {
+        "cookie": {
+          "name": "thinkjs",
+          "maxAge": 5000,
+          "signed": true
+        },
+        "sessionPath": "/Users/dwq/Projects/FlyFish/runtime/session"
+      }
+    },
+    "view": {
+      "type": "nunjucks",
+      "nunjucks": {
+        "viewPath": "/Users/dwq/Projects/FlyFish/view",
+        "sep": "_",
+        "extname": ".html"
+      }
+    }
+  }
+}
