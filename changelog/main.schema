@@ -7,7 +7,7 @@ projects: {
 	name: String,
 	trades: [String],   					// 行业
 	desc: String,
-	
+
 	is_delete: false,
 }
 
@@ -26,8 +26,8 @@ applications: {
 	updater: String,
 	is_delete: false, 						// 是否删除
 
-	// 页面编排待定
-	
+	// 页面组件配置
+	options: Object
 }
 
 // 组件
@@ -43,16 +43,17 @@ components: {
 	trades: [String], 				// 行业
 	tags: [String],					// 标签
 	desc: String,			
-	mark: String,
 	versions: [{
 		no: String,
-		desc: String
+		desc: String,
+		status: Integer, // 版本上下架， 1：上架，2：下架
 	}],
 	cover: String, 					// 封面，效果展示
 	creator: String,
-	status: String, 				// 组件状态
-}
+	status: String, 				// 开发状态
 
+	is_delete: false, 				// 是否删除
+}
 
 // 组件分类
 component_categories: {
@@ -63,7 +64,7 @@ component_categories: {
 		u_id: String,
 		name: String,
 		level: Integer,
-		sub_categories: [{		  	// 二级分类
+		children: [{		  		// 二级分类
 			uid: String,
 			name: String,
 			level: Integer,
@@ -117,8 +118,15 @@ menus: {
 	create_time: Time,
 	update_time: Time,
 
-	p_id: String,
+	menus: [{
+		uid: String,
+		name: String,
+		url: String,
 
-	name: String,
-	url: String,
+		children: [{
+			uid: String,
+			name: String,
+			url: String
+		}]
+	}]
 }
