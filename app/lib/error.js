@@ -2,6 +2,7 @@
 
 const CODE = {
   SUCCESS: 0, // 成功
+  FAIL: 1, // 失败
 
   INTERNAL_ERR: 1000, // 内部错误
   PARAM_ERR: 1001, // 参数错误

@@ -1,23 +1,27 @@
 'use strict';
 
 const BaseController = require('./base');
+const _ = require('lodash');
+const CODE = require('../lib/error');
 class UserController extends BaseController {
 
   async login(ctx) {
     const Joi = ctx.app.Joi;
     const UserLoginSchema = Joi.object().keys({
-      phone: Joi.number().required(),
-      email: Joi.string().email().required(),
+      username: Joi.string().required(),
       password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
-      rePassword: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
     });
     ctx.validate(UserLoginSchema, ctx.request.body);
 
-    const { phone, password } = ctx.request.body;
+    const { username, password } = ctx.request.body;
 
-    const result = await ctx.service.user.userLogin();
+    const result = await ctx.service.user.userLogin(username, password);
 
-    this.success('登录成功', result);
+    if (_.isEmpty(result)) {
+      this.fail('登录失败', null, CODE.FAIL);
+    } else {
+      this.success('登录成功', { id: result._id });
+    }
   }
 
   async list(ctx) {
