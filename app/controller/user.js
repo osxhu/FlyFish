@@ -5,17 +5,18 @@ const _ = require('lodash');
 const CODE = require('../lib/error');
 class UserController extends BaseController {
 
-  async login(ctx) {
-    const Joi = ctx.app.Joi;
-    const UserLoginSchema = Joi.object().keys({
-      username: Joi.string().required(),
-      password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+  async login() {
+    const { ctx, app, service } = this;
+
+    const UserLoginSchema = app.Joi.object().keys({
+      username: app.Joi.string().required(),
+      password: app.Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
     });
     ctx.validate(UserLoginSchema, ctx.request.body);
 
     const { username, password } = ctx.request.body;
 
-    const result = await ctx.service.user.userLogin(username, password);
+    const result = await service.user.userLogin(username, password);
 
     if (_.isEmpty(result)) {
       this.fail('登录失败', null, CODE.FAIL);
