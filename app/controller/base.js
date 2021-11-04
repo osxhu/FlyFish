@@ -1,7 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const CODE = require('../lib/enum');
+const CODE = require('../lib/error');
 class BaseController extends Controller {
   async success(msg, data) {
     const { ctx } = this;

@@ -1,14 +1,13 @@
 // 项目
 projects: {
 	create_time: Time,
-  	update_time: Time,
+	update_time: Time,
 
-	mark: String,
 	name: String,
 	trades: [String],   					// 行业
 	desc: String,
 
-	is_delete: false,
+	status: String, // 可用状态 enum#COMMON_STATUS
 }
 
 // 应用
@@ -19,15 +18,22 @@ applications: {
 	name: String,
 	projects: [String],
 	tags: [String],							// 标签	
-	status: String, 						// 开发状态
+	develop_status: String, 	 // 应用开发状态 enum#APP_DEVELOP_STATUS
 	type: String,						    // 应用类型
 	cover: String, 							// 封面
 	creator: String,
 	updater: String,
-	is_delete: false, 						// 是否删除
+	status: String,    // 可用状态 enum#COMMON_STATUS
 
-	// 页面组件配置
-	options: Object
+	screens: [{
+		uid: String
+		name: String,
+		components: [{
+			id: String, // components._id
+			version: String
+		}]
+	}]
+
 }
 
 // 组件
@@ -38,7 +44,7 @@ components: {
 	name: String,
 	category_id: String, 			// 分类id
 	sub_category_id: String, 		// 子分类id
-	type: String, 					// 公共组件/项目组件
+	type: String, 					// 公共组件/项目组件 enum#COMPONENT_TYPE
 	projects: [String], 			// 所属项目
 	trades: [String], 				// 行业
 	tags: [String],					// 标签
@@ -46,13 +52,13 @@ components: {
 	versions: [{
 		no: String,
 		desc: String,
-		status: Integer, // 版本上下架， 1：上架，2：下架
+		status: String,       // 对应版本的可用状态 enum#COMMON_STATUS
 	}],
 	cover: String, 					// 封面，效果展示
 	creator: String,
-	status: String, 				// 开发状态
+	develop_status: String, 	// 组件开发状态 enum#COMPONENT_DEVELOP_STATUS
 
-	is_delete: false, 				// 是否删除
+	status: String, 				// 可用状态 enum#COMMON_STATUS
 }
 
 // 组件分类
@@ -63,11 +69,9 @@ component_categories: {
 	categories: [{					// 一级分类
 		uid: String,
 		name: String,
-		level: Integer,
 		children: [{		  		// 二级分类
 			uid: String,
 			name: String,
-			level: Integer,
 		}]
 	}]
 }
@@ -78,7 +82,7 @@ tags: {
 	update_time: Time,
 
 	name: String,
-	status: String,
+	status: String, // 可用状态 enum#COMMON_STATUS
 }
 
 // 行业
@@ -87,7 +91,7 @@ trades: {
 	update_time: Time,
 
 	name: String,
-	status: String,
+	status: String, // 可用状态 enum#COMMON_STATUS
 }
 
 // 用户
@@ -100,7 +104,7 @@ users: {
 	email: String,
 	phone: String,
 	password: String,
-	status: String,
+	status: String,  // 可用状态 enum#COMMON_STATUS
 	projects: [String]
 }
 
@@ -111,6 +115,7 @@ roles: {
 
 	name: String,
 	menus: [String],
+	status: String, // 可用状态 enum#COMMON_STATUS
 }
 
 // 菜单

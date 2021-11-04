@@ -1,12 +1,26 @@
 'use strict';
 
-const CODE = {
-  SUCCESS: 0, // 成功
-
-  INTERNAL_ERR: 1000, // 内部错误
-  PARAM_ERR: 1001, // 参数错误
-  AUTH_FAIL: 1002, // 验证失败
-  ALREADY_EXISTS: 1003, // 已经存在
+// 组件类型
+exports.COMPONENT_TYPE = {
+  COMMON: 'common', // 公共组件
+  PROJECT: 'project', // 项目组件
 };
 
-module.exports = CODE;
+// 组件开发状态
+exports.COMPONENT_DEVELOP_STATUS = {
+  DOING: 'doing', // 开发中
+  ONLINE: 'online', // 已上线
+};
+
+// 可用状态
+exports.COMMON_STATUS = {
+  VALID: 'valid', // 可用的
+  INVALID: 'invalid', // 不可用的
+};
+
+exports.APP_DEVELOP_STATUS = {
+  DOING: 'doing', // 开发中
+  TESTING: 'testing', // 测试中
+  DELIVERED: 'delivered', // 已交付
+  DEMO: 'demo', // demo
+};

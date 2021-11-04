@@ -1,5 +1,5 @@
 'use strict';
-const CODE = require('../lib/enum');
+const CODE = require('../lib/error');
 module.exports = () => {
   return async function errorHandler(ctx, next) {
     try {
