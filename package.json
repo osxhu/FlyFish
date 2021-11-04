@@ -28,7 +28,7 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --port=7001 --daemon --title=egg-server-FlyFish",
+    "start": "EGG_SERVER_ENV=prod egg-scripts start --port=7001 --daemon --title=egg-server-FlyFish",
     "stop": "egg-scripts stop --title=egg-server-FlyFish",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
