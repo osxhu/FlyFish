@@ -1,11 +1,17 @@
 'use strict';
 
 const BaseController = require('./base');
-
 class UserController extends BaseController {
 
   async login(ctx) {
-    ctx.validate(ctx.app.validator.users.login, ctx.request.body);
+    const Joi = ctx.app.Joi;
+    const UserLoginSchema = Joi.object().keys({
+      phone: Joi.number().required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+      rePassword: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+    });
+    ctx.validate(UserLoginSchema, ctx.request.body);
 
     const { phone, password } = ctx.request.body;
 
