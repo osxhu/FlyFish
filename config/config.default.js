@@ -44,7 +44,7 @@ module.exports = appInfo => {
 
   // 路由鉴权白名单
   config.reqUrlWhiteList = [
-
+    '/users/login',
   ];
 
   // egg-axios 配置

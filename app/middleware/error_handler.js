@@ -20,7 +20,10 @@ module.exports = () => {
         msg: error,
         data: null,
       };
+
+      // joi error
       if (status === 422) {
+        ctx.body.code = CODE.PARAM_ERR;
         ctx.body.detail = err.errors;
       }
       ctx.status = status;

@@ -9,6 +9,7 @@ module.exports = () => {
         msg: 'Not Found',
         data: null,
       };
+      ctx.logger.error(ctx.body);
       ctx.status = 200;
     }
   };
