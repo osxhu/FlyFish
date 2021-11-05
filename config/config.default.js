@@ -45,6 +45,7 @@ module.exports = appInfo => {
   // 路由鉴权白名单
   config.reqUrlWhiteList = [
     '/users/login',
+    '/users/register',
   ];
 
   // egg-axios 配置
@@ -72,10 +73,17 @@ module.exports = appInfo => {
     },
   };
 
+  config.cookieConfig = {
+    name: 'FLY_FISH_V2.0',
+    domain: 'localhost',
+    encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
+  };
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
   };
+
 
   return {
     ...config,

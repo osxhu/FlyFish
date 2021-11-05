@@ -1,4 +1,5 @@
 'use strict';
+const Enum = require('../lib/enum');
 
 module.exports = app => {
   const mongoose = app.mongoose;
@@ -31,7 +32,8 @@ module.exports = app => {
       type: String,
     },
     status: {
-      type: Number,
+      type: String,
+      default: Enum.COMMON_STATUS.VALID,
     },
   });
 

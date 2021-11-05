@@ -9,5 +9,7 @@ module.exports = app => {
   router.use(app.middleware.authCheck(app.config));
 
   // users
+  router.post('/users/register', controller.user.register);
   router.post('/users/login', controller.user.login);
+  router.post('/users/logout', controller.user.logout);
 };
