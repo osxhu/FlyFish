@@ -70,6 +70,52 @@ class UserController extends BaseController {
 
     this.success('登出成功', { id });
   }
+
+  async info() {
+    const { ctx, app, service } = this;
+
+    const getUserInfoSchema = app.Joi.object().keys({
+      id: app.Joi.string().required(),
+    });
+    ctx.validate(getUserInfoSchema, ctx.params);
+
+    const { id } = ctx.params;
+
+    const userInfo = await service.user.getUserInfo(id);
+
+    if (_.isEmpty(userInfo)) {
+      this.fail('获取失败', null, CODE.FAIL);
+    } else {
+      this.success('获取成功', userInfo);
+    }
+  }
+
+  async list() {
+    const { ctx, app, service } = this;
+
+    const getUserInfoSchema = app.Joi.object().keys({
+      id: app.Joi.string(),
+      username: app.Joi.string(),
+      phone: app.Joi.string(),
+      email: app.Joi.string(),
+
+      curPage: app.Joi.number().default(0),
+      pageSize: app.Joi.number().default(10),
+    });
+    const { value: requestData } = ctx.validate(getUserInfoSchema, ctx.request.body);
+
+    const userList = await service.user.getUserList(requestData);
+
+    const returnInfo = {
+      total: userList.total,
+      curPage: requestData.curPage,
+      pageSize: requestData.pageSize,
+      list: userList.data,
+    };
+
+    this.success('获取成功', returnInfo);
+  }
 }
 
 module.exports = UserController;
+

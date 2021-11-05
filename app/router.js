@@ -12,4 +12,6 @@ module.exports = app => {
   router.post('/users/register', controller.user.register);
   router.post('/users/login', controller.user.login);
   router.post('/users/logout', controller.user.logout);
+  router.get('/users/info/:id', controller.user.info);
+  router.post('/users/list', controller.user.list);
 };

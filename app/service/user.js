@@ -32,6 +32,32 @@ class UserService extends Service {
     return result || {};
   }
 
+  async getUserInfo(userId) {
+    const { ctx } = this;
+
+    const result = await ctx.model.User.findOne({ _id: userId });
+
+    return result || {};
+  }
+
+  async getUserList(requestData) {
+    const { ctx } = this;
+
+    const { id, username, phone, email } = requestData;
+    const queryCond = {
+      status: Enum.COMMON_STATUS.VALID,
+    };
+
+    if (id) queryCond._id = id;
+    if (username) queryCond.username = username;
+    if (phone) queryCond.phone = phone;
+    if (email) queryCond.email = email;
+
+    const total = await ctx.model.User.count(queryCond);
+    const data = await ctx.model.User.find(queryCond);
+
+    return { total, data };
+  }
 }
 
 module.exports = UserService;
