@@ -40,6 +40,22 @@ class UserService extends Service {
     return result || {};
   }
 
+  async updateUserInfo(id, requestData) {
+    const { ctx } = this;
+    const { disable, password, phone, email } = requestData;
+
+    const updateData = {};
+    if (disable) updateData.status = Enum.COMMON_STATUS.INVALID;
+    if (password) updateData.password = md5(password);
+
+    if (phone) updateData.phone = phone;
+    if (email) updateData.email = email;
+
+    const result = await ctx.model.User.updateOne({ _id: id }, updateData);
+
+    return result || {};
+  }
+
   async getUserList(requestData) {
     const { ctx } = this;
 

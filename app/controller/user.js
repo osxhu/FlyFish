@@ -71,7 +71,7 @@ class UserController extends BaseController {
     this.success('登出成功', { id });
   }
 
-  async info() {
+  async getInfo() {
     const { ctx, app, service } = this;
 
     const getUserInfoSchema = app.Joi.object().keys({
@@ -90,7 +90,24 @@ class UserController extends BaseController {
     }
   }
 
-  async list() {
+  async updateUserInfo() {
+    const { ctx, app, service } = this;
+
+    const updateUserInfoSchema = app.Joi.object().keys({
+      password: app.Joi.string(),
+      disable: app.Joi.boolean(),
+      phone: app.Joi.string(),
+      email: app.Joi.string().email(),
+    });
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+    const { value: requestData } = ctx.validate(updateUserInfoSchema, ctx.request.body);
+
+    await service.user.updateUserInfo(id, requestData);
+
+    this.success('更新成功', { id: requestData.id });
+  }
+
+  async getList() {
     const { ctx, app, service } = this;
 
     const getUserInfoSchema = app.Joi.object().keys({
