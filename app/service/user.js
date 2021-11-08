@@ -51,7 +51,7 @@ class UserService extends Service {
     if (phone) updateData.phone = phone;
     if (email) updateData.email = email;
 
-    await ctx.model.User.updateOne({ _id: id }, toUpdateDoc(updateData));
+    await ctx.model.User._updateOne(id, updateData);
   }
 
   async getUserList(requestData) {
