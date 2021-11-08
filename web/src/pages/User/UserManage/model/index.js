@@ -1,18 +1,21 @@
 import { toMobx } from '@chaoswise/cw-mobx';
 import { getProjectManageListService, saveProjectService } from "../services";
 import _ from "lodash";
-
+import { message } from 'antd';
 
 const model = {
   // 唯一命名空间
-  namespace: "AppProjectManage",
+  namespace: "UserList",
   // 状态
   state: {
     searchParams: {},
     projectList: [],
     total: 0,
     activeProject: null,
+    activeUser:null,
     isEditProjectModalVisible: false,
+    isRoleModalVisible:false,
+    deleteId:null
   },
   effects: {
     // 获取项目列表数据
@@ -48,13 +51,22 @@ const model = {
       this.activeProject = _.clone(project);
       this.isEditProjectModalVisible = true;
     },
-    openProjectPage(project) {
-      this.activeProject = _.clone(project);
+    openRoleModal(project){
+      this.activeUser = _.clone(project);
+      this.isRoleModalVisible = true;
+    },
+    closeRoleModal(){
+      this.activeUser = null;
+      this.isRoleModalVisible = false;
     },
     closeEditProjectModal() {
       this.activeProject = null;
       this.isEditProjectModalVisible = false;
     },
+    deleteOne(id){
+      this.deleteId=id;
+      message.success('删除成功');
+    }
   },
 };
 

@@ -17,7 +17,7 @@ module.exports = {
       routes: [
         {
           icon: "pie-chart",
-          name: "应用",
+          name: "应用创建",
           path: "/app",
           component: "@/pages/App",
           routes: [
@@ -26,7 +26,18 @@ module.exports = {
               path: "/app/project-manage",
               component: "@/pages/App/ProjectManage",
             },
-            { from: "/app", to: "/app/project-manage" },
+            {
+              name: "布局",
+              path: "/app/:id/project-detail",
+              component: "@/pages/App/ProjectDetail",
+              // hideInMenu: true,
+            },
+            {
+              name: "应用开发",
+              path: "/app/apply-develop",
+              component: "@/pages/App/ApplyDevelop",
+            }
+            // { from: "/app", to: "/app/project-manage" },
           ],
         },
         {
@@ -86,6 +97,24 @@ module.exports = {
               name: "表单联动",
               path: "/form/link",
               component: "@/pages/Form/Link",
+            },
+          ],
+        },
+        {
+          icon: "pie-chart",
+          name: "用户管理",
+          path: "/user",
+          component: "@/pages/User",
+          routes: [
+            {
+              name: "用户列表",
+              path: "/user/user-manage",
+              component: "@/pages/User/UserManage",
+            },
+            {
+              name: "角色列表",
+              path: "/user/role-manage",
+              component: "@/pages/User/RoleManage",
             },
           ],
         },

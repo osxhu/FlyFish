@@ -3,7 +3,6 @@ import {
   ConfigProvider, 
   ThemeProvider 
 } from '@chaoswise/ui';
-
 import Router from '@/config/router.config';
 
 // 国际化

@@ -2,16 +2,21 @@ import { toMobx } from '@chaoswise/cw-mobx';
 import { getProjectManageListService, saveProjectService } from "../services";
 import _ from "lodash";
 
-
 const model = {
   // 唯一命名空间
-  namespace: "AppProjectManage",
+  namespace: "ProjectDetail",
   // 状态
   state: {
+    checkPageFLag: 'assemblyList',
     searchParams: {},
     projectList: [],
     total: 0,
-    activeProject: null,
+    activeProject: {
+      name:'测试11',
+      projectId:'北京项目a',
+      tags:['jack','lucy'],
+      state:0
+    },
     isEditProjectModalVisible: false,
   },
   effects: {
@@ -35,6 +40,9 @@ const model = {
     },
   },
   reducers: {
+    setCheckPageFLag(a) {
+      this.checkPageFLag=a.key;
+    },
     setProjectList(res) {
       this.projectList = res.data;
       this.total = res.total;

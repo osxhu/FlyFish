@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Input, Select, Form } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 
-export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
+export default Form.create({ name: "FORM_IN_USER_MODAL" })(
   function EditProjectModal({ form, project = {}, onSave, onCancel }) {
     const intl = useIntl();
     const { getFieldDecorator } = form;
@@ -27,13 +27,13 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         title={
           project && project.id > 0
             ? intl.formatMessage({
-                id: "pages.projectManage.edit",
-                defaultValue: "编辑项目",
-              })
+              id: "pages.userManage.edit",
+              defaultValue: "编辑用户",
+            })
             : intl.formatMessage({
-                id: "pages.projectManage.create",
-                defaultValue: "添加项目",
-              })
+              id: "pages.userManage.create",
+              defaultValue: "添加用户",
+            })
         }
         visible={true}
       >
@@ -48,9 +48,9 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           }}
           initialvalues={project || {}}
         >
-          <Form.Item label="项目标识" name={"projectMark"}>
-            {getFieldDecorator("projectMark", {
-              initialValue: project.projectMark,
+          <Form.Item label="用户名" name={"username"}>
+            {getFieldDecorator("username", {
+              initialValue: project.username,
               rules: [
                 {
                   required: true,
@@ -58,7 +58,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     intl.formatMessage({
                       id: "common.pleaseInput",
                       defaultValue: "请输入",
-                    }) + "项目标识",
+                    }) + "用户名",
                 },
                 {
                   pattern: /^[a-zA-Z]{6,20}$/,
@@ -72,14 +72,14 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   intl.formatMessage({
                     id: "common.pleaseInput",
                     defaultValue: "请输入",
-                  }) + "项目标识"
+                  }) + "用户名"
                 }
               />
             )}
           </Form.Item>
-          <Form.Item label="项目名称" name={"name"}>
-            {getFieldDecorator("name", {
-              initialValue: project.name,
+          <Form.Item label="用户邮箱" name={"useremail"}>
+            {getFieldDecorator("useremail", {
+              initialValue: project.useremail,
               rules: [
                 {
                   required: true,
@@ -87,7 +87,11 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     intl.formatMessage({
                       id: "common.pleaseInput",
                       defaultValue: "请输入",
-                    }) + "项目名称",
+                    }) + "用户邮箱",
+                },
+                {
+                  pattern: /^[A-Za-zd0-9]+([-_.][A-Za-zd]+)*@([A-Za-zd]+[-.])+[A-Za-zd]{2,5}$/,
+                  message: "请输入正确的邮箱格式",
                 },
               ],
             })(
@@ -96,14 +100,61 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   intl.formatMessage({
                     id: "common.pleaseInput",
                     defaultValue: "请输入",
-                  }) + "项目名称"
+                  }) + "用户邮箱"
                 }
               />
             )}
           </Form.Item>
-          <Form.Item label="行业" name={"industry"}>
-            {getFieldDecorator("industry", {
-              initialValue: project.industry,
+
+          <Form.Item label="手机号" name={"phone"}>
+            {getFieldDecorator("phone", {
+              initialValue: project.phone,
+              rules: [
+                {
+                  message:
+                    intl.formatMessage({
+                      id: "common.pleaseInput",
+                      defaultValue: "请输入",
+                    }) + "手机号",
+                },
+              ],
+            })(
+              <Input
+                placeholder={
+                  intl.formatMessage({
+                    id: "common.pleaseInput",
+                    defaultValue: "请输入",
+                  }) + "手机号"
+                }
+              />
+            )}
+          </Form.Item>
+          <Form.Item label="密码" name={"password"}>
+            {getFieldDecorator("password", {
+              initialValue: project.password,
+              rules: [
+                {
+                  message:
+                    intl.formatMessage({
+                      id: "common.pleaseInput",
+                      defaultValue: "请输入",
+                    }) + "密码",
+                },
+              ],
+            })(
+              <Input
+                placeholder={
+                  intl.formatMessage({
+                    id: "common.pleaseInput",
+                    defaultValue: "请输入",
+                  }) + "密码"
+                }
+              />
+            )}
+          </Form.Item>
+          <Form.Item label="所属项目" name={"belongproject"}>
+            {getFieldDecorator("belongproject", {
+              initialValue: project.belongproject,
               rules: [
                 {
                   required: true,
@@ -111,7 +162,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     intl.formatMessage({
                       id: "common.pleaseSelect",
                       defaultValue: "请选择",
-                    }) + "行业",
+                    }) + "所属项目",
                 },
               ],
             })(
@@ -120,28 +171,14 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   intl.formatMessage({
                     id: "common.pleaseSelect",
                     defaultValue: "请选择",
-                  }) + "行业"
+                  }) + "所属项目"
                 }
               >
                 <Select.Option value="1">1</Select.Option>
               </Select>
             )}
           </Form.Item>
-          <Form.Item label="描述" name={"describe"}>
-            {getFieldDecorator("describe", {
-              initialValue: project.describe,
-            })(
-              <Input.TextArea
-                row={3}
-                placeholder={
-                  intl.formatMessage({
-                    id: "common.pleaseInput",
-                    defaultValue: "请输入",
-                  }) + "描述"
-                }
-              />
-            )}
-          </Form.Item>
+
         </Form>
       </Modal>
     );

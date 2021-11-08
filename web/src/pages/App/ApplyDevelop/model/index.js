@@ -2,10 +2,9 @@ import { toMobx } from '@chaoswise/cw-mobx';
 import { getProjectManageListService, saveProjectService } from "../services";
 import _ from "lodash";
 
-
 const model = {
   // 唯一命名空间
-  namespace: "AppProjectManage",
+  namespace: "ApplyDevelop",
   // 状态
   state: {
     searchParams: {},
@@ -47,9 +46,6 @@ const model = {
     openEditProjectModal(project) {
       this.activeProject = _.clone(project);
       this.isEditProjectModalVisible = true;
-    },
-    openProjectPage(project) {
-      this.activeProject = _.clone(project);
     },
     closeEditProjectModal() {
       this.activeProject = null;

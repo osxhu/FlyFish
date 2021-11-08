@@ -26,7 +26,7 @@ function Dynamic() {
       <Form
         onSubmit={onSubmit}
         value={value}
-        initialValues={{
+        initialvalues={{
           userList: [
             { username: 'morally', age: 21 },
           ]

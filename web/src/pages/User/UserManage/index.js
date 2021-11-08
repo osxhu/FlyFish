@@ -1,52 +1,55 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
-import { CWTable, Input, Button, message } from "@chaoswise/ui";
+import { CWTable, Input, Button, message, Select } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
-import EditProjectModal from "./components/EditProjectModal";
+import EditProjectModal from "./components/EditUsertModal";
+import ChangeRoleModal from "./components/changeRoleMoal";
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
+import { Popconfirm } from 'antd';
+
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link } from 'react-router-dom';
-const AppProjectManage = observer((props) => {
+const UserList = observer(() => {
   const intl = useIntl();
   const {
     getProjectList,
     setSearchParams,
     saveProject,
-    openEditProjectModal, openProjectPage,
+    openEditProjectModal,
+    openRoleModal,
+    closeRoleModal,
+    deleteOne,
     closeEditProjectModal,
   } = store;
-  const { total, projectList, isEditProjectModalVisible, activeProject } =
+  const { total, projectList, isEditProjectModalVisible, isRoleModalVisible, activeUser, activeProject } =
     store;
-  let checkid=null;
-  const loading = loadingStore.loading["AppProjectManage/getProjectList"];
+  const loading = loadingStore.loading["UserList/getProjectList"];
   // 表格列表数据
   let basicTableListData = toJS(projectList);
   // 表格列配置信息
   const columns = [
     {
-      title: "项目标识",
-      dataIndex: "projectMark",
-      key: "projectMark",
+      title: "用户名",
+      dataIndex: "username",
+      key: "username",
       disabled: true,
     },
     {
-      title: "项目名称",
-      dataIndex: "name",
-      key: "name",
+      title: "用户邮箱",
+      dataIndex: "useremail",
+      key: "useremail",
       disabled: true,
     },
     {
-      title: "行业",
-      dataIndex: "industry",
-      key: "industry",
+      title: "所属项目",
+      dataIndex: "belongproject",
+      key: "belongproject",
     },
     {
-      title: "描述",
-      dataIndex: "describe",
-      key: "describe",
-      width: 300,
+      title: "手机号",
+      dataIndex: "phone",
+      key: "phone"
     },
     {
       title: "创建时间",
@@ -60,21 +63,19 @@ const AppProjectManage = observer((props) => {
       }),
       dataIndex: "actions",
       key: "actions",
-      width: 200,
       render(text, record, index) {
         return (
           <span className={styles.projectActionList}>
-            <Link className={styles.projectAction}
-              to={{}}
+            <a className={styles.projectAction}
               onClick={() => {
-                goRoute(record.id);
-                openProjectPage(record);
-              }}>
+                openRoleModal(record);
+              }}
+            >
               <FormattedMessage
-                id="pages.projectManage.goToProject"
-                defaultValue="进入项目"
+                id="pages.userManage.configurePermissions"
+                defaultValue="配置权限"
               />
-            </Link>
+            </a>
             <a
               className={styles.projectAction}
               onClick={() => {
@@ -83,9 +84,14 @@ const AppProjectManage = observer((props) => {
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
-            <a className={styles.projectAction}>
-              <FormattedMessage id="common.delete" defaultValue="删除" />
-            </a>
+            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={()=>{
+              deleteOne(record.id);
+            }}>
+              <a className={styles.projectAction} href='#'>
+                <FormattedMessage id="common.delete" defaultValue="删除" />
+              </a>
+            </Popconfirm>,
+
           </span>
         );
       },
@@ -97,22 +103,61 @@ const AppProjectManage = observer((props) => {
         <Input
           id="name"
           key="name"
-          style={{ width: "300px" }}
+          name='用户名'
+          style={{ width: "150px" }}
           placeholder={intl.formatMessage({
-            id: "pages.projectManage.searchInputPlaceholder",
-            defaultValue: "输入项目名称/项目标识/行业/描述进行查询",
+            id: "pages.userManage.searchInputUsername",
           })}
         />
       ),
-    },
+    }, {
+      components: (
+        <Input
+          id="email"
+          key="email"
+          name='邮箱'
+          style={{ width: "150px" }}
+          placeholder={intl.formatMessage({
+            id: "pages.userManage.searchInputEmail",
+            defaultValue: "输入邮箱进行查询",
+          })}
+        />
+      ),
+    }, {
+      components: (
+        <Select
+          name='所属项目'
+          id="belongproject"
+          key="belongproject"
+          style={{ width: "200px" }}
+          placeholder={intl.formatMessage({
+            id: "pages.userManage.searchInputproject",
+            defaultValue: "输入所属项目进行查询",
+          })}
+        />
+      ),
+    }, {
+      components: (
+        <Select
+          id="state"
+          key="state"
+          name='状态'
+          style={{ width: "150px" }}
+          placeholder={intl.formatMessage({
+            id: "pages.userManage.searchInputstate",
+            defaultValue: "输入状态进行查询",
+          })}
+        />
+      ),
+    }
   ];
+  function handleChange(value) {
+    console.log(`selected ${value}`);
+  }
   // 请求列表数据
   useEffect(() => {
     getProjectList();
   }, []);
-  const goRoute=(id)=>{
-    props.history.push(`/app/${id}/project-detail`);  
-  };
   // 分页、排序、筛选变化时触发
   const onPageChange = (currentPage, pageSize) => {
     getProjectList({ currentPage, pageSize });
@@ -151,12 +196,13 @@ const AppProjectManage = observer((props) => {
                 }}
               >
                 <FormattedMessage
-                  id="pages.projectManage.create"
-                  defaultValue="添加项目"
+                  id="pages.userManage.create"
+                  defaultValue="用户"
                 />
               </Button>,
             ];
           },
+          showSearchCount: 6,
           searchContent: searchContent,
         }}
       ></CWTable>
@@ -189,7 +235,38 @@ const AppProjectManage = observer((props) => {
           onCancel={closeEditProjectModal}
         />
       )}
+      {isRoleModalVisible && (
+        <ChangeRoleModal
+          project={activeUser}
+          onSave={(project) => {
+            saveProject(project, (res) => {
+              if (res.code === successCode) {
+                message.success(
+                  intl.formatMessage({
+                    id: "common.saveSuccess",
+                    defaultValue: "保存成功！",
+                  })
+                );
+                closeEditProjectModal();
+                getProjectList({
+                  currentPage: 1,
+                });
+              } else {
+                message.error(
+                  intl.formatMessage({
+                    id: "common.saveError",
+                    defaultValue: "保存失败，请稍后重试！",
+                  })
+                );
+              }
+            });
+          }}
+          onCancel={closeRoleModal}
+        />
+
+      )
+      }
     </React.Fragment>
   );
 });
-export default AppProjectManage;
+export default UserList;

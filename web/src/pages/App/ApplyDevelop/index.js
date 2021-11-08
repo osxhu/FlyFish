@@ -1,28 +1,35 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
-import { CWTable, Input, Button, message } from "@chaoswise/ui";
-import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
+import { CWTable, Input, Button, message, SearchBar,Pagination } from "@chaoswise/ui";
+import {
+  observer, loadingStore, toJS, Form, Row,
+  Col
+} from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import EditProjectModal from "./components/EditProjectModal";
+import Cards from "./components/card";
+
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link } from 'react-router-dom';
-const AppProjectManage = observer((props) => {
+import { Icon, Select} from 'antd';
+const { Option } = Select;
+
+const ApplyDevelop = observer(() => {
   const intl = useIntl();
   const {
     getProjectList,
     setSearchParams,
     saveProject,
-    openEditProjectModal, openProjectPage,
+    openEditProjectModal,
     closeEditProjectModal,
   } = store;
   const { total, projectList, isEditProjectModalVisible, activeProject } =
     store;
-  let checkid=null;
-  const loading = loadingStore.loading["AppProjectManage/getProjectList"];
+  const loading = loadingStore.loading["ApplyDevelop/getProjectList"];
   // 表格列表数据
   let basicTableListData = toJS(projectList);
+  const testCardArr = [{ status: 0, title: '测试大屏11', development: '泡泡', create: '分为丰富' }, { status: 1, title: '测试大屏22', development: '虾饺', create: '11324de' }, { status: 1, title: '测试大屏33', development: '春卷', create: 'ewfefe' }, { status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }];
   // 表格列配置信息
   const columns = [
     {
@@ -58,23 +65,18 @@ const AppProjectManage = observer((props) => {
         id: "common.actions",
         defaultValue: "操作",
       }),
+      width: 200,
       dataIndex: "actions",
       key: "actions",
-      width: 200,
       render(text, record, index) {
         return (
           <span className={styles.projectActionList}>
-            <Link className={styles.projectAction}
-              to={{}}
-              onClick={() => {
-                goRoute(record.id);
-                openProjectPage(record);
-              }}>
+            <a className={styles.projectAction}>
               <FormattedMessage
-                id="pages.projectManage.goToProject"
+                id="pages.applyDevelop.goToProject"
                 defaultValue="进入项目"
               />
-            </Link>
+            </a>
             <a
               className={styles.projectAction}
               onClick={() => {
@@ -97,12 +99,58 @@ const AppProjectManage = observer((props) => {
         <Input
           id="name"
           key="name"
-          style={{ width: "300px" }}
+          name='项目名称'
+          style={{ width: "200px" }}
           placeholder={intl.formatMessage({
-            id: "pages.projectManage.searchInputPlaceholder",
-            defaultValue: "输入项目名称/项目标识/行业/描述进行查询",
+            id: "pages.applyDevelop.searchInputProgressName",
+            defaultValue: "输入项目名称进行查询",
           })}
         />
+      ),
+    },
+    {
+      components: (
+
+        <Select
+          id="state"
+          key="state"
+          name='开发状态'
+          style={{ width: "100px" }}
+          placeholder={intl.formatMessage({
+            id: "pages.applyDevelop.searchInputDevelopmentState",
+            defaultValue: "选择开发状态进行查询",
+          })}
+        />
+      ),
+    },
+    {
+      components: (
+        <Input
+          id="AppName"
+          key="AppName"
+          name='应用名称'
+          style={{ width: "150px" }}
+          placeholder={intl.formatMessage({
+            id: "pages.applyDevelop.searchInputAppName",
+            defaultValue: "输入应用名称进行查询",
+          })}
+        />
+      ),
+    },
+    {
+      components: (
+        <Select mode="tags" id="ApplyLabel"
+          key="ApplyLabel"
+          name='应用标签' style={{ width: 200 }}
+          placeholder={intl.formatMessage({
+            id: "pages.applyDevelop.searchInputApplyLabel",
+            defaultValue: "选择应用标签进行查询",
+          })}
+        >
+          <Option value="jack">Jack</Option>
+          <Option value="lucy">Lucy</Option>
+          <Option value="Yiminghe">yiminghe</Option>
+        </Select>
       ),
     },
   ];
@@ -110,9 +158,6 @@ const AppProjectManage = observer((props) => {
   useEffect(() => {
     getProjectList();
   }, []);
-  const goRoute=(id)=>{
-    props.history.push(`/app/${id}/project-detail`);  
-  };
   // 分页、排序、筛选变化时触发
   const onPageChange = (currentPage, pageSize) => {
     getProjectList({ currentPage, pageSize });
@@ -123,43 +168,44 @@ const AppProjectManage = observer((props) => {
       currentPage: 1,
     });
   };
-
+  const extra = () => {
+    return [
+      <Button
+        type="primary"
+        key="create_project"
+        onClick={() => {
+          openEditProjectModal({});
+        }}
+      >
+        <FormattedMessage
+          id="pages.applyDevelop.create"
+          defaultValue="添加应用"
+        />
+      </Button>,
+    ];
+  };
   return (
     <React.Fragment>
-      <CWTable
-        columns={columns}
-        dataSource={basicTableListData}
-        rowKey={(record) => record.id}
-        loading={loading}
-        pagination={{
-          showTotal: true,
-          total: total,
-          onChange: onPageChange,
-          onShowSizeChange: onPageChange,
-          showSizeChanger: true,
-          showQuickJumper: true,
-        }}
-        searchBar={{
-          onSearch: onSearch,
-          extra: () => {
-            return [
-              <Button
-                type="primary"
-                key="create_project"
-                onClick={() => {
-                  openEditProjectModal({});
-                }}
-              >
-                <FormattedMessage
-                  id="pages.projectManage.create"
-                  defaultValue="添加项目"
-                />
-              </Button>,
-            ];
-          },
-          searchContent: searchContent,
-        }}
-      ></CWTable>
+      <div className={styles.searchCotainer1}>
+        应用类型选择：<Select
+          id="name"
+          key="name"
+          style={{ width: "200px" }}
+          placeholder={intl.formatMessage({
+            id: "pages.applyDevelop.searchInputPlaceholder",
+            defaultValue: "选择应用类型进行查询",
+          })}
+        />
+      </div>
+      <span className={styles.searchCotainer}>
+        应用管理：
+        <Icon type="delete" className={styles.icon} />
+      </span>
+      <SearchBar
+        searchContent={searchContent} showSearchCount={6} extra={extra}
+      />
+      <Cards value={testCardArr} />
+      <Pagination defaultCurrent={6} total={500} showQuickJumper={true} showSizeChanger={true} />
       {isEditProjectModalVisible && (
         <EditProjectModal
           project={activeProject}
@@ -192,4 +238,4 @@ const AppProjectManage = observer((props) => {
     </React.Fragment>
   );
 });
-export default AppProjectManage;
+export default ApplyDevelop;

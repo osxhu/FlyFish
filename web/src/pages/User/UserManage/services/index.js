@@ -8,9 +8,13 @@ export const getProjectManageListService = (options) => {
     res({
       data: [
         {
-          id: '011',
-          projectMark: "12212",
-          name: "test",
+          id: 1,
+          username: "泡泡1",
+          useremail: "21586671@qq.com",
+          belongproject:"上海一步",
+          phone:1823710398,
+          createTime:'2021-04-90'
+
         },
       ],
       total: 10,

@@ -8,9 +8,16 @@ export const getProjectManageListService = (options) => {
     res({
       data: [
         {
-          id: '011',
-          projectMark: "12212",
-          name: "test",
+          id: 1,
+          rolename: "泡泡",
+          describe: "admin管理员"
+
+        },
+        {
+          id: 2,
+          rolename: "花花",
+          describe: "开发一部前端"
+
         },
       ],
       total: 10,

@@ -8,7 +8,7 @@ export const getProjectManageListService = (options) => {
     res({
       data: [
         {
-          id: '011',
+          id: 1,
           projectMark: "12212",
           name: "test",
         },

@@ -46,9 +46,7 @@ const Layout = ({
    * @param {Arrary} routeData 路由配置
    */
   const getMenuData = (routeData) => {
-    
-    return routeData.map(item => {
-
+    return routeData.map((item,index) => {
       if(item.routes) {
         return {
           ...item,
