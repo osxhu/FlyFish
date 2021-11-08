@@ -38,7 +38,7 @@ class UserController extends BaseController {
     const userInfo = await service.user.userLogin(username, password);
 
     const cookieToSet = {
-      userId: userInfo._id.toString(),
+      userId: userInfo.id,
       username: userInfo.username,
       role: userInfo.role,
       phone: userInfo.phone,
@@ -49,7 +49,7 @@ class UserController extends BaseController {
     if (_.isEmpty(userInfo)) {
       this.fail('登录失败', null, CODE.FAIL);
     } else {
-      this.success('登录成功', { id: userInfo._id });
+      this.success('登录成功', { id: userInfo.id });
     }
   }
 

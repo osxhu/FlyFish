@@ -75,7 +75,7 @@ class UserService extends Service {
 }
 
 function toObj(doc) {
-  if (_.isEmpty(doc)) return;
+  if (_.isEmpty(doc)) return {};
   const obj = {
     id: doc._id.toString(),
     createTime: doc.create_time && doc.create_time.getTime(),
@@ -97,6 +97,7 @@ function toNewDoc(obj) {
   };
 
   if (obj.username) doc.username = obj.username;
+  if (obj.password) doc.password = obj.password;
   if (obj.role) doc.role = obj.role;
   if (obj.email) doc.email = obj.email;
   if (obj.phone) doc.phone = obj.phone;

@@ -113,7 +113,10 @@ roles: {
 	update_time: Time,
 
 	name: String,
-	menus: [String],
+	menus: [{
+		name: String,
+		url: String,
+	}],
 	status: String, // 可用状态 enum#COMMON_STATUS
 }
 
