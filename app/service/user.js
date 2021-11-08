@@ -27,7 +27,7 @@ class UserService extends Service {
   async userLogin(username, password) {
     const { ctx } = this;
 
-    const result = toObj(await ctx.model.User.findOne({ status: Enum.COMMON_STATUS.VALID, username, password: md5(password) }));
+    const result = await ctx.model.User._findOne({ status: Enum.COMMON_STATUS.VALID, username, password: md5(password) });
 
     return result || {};
   }

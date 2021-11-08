@@ -1,5 +1,6 @@
 'use strict';
 const Enum = require('../lib/enum');
+const { camelizeKeys, decamelizeKeys } = require('humps');
 
 module.exports = app => {
   const mongoose = app.mongoose;
@@ -36,6 +37,29 @@ module.exports = app => {
       default: Enum.COMMON_STATUS.VALID,
     },
   });
+
+  UserSchema.statics._findOne = async function(params) {
+    const decamelizeParams = decamelizeKeys(params);
+    const doc = Object.assign({}, decamelizeParams, {
+      // 处理value转化
+      // create_time: new Date(),
+      // v: decamelizeParams.v.toString(),
+    });
+
+    const res = await this.findOne(doc);
+    const camelizeRes = camelizeKeys(res._doc);
+    return Object.assign({}, camelizeRes, {
+      // 处理value转化
+      id: camelizeRes.toString(),
+      createTime: camelizeRes.createTime.getTime(),
+      updateTime: camelizeRes.updateTime.getTime(),
+    });
+  };
+
+  // UserSchema.statics._updateOne = function(id, params) {
+  //   const doc = decamelizeKeys(params);
+  //   return this.updateOne({ _id: id, doc });
+  // };
 
   return mongoose.model('User', UserSchema);
 };
