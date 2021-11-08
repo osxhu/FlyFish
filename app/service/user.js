@@ -68,7 +68,8 @@ class UserService extends Service {
     if (email) queryCond.email = email;
 
     const total = await ctx.model.User.count(queryCond);
-    const data = (await ctx.model.User.find(queryCond)).map(toObj);
+    const data = (await ctx.model.User.find(queryCond).sort('update_time').skip(requestData.curPage)
+      .limit(requestData.pageSize)).map(toObj);
 
     return { total, data };
   }

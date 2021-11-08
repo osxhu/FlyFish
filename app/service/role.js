@@ -75,7 +75,8 @@ class RoleService extends Service {
     if (requestData.id) queryCond._id = requestData.id;
 
     const total = await ctx.model.Role.count(queryCond);
-    const data = await ctx.model.Role.find(queryCond);
+    const data = await ctx.model.Role.find(queryCond).sort('update_time').skip(requestData.curPage)
+      .limit(requestData.pageSize);
 
     return { total, data };
   }
