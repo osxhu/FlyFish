@@ -105,7 +105,6 @@ users: {
 	phone: String,
 	password: String,
 	status: String,  // 可用状态 enum#COMMON_STATUS
-	projects: [String]
 }
 
 // 角色

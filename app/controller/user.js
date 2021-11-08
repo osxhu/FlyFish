@@ -15,15 +15,12 @@ class UserController extends BaseController {
       password: app.Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
       rePassword: app.Joi.ref('password'),
     });
-    ctx.validate(UserRegisterSchema, ctx.request.body);
-
-    const { username, password, phone, email } = ctx.request.body;
-
-    const userInfo = await service.user.userRegister(username, password, phone, email);
+    const { value: createUserInfo } = ctx.validate(UserRegisterSchema, ctx.request.body);
+    const userInfo = await service.user.userRegister(createUserInfo);
     if (userInfo.msg === 'user exists') {
       this.fail('注册失败, 用户已存在', null, CODE.FAIL);
     } else {
-      this.success('注册成功', { id: _.get(userInfo, [ 'data', '_id' ]) });
+      this.success('注册成功', { id: _.get(userInfo, [ 'data', 'id' ]) });
     }
   }
 
@@ -104,7 +101,7 @@ class UserController extends BaseController {
 
     await service.user.updateUserInfo(id, requestData);
 
-    this.success('更新成功', { id: requestData.id });
+    this.success('更新成功', { id });
   }
 
   async getList() {
