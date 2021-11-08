@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { CWTable, Input, Button, message, SearchBar,Pagination } from "@chaoswise/ui";
 import {
   observer, loadingStore, toJS, Form, Row,
@@ -7,7 +7,7 @@ import {
 } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import EditProjectModal from "./components/EditProjectModal";
-import Cards from "./components/card";
+import Cards from "@/components/card";
 
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
@@ -16,7 +16,9 @@ import { Icon, Select} from 'antd';
 const { Option } = Select;
 
 const ApplyDevelop = observer(() => {
+  let [checkFlag, setCheckFlag] = useState(false);
   const intl = useIntl();
+  
   const {
     getProjectList,
     setSearchParams,
@@ -26,73 +28,11 @@ const ApplyDevelop = observer(() => {
   } = store;
   const { total, projectList, isEditProjectModalVisible, activeProject } =
     store;
-  const loading = loadingStore.loading["ApplyDevelop/getProjectList"];
-  // 表格列表数据
-  let basicTableListData = toJS(projectList);
-  const testCardArr = [{ status: 0, title: '测试大屏11', development: '泡泡', create: '分为丰富' }, { status: 1, title: '测试大屏22', development: '虾饺', create: '11324de' }, { status: 1, title: '测试大屏33', development: '春卷', create: 'ewfefe' }, { status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }];
-  // 表格列配置信息
-  const columns = [
-    {
-      title: "项目标识",
-      dataIndex: "projectMark",
-      key: "projectMark",
-      disabled: true,
-    },
-    {
-      title: "项目名称",
-      dataIndex: "name",
-      key: "name",
-      disabled: true,
-    },
-    {
-      title: "行业",
-      dataIndex: "industry",
-      key: "industry",
-    },
-    {
-      title: "描述",
-      dataIndex: "describe",
-      key: "describe",
-      width: 300,
-    },
-    {
-      title: "创建时间",
-      dataIndex: "createTime",
-      key: "createTime",
-    },
-    {
-      title: intl.formatMessage({
-        id: "common.actions",
-        defaultValue: "操作",
-      }),
-      width: 200,
-      dataIndex: "actions",
-      key: "actions",
-      render(text, record, index) {
-        return (
-          <span className={styles.projectActionList}>
-            <a className={styles.projectAction}>
-              <FormattedMessage
-                id="pages.applyDevelop.goToProject"
-                defaultValue="进入项目"
-              />
-            </a>
-            <a
-              className={styles.projectAction}
-              onClick={() => {
-                openEditProjectModal(record);
-              }}
-            >
-              <FormattedMessage id="common.edit" defaultValue="编辑" />
-            </a>
-            <a className={styles.projectAction}>
-              <FormattedMessage id="common.delete" defaultValue="删除" />
-            </a>
-          </span>
-        );
-      },
-    },
-  ];
+  const onDelete=(id)=>{
+    console.log('应用开发子组件删除',id);
+  };
+  const testCardArr = [{id:1, status: 0, title: '测试大屏11', development: '泡泡', create: '分为丰富' }, { id:2,status: 1, title: '测试大屏22', development: '虾饺', create: '11324de' }, { id:3,status: 1, title: '测试大屏33', development: '春卷', create: 'ewfefe' }, { id:3,status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { id:4,status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }];
+
   const searchContent = [
     {
       components: (
@@ -199,12 +139,16 @@ const ApplyDevelop = observer(() => {
       </div>
       <span className={styles.searchCotainer}>
         应用管理：
-        <Icon type="delete" className={styles.icon} />
+        <Icon type="delete" className={styles.icon} onClick={()=>
+        {
+          setCheckFlag(!checkFlag);
+        }
+        }/>
       </span>
       <SearchBar
         searchContent={searchContent} showSearchCount={6} extra={extra}
       />
-      <Cards value={testCardArr} />
+      <Cards checkFlag={checkFlag} value={testCardArr} onDelete={onDelete} state={0} showFotter={true}/>
       <Pagination defaultCurrent={6} total={500} showQuickJumper={true} showSizeChanger={true} />
       {isEditProjectModalVisible && (
         <EditProjectModal

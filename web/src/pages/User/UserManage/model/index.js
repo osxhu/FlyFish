@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, saveProjectService } from "../services";
+import { getUsertManageListService, saveProjectService } from "../services";
 import _ from "lodash";
 import { message } from 'antd';
 
@@ -15,7 +15,9 @@ const model = {
     activeUser:null,
     isEditProjectModalVisible: false,
     isRoleModalVisible:false,
-    deleteId:null
+    deleteId:null,
+    currentPage:1,
+    pageSize:30
   },
   effects: {
     // 获取项目列表数据
@@ -28,7 +30,7 @@ const model = {
         ...params,
       };
       // 请求数据
-      const res = yield getProjectManageListService(options);
+      const res = yield getUsertManageListService(options);
       this.setProjectList(res);
     },
     *saveProject(params = {}, callback) {
@@ -39,7 +41,7 @@ const model = {
   },
   reducers: {
     setProjectList(res) {
-      this.projectList = res.data;
+      this.projectList = res.data.list;
       this.total = res.total;
       this.currentPage = res.currentPage;
       this.pageSize = res.pageSize;

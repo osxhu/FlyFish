@@ -23,9 +23,6 @@ const ProjectDetail = observer((props) => {
     store;
   const nowProgressId = props.match.params.id;
   const loading = loadingStore.loading["ProjectDetail/getProjectList"];
-  const getChildrenMsg = (item) => {
-    openEditProjectModal(item);
-  };
   return (
     <React.Fragment>
       <Menu onClick={setCheckPageFLag} mode="horizontal" selectedKeys={[checkPageFLag]} >

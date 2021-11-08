@@ -7,32 +7,10 @@ import { useIntl } from "react-intl";
 const { Option } = Select;
 import store from '../model/index';
 import Collapse from '@/components/collapse';
-const SearchList = observer(() => {
-  /** 
-   * getNavigationTableList 获取列表数据方法
-   * total                  表格数据总条数
-   * currentPage            当前页码
-   * navigationListData     表格列表数据
-   * loadingStore           loading状态监听
-   * columns                表格列字段总集合
-   * setColumns             处理表格列字段顺序
-   * showColumns            初始表格展示列的字段集合
-   * setShowColumns         处理 展示列 变化
-   * tableColumns           表格正常显示的字段集合
-   * getTableColumns        处理tableColumns的计算属性
-   * selectItems            下拉筛选已选择字段集合
-  */
-  const { getNavigationTableList, getTableColumns } = store;
-  const { total, currentPage, navigationListData } = store;
-  const { columns, setColumns } = store;
-  const { showColumns, setShowColumns } = store;
-  const loading = loadingStore.loading['navigationStore/getNavigationTableList'];
-  let navigationTableListData = toJS(navigationListData);
-  let tableColumns = toJS(getTableColumns);
-  let selectItems = toJS(showColumns);
+function SearchList({ onSearch,onSave ,onDelete}) {
   const intl = useIntl();
-
-  // 顶部高级筛选搜索框内容配置
+  
+  // 筛选搜索框内容配置
   const searchContent = [
     {
       components: (
@@ -84,38 +62,26 @@ const SearchList = observer(() => {
       ),
     },
   ];
-  // 高级查询搜索
-  const onSearch = (searchFields) => {
-    getNavigationTableList({
-      searchInfo: searchFields,
-      currentPage: 1,
-    });
-  };
-const btnTitleArr=['编辑','完成'];
-  const progressDetail = {
-    name: "北京项目A",
-    apply: [{ status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }]
-  };
-  const onSave = () => {
-    console.log('子组件点击按钮了！');
-  };
-  // 分页、排序、筛选变化时触发
-  const onPageChange = (currentPage, pageSize) => {
-    getNavigationTableList({ currentPage, pageSize });
-  };
-  // 下拉筛选列变化处理
-  const changeColumns = (selectedColumns) => {
-    setShowColumns(selectedColumns);
-  };
-  // 下拉筛选列拖拽处理
-  const handleExchangeOptions = (dragIndex, hoverIndex) => {
-    setColumns(dragIndex, hoverIndex);
-  };
-  const handleExport = () => {
-    message.success('导出数据');
-  };
+  const progressDetail = [{id:1, status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { id:2,status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }];
+  const progressDetail1 = [{ status: 1, title: '面板测试1', development: '发热发', create: '321321' }, { status: 2, title: '面板测试2', development: 'eweqweq', create: 'vrevevr' }];
+
+  // collaose的内容配置 
+  const collapseData=[
+    {
+      name:'北京项目test',
+      btnTitle:['编辑','完成'],
+      data:progressDetail,
+      btnMethod:onSave,
+      onDelete
+    },{
+      searchContent, //搜索框配置  
+      onSearch, //点击搜索的回调
+      state:2, //底部文字状态,1:应用模板  2:组件库
+      data:progressDetail1 
+    }
+  ];
   return (
-    < Collapse btnTitle={btnTitleArr} onSave={onSave} onSearch={onSearch} progressDetail={progressDetail} state={2} searchContent={searchContent} />
+    < Collapse collapseData={collapseData} />
   );
-});
+}
 export default SearchList;

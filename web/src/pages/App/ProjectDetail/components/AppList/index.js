@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Input, Form, Button, Collapse, SearchBar } from "@chaoswise/ui";
+import { Modal, Input, Form, Button, SearchBar } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 import styles from "./index.less";
 import List from '../NavigationList/index';
 import Card from '@/components/Card';
 import { Icon, Select } from 'antd';
 const { Option } = Select;
-const { Panel } = Collapse;
+import Collapse from '@/components/collapse';
+
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
-  function EditProjectModal({ ProgressId,checkPageFLag, onSave }) {
+  function EditProjectModal({ ProgressId,checkPageFLag }) {
     const intl = useIntl();
-    const progressDetail = {
-      name: "北京项目A",
-      apply: [{ status: 1, title: '测试大屏33', development: '春卷', create: 'ewfefe' }, { status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }]
-    };
+    const progressDetail = [{id:1, status: 1, title: '测试大屏33', development: '春卷', create: 'ewfefe' }, { id:2,status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, {id:3, status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }];
+  
     const onSearch=(e)=>{
-      console.log('下面搜索框',e);
+      console.log('applist父组件搜索触发',e);
+    };
+    const onSave=(e)=>{
+      console.log('applist父组件保存触发',e);
+    };
+    const onDelete=(id)=>{
+      console.log('applist父组件删除触发',id);
     };
     const searchContent = [
       {
@@ -69,6 +74,21 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         ),
       },
     ];
+    // collaose的内容配置 
+  const collapseData=[
+    {
+      name:'北京项目test', //面板项目名称
+      data:progressDetail,  
+      onSave, //新建的回调
+      showCardFotter:true
+    },{
+      searchContent, //搜索框配置  
+      onSearch, //点击搜索的回调
+      state:1, //底部文字状态,1:应用模板  2:组件库
+      data:progressDetail, //card数据
+      showCardFotter:true //是否显示card组件底部文字显示
+    }
+  ];
     return (
       <>
        {
@@ -84,35 +104,11 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               defaultValue: "选择应用类型进行查询",
             })}
           />
-          <Collapse defaultActiveKey={['1', '2']} ghost={true} bordered={false}>
-            <Panel className='usePanel' header={
-              <>
-                <span>{progressDetail.name}</span>
-                <span className={styles.title}>共</span>
-                <span>{progressDetail.apply.length}个应用</span>
-
-              </>
-            } extra={
-              <Button onClick={(e) => {
-                e.stopPropagation();
-                onSave && onSave();
-              }} type="primary" >添加应用</Button>
-            }
-              key="1">
-              <Card value={progressDetail.apply} showFotter={true}/>
-            </Panel>
-            <Panel header="从应用模板中选择" key="2" >
-              <SearchBar
-                searchContent={searchContent} showSearchCount={6}
-                onSearch={onSearch}
-              />
-               <Card value={progressDetail.apply} state={1} showFotter={true} />
-            </Panel>
-          </Collapse>
+              < Collapse collapseData={collapseData} />
         </div>:null
        }
        {
-         checkPageFLag==='assemblyList'? <List/>:null
+         checkPageFLag==='assemblyList'? <List onSearch={onSearch} onSave={onSave} onDelete={onDelete}/>:null
        }
       </>
 

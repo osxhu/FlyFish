@@ -37,14 +37,9 @@ const UserList = observer(() => {
     },
     {
       title: "用户邮箱",
-      dataIndex: "useremail",
-      key: "useremail",
+      dataIndex: "email",
+      key: "email",
       disabled: true,
-    },
-    {
-      title: "所属项目",
-      dataIndex: "belongproject",
-      key: "belongproject",
     },
     {
       title: "手机号",
@@ -120,19 +115,6 @@ const UserList = observer(() => {
           placeholder={intl.formatMessage({
             id: "pages.userManage.searchInputEmail",
             defaultValue: "输入邮箱进行查询",
-          })}
-        />
-      ),
-    }, {
-      components: (
-        <Select
-          name='所属项目'
-          id="belongproject"
-          key="belongproject"
-          style={{ width: "200px" }}
-          placeholder={intl.formatMessage({
-            id: "pages.userManage.searchInputproject",
-            defaultValue: "输入所属项目进行查询",
           })}
         />
       ),

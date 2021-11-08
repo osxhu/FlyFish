@@ -30,7 +30,7 @@ module.exports = {
               name: "布局",
               path: "/app/:id/project-detail",
               component: "@/pages/App/ProjectDetail",
-              // hideInMenu: true,
+              hideInMenu: true
             },
             {
               name: "应用开发",

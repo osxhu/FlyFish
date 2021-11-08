@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Form } from "@chaoswise/ui";
-import { useIntl } from "react-intl";
-import { Card, List, Icon, Button, Input, Pagination, Tooltip, Tag, Select, Col, Row } from 'antd';
+import React from 'react';
+import { Form, Popconfirm } from "@chaoswise/ui";
+import { Card, Tag, Col, Row } from 'antd';
 import styles from './index.less';
 const { Meta } = Card;
 const TagColorMap = {
@@ -27,12 +26,18 @@ const computedTagWordByStatus = (status) => {
     const statusItem = Object.entries(EnumScreenStatus).find(([key, { label, value }]) => value === status);
     return statusItem ? statusItem[1].label : EnumScreenStatus.developing.label;
 };
+// 接收数据格式
+// value：card数值，数组
+// state：0/1控制不同页面内容显示
+// showFotter：是否显示底部按钮
+// checkFlag：左上角删除显示隐藏
+// onDelete：传递过来的删除回调
 
-export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
-    function EditProjectModal({ value, state, showFotter,checkFlag }) {
-        const checked=(id)=>{
-            console.log('点击了需要删除的组件',id);
-        };
+export default Form.create({ name: "FORM_IN_PROJECT_CARD" })(
+    function BasicCard({ value, state, showFotter, checkFlag, onDelete }) {
+        const [visible, setVisible] = React.useState(false);
+        const [checkId, setCheckId] = React.useState(false);
+
         let arr = value.map((item, index) => <Col span={8} key={index}>
             <Card
                 cover={
@@ -41,7 +46,13 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                             !state ? <Tag className={styles.tag} color={TagColorMap[item.status]}>{computedTagWordByStatus(item.status)}</Tag> : null
                         }
                         {
-                            checkFlag ? <Tag className={styles.closeTag} color="#f50" onClick={()=>{checked(item.id);}}>-</Tag> : null
+                            checkFlag ?
+                        <Popconfirm title="确认删除？" onCancel={()=>{setVisible(false);}} visible={visible&&checkId===item.id} okText="确认" cancelText="取消" onConfirm={() => {
+                           onDelete(item.id);
+                        }}>
+                             <Tag className={styles.closeTag} color="#f50" onClick={() => {setVisible(true),setCheckId(item.id);}}>-</Tag>            
+                         </Popconfirm>
+                            : null
                         }
 
                         <img
@@ -78,11 +89,10 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
             >
                 <Meta
                     title={(() => {
-
                         if (!showFotter) {
                             return `组件名称：${item.title}`;
                         }
-                        if(!state){
+                        if (!state) {
                             return item.title;
                         }
                     })()

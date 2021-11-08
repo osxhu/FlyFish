@@ -8,6 +8,7 @@ module.exports = {
   useMultipleTheme: false, // 是否开启多主题
   isCombinePortal: false, // 是否开启对接portal的配置
   publicPath: '/',
+  hot:true,
   isNoticeUpdate: true, // 是否开启升级通知
   routerType: 'hash', // 路由类型browser|hash  默认 hash  
   themes: [
@@ -35,11 +36,11 @@ module.exports = {
     config.port = 8000;
     config.proxy = {
       '/api': {
-          target: 'http://10.0.2.166:18080',
-          changeOrigin:true,
-          // pathRewrite:{
-          //   "^/api":"/api"
-          // }
+          target: 'http://10.2.3.56:3000',
+          // changeOrigin:true,
+          pathRewrite:{
+            "^/api":""
+          }
       }
     };
     return config;

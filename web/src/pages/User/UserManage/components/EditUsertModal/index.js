@@ -77,9 +77,9 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
               />
             )}
           </Form.Item>
-          <Form.Item label="用户邮箱" name={"useremail"}>
-            {getFieldDecorator("useremail", {
-              initialValue: project.useremail,
+          <Form.Item label="用户邮箱" name={"mail"}>
+            {getFieldDecorator("email", {
+              initialValue: project.email,
               rules: [
                 {
                   required: true,
@@ -150,32 +150,6 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                   }) + "密码"
                 }
               />
-            )}
-          </Form.Item>
-          <Form.Item label="所属项目" name={"belongproject"}>
-            {getFieldDecorator("belongproject", {
-              initialValue: project.belongproject,
-              rules: [
-                {
-                  required: true,
-                  message:
-                    intl.formatMessage({
-                      id: "common.pleaseSelect",
-                      defaultValue: "请选择",
-                    }) + "所属项目",
-                },
-              ],
-            })(
-              <Select
-                placeholder={
-                  intl.formatMessage({
-                    id: "common.pleaseSelect",
-                    defaultValue: "请选择",
-                  }) + "所属项目"
-                }
-              >
-                <Select.Option value="1">1</Select.Option>
-              </Select>
             )}
           </Form.Item>
 
