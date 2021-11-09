@@ -16,7 +16,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1635235048156_3836';
 
   // add your middleware config here
-  config.middleware = ['errorHandler', 'notfoundHandler'];
+  config.middleware = [ 'errorHandler', 'notfoundHandler' ];
 
 
   // add your user config here
@@ -25,7 +25,7 @@ module.exports = appInfo => {
   };
 
   config.mongoose = {
-    url: 'mongodb://localhost:27017/flyfish',
+    url: 'mongodb://10.2.3.56:27017/flyfish',
     options: {
       useUnifiedTopology: true,
     },
@@ -34,7 +34,7 @@ module.exports = appInfo => {
   config.cluster = {
     listen: {
       port: 7001,
-      hostname: '127.0.0.1',
+      hostname: '10.2.3.56',
     },
   };
 
