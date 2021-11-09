@@ -87,13 +87,13 @@ module.exports = app => {
     const res = {};
     res.id = model._id.toString();
 
-    const camelizeRes = camelizeKeys(model);
+    const camelizeRes = camelizeKeys(model).doc;
 
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();
 
-    delete camelizeRes.doc.password;
-    return Object.assign({}, camelizeRes.doc, res);
+    delete camelizeRes.password;
+    return Object.assign({}, camelizeRes, res);
   }
 
   return mongoose.model('User', UserSchema);

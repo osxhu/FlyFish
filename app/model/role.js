@@ -72,12 +72,12 @@ module.exports = app => {
     const res = {};
     res.id = model._id.toString();
 
-    const camelizeRes = camelizeKeys(model);
+    const camelizeRes = camelizeKeys(model).doc;
 
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();
 
-    return Object.assign({}, camelizeRes.doc, res);
+    return Object.assign({}, camelizeRes, res);
   }
 
   return mongoose.model('Role', RoleSchema);
