@@ -101,8 +101,7 @@ class RolesController extends BaseController {
     const { ctx, app, service } = this;
 
     const addRoleBasicInfoSchema = app.Joi.object().keys({
-      members: app.Joi.array().items(app.Joi.string()).min(1)
-        .required(),
+      members: app.Joi.array().items(app.Joi.string()).required(),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
     const { value: requestData } = ctx.validate(addRoleBasicInfoSchema, ctx.request.body);
@@ -116,8 +115,7 @@ class RolesController extends BaseController {
     const { ctx, app, service } = this;
 
     const addRoleBasicInfoSchema = app.Joi.object().keys({
-      menus: app.Joi.array().items(app.Joi.string()).min(1)
-        .required(),
+      menus: app.Joi.array().items(app.Joi.string()).required(),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
     const { value: requestData } = ctx.validate(addRoleBasicInfoSchema, ctx.request.body);

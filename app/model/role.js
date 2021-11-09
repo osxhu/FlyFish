@@ -52,15 +52,17 @@ module.exports = app => {
     return _toObj(res);
   };
 
-  RoleSchema.statics._updateOne = async function(id, params) {
-    const doc = _toDoc(params);
-    return await this.updateOne({ _id: id }, doc);
+  RoleSchema.statics._updateOne = async function(cond, params) {
+    const docCond = _toDoc(cond);
+    const docData = _toDoc(params, true);
+    return await this.updateOne(docCond, docData);
   };
 
-  function _toDoc(obj) {
+  function _toDoc(obj, update = false) {
     if (_.isEmpty(obj)) return;
 
     if (obj.id) obj._id = obj.id; delete (obj.id);
+    if (update) obj.updateTime = Date.now();
     return decamelizeKeys(obj);
   }
 

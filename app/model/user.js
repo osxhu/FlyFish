@@ -42,7 +42,7 @@ module.exports = app => {
   UserSchema.statics._find = async function(params, projection, options) {
     const doc = _toDoc(params);
     const res = await this.find(doc, projection, options);
-    return res.map(e => _toObj(e._doc));
+    return res.map(_toObj);
   };
 
   UserSchema.statics._count = async function(params) {
@@ -58,18 +58,26 @@ module.exports = app => {
   UserSchema.statics._findOne = async function(params) {
     const doc = _toDoc(params);
     const res = await this.findOne(doc);
-    return _toObj(res._doc);
+    return _toObj(res);
   };
 
-  UserSchema.statics._updateOne = async function(id, params) {
-    const doc = _toDoc(params);
-    return await this.updateOne({ _id: id }, doc);
+  UserSchema.statics._updateOne = async function(cond, params) {
+    const docCond = _toDoc(cond);
+    const docData = _toDoc(params, true);
+    return await this.updateOne(docCond, docData);
   };
 
-  function _toDoc(obj) {
+  UserSchema.statics._updateMany = async function(cond, params) {
+    const docCond = _toDoc(cond);
+    const docData = _toDoc(params, true);
+    return await this.updateMany(docCond, docData);
+  };
+
+  function _toDoc(obj, update = false) {
     if (_.isEmpty(obj)) return;
 
     if (obj.id) obj._id = obj.id; delete (obj.id);
+    if (update) obj.updateTime = Date.now();
     return decamelizeKeys(obj);
   }
 
@@ -84,6 +92,7 @@ module.exports = app => {
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();
 
+    delete camelizeRes.doc.password;
     return Object.assign({}, camelizeRes.doc, res);
   }
 

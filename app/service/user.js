@@ -35,9 +35,16 @@ class UserService extends Service {
   async getUserInfo(userId) {
     const { ctx } = this;
 
-    const result = await ctx.model.User._findOne({ _id: userId });
+    const userInfo = await ctx.model.User._findOne({ id: userId });
 
-    return result || {};
+    userInfo.isAdmin = false; userInfo.menus = [];
+    if (userInfo.role) {
+      const roleInfo = await ctx.model.Role._findOne({ id: userInfo.role });
+      userInfo.isAdmin = roleInfo.name === '管理员';
+      userInfo.menus = roleInfo.menus || [];
+    }
+
+    return userInfo || {};
   }
 
   async updateUserInfo(id, requestData) {
@@ -51,7 +58,7 @@ class UserService extends Service {
     if (phone) updateData.phone = phone;
     if (email) updateData.email = email;
 
-    await ctx.model.User._updateOne(id, updateData);
+    await ctx.model.User._updateOne({ id }, updateData);
   }
 
   async getUserList(requestData) {
@@ -68,7 +75,7 @@ class UserService extends Service {
     if (email) queryCond.email = email;
 
     const total = await ctx.model.User._count(queryCond);
-    const data = await ctx.model.User._find(queryCond, null, { sort: 'update_time', skip: requestData.curPage, limit: requestData.pageSize });
+    const data = await ctx.model.User._find(queryCond, null, { sort: '-update_time', skip: requestData.curPage, limit: requestData.pageSize });
 
     return { total, data };
   }

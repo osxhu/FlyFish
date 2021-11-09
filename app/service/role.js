@@ -34,7 +34,7 @@ class RoleService extends Service {
       }
     }
 
-    await ctx.model.Role._updateOne({ _id: id }, updateInfo);
+    await ctx.model.Role._updateOne({ id }, updateInfo);
 
     return returnData;
   }
@@ -42,8 +42,16 @@ class RoleService extends Service {
   async updateMembersInfo(id, updateInfo) {
     const { ctx } = this;
 
-    const members = _.uniq(updateInfo.members || []);
-    await ctx.model.User.updateMany({ _id: { $in: members } }, { role: id });
+    const memberIds = _.uniq(updateInfo.members || []);
+    const curRoleMembers = await ctx.model.User._find({ role: id });
+    const curRoleMemberIds = (curRoleMembers || []).map(e => e.id);
+
+
+    const enableMemberIds = _.difference(_.union(memberIds), _.union(curRoleMemberIds));
+    const disableMemberIds = _.difference(_.union(curRoleMemberIds), _.union(memberIds));
+
+    await ctx.model.User._updateMany({ id: { $in: enableMemberIds } }, { role: id });
+    await ctx.model.User._updateMany({ id: { $in: disableMemberIds } }, { role: null });
   }
 
   async updateAuthInfo(id, updateInfo) {
@@ -75,7 +83,7 @@ class RoleService extends Service {
     if (requestData.id) queryCond.id = requestData.id;
 
     const total = await ctx.model.Role._count(queryCond);
-    const data = await ctx.model.Role._find(queryCond, null, { sort: 'update_time', skip: requestData.curPage, limit: requestData.pageSize });
+    const data = await ctx.model.Role._find(queryCond, null, { sort: '-update_time', skip: requestData.curPage, limit: requestData.pageSize });
 
     return { total, data };
   }
@@ -84,9 +92,9 @@ class RoleService extends Service {
     const { ctx } = this;
 
     const roleInfo = await ctx.model.Role._findOne({ _id: id });
-    const members = await ctx.model.User._find({ role: id });
+    const members = await ctx.model.User._find({ role: id, status: Enum.COMMON_STATUS.VALID });
 
-    roleInfo._doc.members = (members || []).map(member => {
+    roleInfo.members = (members || []).map(member => {
       return {
         id: member.id,
         username: member.username,
