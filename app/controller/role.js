@@ -18,18 +18,9 @@ class RolesController extends BaseController {
     if (roleInfo.msg === 'Exists Already') {
       this.fail('添加失败, 该角色存已存在', null, CODE.FAIL);
     } else {
-      this.success('添加成功', { id: _.get(roleInfo, [ 'data', '_id' ]) });
+      this.success('添加成功', { id: _.get(roleInfo, [ 'data', 'id' ]) });
     }
   }
-
-  // const addRoleSchema = app.Joi.object().keys({
-  //   name: app.Joi.string().required(),
-  //   menus: app.Joi.array().items({
-  //     name: app.Joi.string().required(),
-  //     url: app.Joi.string().required(),
-  //   }).min(1)
-  //     .required(),
-  // });
 
   async login() {
     const { ctx, app, service } = this;

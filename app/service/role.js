@@ -8,14 +8,14 @@ class RoleService extends Service {
     const { ctx } = this;
 
     const returnData = { msg: 'ok', data: {} };
-    const existsRoles = await ctx.model.Role.findOne({ name: createRoleInfo.name });
+    const existsRoles = await ctx.model.Role._findOne({ name: createRoleInfo.name });
     if (!_.isEmpty(existsRoles)) {
       returnData.msg = 'Exists Already';
       return returnData;
     }
 
     await ctx.model.Role.create(createRoleInfo);
-    const result = await ctx.model.Role.findOne({ name: createRoleInfo.name });
+    const result = await ctx.model.Role._findOne({ name: createRoleInfo.name });
     returnData.data = result;
 
     return returnData;
@@ -27,14 +27,14 @@ class RoleService extends Service {
     const returnData = { msg: 'ok', data: {} };
 
     if (updateInfo.name) {
-      const existsRoles = await ctx.model.Role.findOne({ name: updateInfo.name });
+      const existsRoles = await ctx.model.Role._findOne({ name: updateInfo.name });
       if (!_.isEmpty(existsRoles)) {
         returnData.msg = 'Exists Already';
         return returnData;
       }
     }
 
-    await ctx.model.Role.updateOne({ _id: id }, updateInfo);
+    await ctx.model.Role._updateOne({ _id: id }, updateInfo);
 
     return returnData;
   }
@@ -49,20 +49,20 @@ class RoleService extends Service {
   async updateAuthInfo(id, updateInfo) {
     const { ctx } = this;
 
-    await ctx.model.Role.updateOne({ _id: id }, updateInfo);
+    await ctx.model.Role._updateOne({ id }, updateInfo);
   }
 
   async delete(id) {
     const { ctx } = this;
 
     const returnData = { msg: 'ok' };
-    const result = await ctx.model.User.findOne({ role: id });
+    const result = await ctx.model.User._findOne({ role: id });
     if (!_.isEmpty(result)) {
       returnData.msg = 'Exists Already';
       return returnData;
     }
 
-    await ctx.model.Role.updateOne({ _id: id }, { status: Enum.COMMON_STATUS.INVALID });
+    await ctx.model.Role._updateOne({ id }, { status: Enum.COMMON_STATUS.INVALID });
     return returnData;
   }
 
@@ -72,11 +72,10 @@ class RoleService extends Service {
     const queryCond = {
       status: Enum.COMMON_STATUS.VALID,
     };
-    if (requestData.id) queryCond._id = requestData.id;
+    if (requestData.id) queryCond.id = requestData.id;
 
-    const total = await ctx.model.Role.count(queryCond);
-    const data = await ctx.model.Role.find(queryCond).sort('update_time').skip(requestData.curPage)
-      .limit(requestData.pageSize);
+    const total = await ctx.model.Role._count(queryCond);
+    const data = await ctx.model.Role._find(queryCond, null, { sort: 'update_time', skip: requestData.curPage, limit: requestData.pageSize });
 
     return { total, data };
   }
@@ -84,12 +83,12 @@ class RoleService extends Service {
   async getRoleInfo(id) {
     const { ctx } = this;
 
-    const roleInfo = await ctx.model.Role.findOne({ _id: id });
-    const members = await ctx.model.User.find({ role: id });
+    const roleInfo = await ctx.model.Role._findOne({ _id: id });
+    const members = await ctx.model.User._find({ role: id });
 
     roleInfo._doc.members = (members || []).map(member => {
       return {
-        id: member._id.toString(),
+        id: member.id,
         username: member.username,
         email: member.email,
         phone: member.phone,

@@ -39,6 +39,22 @@ module.exports = app => {
     },
   });
 
+  UserSchema.statics._find = async function(params, projection, options) {
+    const doc = _toDoc(params);
+    const res = await this.find(doc, projection, options);
+    return res.map(e => _toObj(e._doc));
+  };
+
+  UserSchema.statics._count = async function(params) {
+    const doc = _toDoc(params);
+    return await this.count(doc);
+  };
+
+  UserSchema.statics._create = async function(params) {
+    const doc = _toDoc(params);
+    return await this.create(doc);
+  };
+
   UserSchema.statics._findOne = async function(params) {
     const doc = _toDoc(params);
     const res = await this.findOne(doc);
@@ -50,21 +66,25 @@ module.exports = app => {
     return await this.updateOne({ _id: id }, doc);
   };
 
-
   function _toDoc(obj) {
+    if (_.isEmpty(obj)) return;
+
+    if (obj.id) obj._id = obj.id; delete (obj.id);
     return decamelizeKeys(obj);
   }
 
-  function _toObj(doc) {
-    const res = {};
-    res.id = doc._id.toString();
+  function _toObj(model) {
+    if (_.isEmpty(model)) return;
 
-    const camelizeRes = camelizeKeys(doc);
+    const res = {};
+    res.id = model._id.toString();
+
+    const camelizeRes = camelizeKeys(model);
 
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();
 
-    return Object.assign(camelizeRes, res);
+    return Object.assign({}, camelizeRes.doc, res);
   }
 
   return mongoose.model('User', UserSchema);
