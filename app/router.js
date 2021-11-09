@@ -17,11 +17,11 @@ module.exports = app => {
   router.put('/users/info/:id', controller.user.updateUserInfo);
 
   // roles
-  router.post('/roles/add', controller.role.add);
+  router.post('/roles', controller.role.add);
   router.delete('/roles/:id', controller.role.delete);
   router.get('/roles/info/:id', controller.role.getInfo);
   router.post('/roles/list', controller.role.getList);
-  router.put('/roles/:id/basic-info', controller.role.updateBasicInfo);
+  router.put('/roles/:id/basic', controller.role.updateBasicInfo);
   router.put('/roles/:id/members', controller.role.updateMembersInfo);
   router.put('/roles/:id/auth', controller.role.updateAuthInfo);
 };
