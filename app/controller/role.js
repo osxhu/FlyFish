@@ -58,6 +58,8 @@ class RolesController extends BaseController {
     const deleteInfo = await service.role.delete(id);
     if (deleteInfo.msg === 'Exists Already') {
       this.fail('删除失败, 该角色中存在正常用户', null, CODE.FAIL);
+    } else if (deleteInfo.msg === 'Can Not Delete') {
+      this.fail('删除失败, 该角色禁止删除', null, CODE.FAIL);
     } else {
       this.success('删除成功', { id });
     }

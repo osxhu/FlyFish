@@ -24,3 +24,8 @@ exports.APP_DEVELOP_STATUS = {
   DELIVERED: 'delivered', // 已交付
   DEMO: 'demo', // demo
 };
+
+exports.ROLE = {
+  ADMIN: '管理员',
+  MEMBER: '成员',
+};

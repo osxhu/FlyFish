@@ -40,7 +40,7 @@ class UserService extends Service {
     userInfo.isAdmin = false; userInfo.menus = [];
     if (userInfo.role) {
       const roleInfo = await ctx.model.Role._findOne({ id: userInfo.role });
-      userInfo.isAdmin = roleInfo.name === '管理员';
+      userInfo.isAdmin = roleInfo.name === Enum.ROLE.ADMIN;
       userInfo.menus = roleInfo.menus || [];
     }
 
