@@ -67,10 +67,8 @@ component_categories: {
 	update_time: Time,
 
 	categories: [{					// 一级分类
-		uid: String,
 		name: String,
 		children: [{		  		// 二级分类
-			uid: String,
 			name: String,
 		}]
 	}]
