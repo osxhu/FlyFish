@@ -60,7 +60,13 @@ const model = {
       this.pageSize = res.pageSize;
     },
     setSearchParams(searchParams) {
-      this.searchParams = searchParams || {};
+      let sendParams = {};
+      for(let i in searchParams){
+        if(searchParams[i]){
+          sendParams[i] = searchParams[i];
+        }
+      }
+      this.searchParams = sendParams || {};
     },
     openEditRoleModal(project) {
       this.activeProject = _.clone(project);

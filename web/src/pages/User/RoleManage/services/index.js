@@ -2,7 +2,7 @@ import { fetchGet, fetchPost, fetchPut, fetchDelete } from "@/utils/request";
 import API from "@/services/api";
 
 export const getUserListService = (options) => {
-  return fetchPost(API.GET_ROLE_MANAGELIST_API, { params: options });
+  return fetchPost(API.GET_ROLE_MANAGELIST_API, { body: options });
 
 };
 

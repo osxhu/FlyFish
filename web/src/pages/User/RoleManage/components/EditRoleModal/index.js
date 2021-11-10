@@ -19,7 +19,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                     ...role,
                     ...values,
                   }):onChange&&onChange(role.id,{
-                    name:values.name,
+                  
                     desc:values.desc
                   });
               }
@@ -70,7 +70,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
               ],
             })(
               <Input
-                disabled={role && role.id > 0}
+                disabled={!flag}
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseInput",
