@@ -17,10 +17,12 @@ module.exports = app => {
     },
 
     categories: [{
+      _id: false,
       name: {
         type: String,
       },
       children: [{
+        _id: false,
         name: {
           type: String,
         },
