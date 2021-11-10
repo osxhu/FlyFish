@@ -37,8 +37,13 @@ module.exports = {
               name: "应用开发",
               path: "/app/apply-develop",
               component: "@/pages/App/ApplyDevelop",
-            }
+            },
             // { from: "/app", to: "/app/project-manage" },
+            {
+              name: "组件开发",
+              path: "/app/component-develop",
+              component: "@/pages/App/ComponentDevelop",
+            }
           ],
         },
         {

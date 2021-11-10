@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-10 18:46:29
+ * @LastEditTime: 2021-11-10 19:16:22
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect } from "react";
@@ -14,8 +14,6 @@ import {
   Col
 } from "@chaoswise/cw-mobx";
 import store from "./model/index";
-import EditProjectModal from "./components/EditProjectModal";
-import Cards from "./components/card";
 
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
