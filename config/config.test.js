@@ -38,6 +38,12 @@ module.exports = appInfo => {
     },
   };
 
+  config.cookieConfig = {
+    name: 'FLY_FISH_V2.0',
+    domain: '10.2.3.56',
+    encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
+  };
+
   return {
     ...config,
     ...userConfig,
