@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CWTable, Input, Button, message, Select } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
@@ -13,18 +13,22 @@ import { FormattedMessage, useIntl } from "react-intl";
 const RoleList = observer(() => {
   const intl = useIntl();
   const {
-    getProjectList,
+    getUserList, changeRole,
     setSearchParams,
     saveProject,
     openEditRoleModal,
     openRoleModal,
     closeRoleModal,
     deleteOne,
+    deleteRole,
     closeEditRoleModal,
+    addNewRole
   } = store;
   const { total, projectList, isEditRoleModalVisible, isRoleModalVisible, activeUser, activeProject } =
     store;
-  const loading = loadingStore.loading["RoleList/getProjectList"];
+  const [saveOrChangeFlag, setSaveOrChangeFlag] = useState(false);
+
+  const loading = loadingStore.loading["RoleList/getUserList"];
   // 表格列表数据
   let basicTableListData = toJS(projectList);
   // 表格列配置信息
@@ -34,12 +38,18 @@ const RoleList = observer(() => {
       dataIndex: "rolename",
       key: "rolename",
       disabled: true,
-      width:250
+      width: 250
     },
     {
       title: "描述",
       dataIndex: "describe",
       key: "describe",
+      disabled: true,
+    },
+    {
+      title: "创建时间",
+      dataIndex: "createTime",
+      key: "createTime",
       disabled: true,
     },
     {
@@ -65,29 +75,28 @@ const RoleList = observer(() => {
             <a
               className={styles.projectAction}
               onClick={() => {
-                openEditRoleModal(record);
+                openEditRoleModal(record);setSaveOrChangeFlag(false);
               }}
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
-            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={()=>{
-              // deleteOne(record.id);
-              saveProject(record, (res) => {
+            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+              deleteRole({id:3,...record}, (res) => {
                 if (res.code === successCode) {
                   message.success(
                     intl.formatMessage({
-                      id: "common.saveSuccess",
+                      id: "common.deleteSuccess",
                       defaultValue: "删除成功！",
                     })
                   );
                   closeEditRoleModal();
-                  getProjectList({
+                  getUserList({
                     currentPage: 1,
                   });
                 } else {
                   message.error(
                     intl.formatMessage({
-                      id: "common.saveError",
+                      id: "common.deleteError",
                       defaultValue: "删除失败，请稍后重试！",
                     })
                   );
@@ -124,15 +133,15 @@ const RoleList = observer(() => {
   }
   // 请求列表数据
   useEffect(() => {
-    getProjectList();
+    getUserList();
   }, []);
   // 分页、排序、筛选变化时触发
   const onPageChange = (currentPage, pageSize) => {
-    getProjectList({ currentPage, pageSize });
+    getUserList({ currentPage, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
-    getProjectList({
+    getUserList({
       currentPage: 1,
     });
   };
@@ -160,7 +169,7 @@ const RoleList = observer(() => {
                 type="primary"
                 key="create_project"
                 onClick={() => {
-                  openEditRoleModal({});
+                  openEditRoleModal({});setSaveOrChangeFlag(true);
                 }}
               >
                 <FormattedMessage
@@ -177,29 +186,53 @@ const RoleList = observer(() => {
       {isEditRoleModalVisible && (
         <EditRoleModal
           role={activeProject}
+          onChange={(project) => {
+            changeRole({ id: 3, ...project }, (res) => {
+              if (res.code === successCode) {
+                message.success(
+                  intl.formatMessage({
+                    id: "common.changeSuccess",
+                    defaultValue: "修改成功！",
+                  })
+                );
+                closeEditRoleModal();
+                getUserList({
+                  currentPage: 1,
+                });
+              } else {
+                message.error(
+                  intl.formatMessage({
+                    id: "common.changeError",
+                    defaultValue: "修改失败，请稍后重试！",
+                  })
+                );
+              }
+            });
+          }}
           onSave={(project) => {
-            saveProject(project, (res) => {
+            addNewRole({ project }, (res) => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
                     id: "common.saveSuccess",
-                    defaultValue: "保存成功！",
+                    defaultValue: "新增成功！",
                   })
                 );
                 closeEditRoleModal();
-                getProjectList({
+                getUserList({
                   currentPage: 1,
                 });
               } else {
                 message.error(
                   intl.formatMessage({
                     id: "common.saveError",
-                    defaultValue: "保存失败，请稍后重试！",
+                    defaultValue: "新增失败，请稍后重试！",
                   })
                 );
               }
             });
           }}
+          flag={saveOrChangeFlag}
           onCancel={closeEditRoleModal}
         />
       )}
@@ -216,7 +249,7 @@ const RoleList = observer(() => {
                   })
                 );
                 closeEditRoleModal();
-                getProjectList({
+                getUserList({
                   currentPage: 1,
                 });
               } else {

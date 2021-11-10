@@ -19,6 +19,8 @@ export default flattenMessages({
     saveSuccess: "保存成功！",
     deleteError: "删除失败，请稍后重试！",
     deleteSuccess: "删除成功！",
+    changeSuccess:'修改成功！',
+    changeError:"修改失败，请稍后重试！",
     loadDataError: "加载{name}失败，请稍后重试！",
   },
   business: {},

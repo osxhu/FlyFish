@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, saveProjectService } from "../services";
+import { getProjectManageListService, saveProjectService,deleteProjectService } from "../services";
 import _ from "lodash";
 
 
@@ -31,6 +31,11 @@ const model = {
     *saveProject(params = {}, callback) {
       // 测试代码
       const res = yield saveProjectService(params);
+      callback && callback(res);
+    },
+    *deleteProject(params = {}, callback) {
+      // 测试代码
+      const res = yield deleteProjectService(params);
       callback && callback(res);
     },
   },

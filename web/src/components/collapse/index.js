@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Collapse, SearchBar } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 import styles from "./index.less";
-import Card from '@/components/Card';
+import Card from '@/components/TestCard';
 const { Panel } = Collapse;
 // 需要传递的数据格式
 //  const collapseData=[
@@ -11,17 +11,17 @@ const { Panel } = Collapse;
 //         data:progressDetail,  
 //         btnMethod, //按钮的回调,
 //         deleteMethod,//删除的回调
-//         showCardFotter:true
+//         showCardFotter:true,
+// titleName:
 //       },{
 //         searchContent, //搜索框配置  
 //         onSearch, //点击搜索的回调
 //         state:1, //底部文字状态,1:应用模板  2:组件库
 //         data:progressDetail, //card数据
-//         showCardFotter:true //是否显示card组件底部文字显示
 //       }
 //     ];
 export default Form.create({ name: "FORM_IN_PROJECT_COLLAPSE" })(
-    function BasicCollapse({ collapseData }) {
+    function BasicCollapse({ collapseData, AllMethod, children }) {
         let [checkFlag, setCheckFlag] = useState(false);
         const lengthArr = collapseData.map((item, index) => (index + 1).toString());
         const panelArr = collapseData.map((item, index) => {
@@ -45,7 +45,11 @@ export default Form.create({ name: "FORM_IN_PROJECT_COLLAPSE" })(
                                 }} type="primary" >添加应用</Button>
                         }
                         key="1">
-                        <Card value={item.data} checkFlag={checkFlag} showFotter={item.showCardFotter ? true : false} onDelete={item.onDelete} />
+                        {
+                            children ? <Card value={item.data} show={true}>
+                                {children[0]}
+                            </Card> : <Card value={item.data} />
+                        }
                     </Panel>);
             } else {
                 return (
@@ -60,7 +64,11 @@ export default Form.create({ name: "FORM_IN_PROJECT_COLLAPSE" })(
                                     onSearch={item.onSearch}
                                 /> : null
                         }
-                        <Card value={item.data} showFotter={item.showCardFotter ? true : false} />
+                        {
+                            children ? <Card value={item.data} state={item.state}>
+                                {children[1]}
+                            </Card> : <Card value={item.data} />
+                        }
                     </Panel>
                 );
             }

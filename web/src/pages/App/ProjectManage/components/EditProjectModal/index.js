@@ -60,10 +60,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                       defaultValue: "请输入",
                     }) + "项目标识",
                 },
-                {
-                  pattern: /^[a-zA-Z]{6,20}$/,
-                  message: "请输入a~z的6~20位的字符，不限制大小写",
-                },
               ],
             })(
               <Input

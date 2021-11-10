@@ -1,24 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect,useState } from "react";
-import { CWTable, Input, Button, message, SearchBar,Pagination } from "@chaoswise/ui";
+import React, { useEffect, useState } from "react";
+import { CWTable, Input, Button, message, SearchBar, Pagination } from "@chaoswise/ui";
 import {
   observer, loadingStore, toJS, Form, Row,
   Col
 } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import EditProjectModal from "./components/EditProjectModal";
-import Cards from "@/components/card";
-
+import TsetCard from '@/components/TestCard';
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Icon, Select} from 'antd';
+import { Icon, Select } from 'antd';
 const { Option } = Select;
 
 const ApplyDevelop = observer(() => {
   let [checkFlag, setCheckFlag] = useState(false);
   const intl = useIntl();
-  
+
   const {
     getProjectList,
     setSearchParams,
@@ -28,11 +27,13 @@ const ApplyDevelop = observer(() => {
   } = store;
   const { total, projectList, isEditProjectModalVisible, activeProject } =
     store;
-  const onDelete=(id)=>{
-    console.log('应用开发子组件删除',id);
+  const onDelete = (id) => {
+    console.log('应用开发子组件删除', id);
   };
-  const testCardArr = [{id:1, status: 0, title: '测试大屏11', development: '泡泡', create: '分为丰富' }, { id:2,status: 1, title: '测试大屏22', development: '虾饺', create: '11324de' }, { id:3,status: 1, title: '测试大屏33', development: '春卷', create: 'ewfefe' }, { id:3,status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { id:4,status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }];
-
+  const testCardArr = [{ id: 1, status: 0, title: '测试大屏11', development: '泡泡', create: '分为丰富' }, { id: 2, status: 1, title: '测试大屏22', development: '虾饺', create: '11324de' }, { id: 3, status: 1, title: '测试大屏33', development: '春卷', create: 'ewfefe' }, { id: 3, status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { id: 4, status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }];
+  const AllMethod = {
+    change: openEditProjectModal
+  };
   const searchContent = [
     {
       components: (
@@ -139,16 +140,31 @@ const ApplyDevelop = observer(() => {
       </div>
       <span className={styles.searchCotainer}>
         应用管理：
-        <Icon type="delete" className={styles.icon} onClick={()=>
-        {
+        <Icon type="delete" className={styles.icon} onClick={() => {
           setCheckFlag(!checkFlag);
         }
-        }/>
+        } />
       </span>
       <SearchBar
         searchContent={searchContent} showSearchCount={6} extra={extra}
       />
-      <Cards checkFlag={checkFlag} value={testCardArr} onDelete={onDelete} state={0} showFotter={true}/>
+      {/* 测试card */}
+      {
+        <TsetCard value={testCardArr} state={0}>
+          <>
+            <div key="development" className={styles.mybtn}>开发应用</div>
+            <div key="look" className={styles.mybtn}>预览应用</div>
+            <div key="copy" className={styles.mybtn}>复制应用</div>
+            <div key="export" className={styles.mybtn}>导出应用</div>
+            <div key="change" className={styles.mybtn} >编辑信息</div>
+            <div key="delete" className={styles.mybtn}>删除</div>
+          </>
+          <>
+          <div key="look" className={styles.mybtn}>预览应用</div>
+          <div key="export" className={styles.mybtn}>导出应用</div>
+          </>
+        </TsetCard>
+      }
       <Pagination defaultCurrent={6} total={500} showQuickJumper={true} showSizeChanger={true} />
       {isEditProjectModalVisible && (
         <EditProjectModal

@@ -7,7 +7,7 @@ const model = {
   namespace: "ProjectDetail",
   // 状态
   state: {
-    checkPageFLag: 'assemblyList',
+    checkPageFLag: 'applyList',
     searchParams: {},
     projectList: [],
     total: 0,

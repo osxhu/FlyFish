@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
-import { CWTable, Input, Button, message } from "@chaoswise/ui";
+import { CWTable, Input, Button, message,Popconfirm } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import EditProjectModal from "./components/EditProjectModal";
@@ -15,7 +15,7 @@ const AppProjectManage = observer((props) => {
     setSearchParams,
     saveProject,
     openEditProjectModal, openProjectPage,
-    closeEditProjectModal,
+    closeEditProjectModal,deleteProject
   } = store;
   const { total, projectList, isEditProjectModalVisible, activeProject } =
     store;
@@ -54,6 +54,11 @@ const AppProjectManage = observer((props) => {
       key: "createTime",
     },
     {
+      title: "创建人",
+      dataIndex: "createUser",
+      key: "createUser",
+    },
+    {
       title: intl.formatMessage({
         id: "common.actions",
         defaultValue: "操作",
@@ -83,9 +88,33 @@ const AppProjectManage = observer((props) => {
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
-            <a className={styles.projectAction}>
+            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={()=>{
+              deleteProject(record.id, (res) => {
+                if (res.code === successCode) {
+                  message.success(
+                    intl.formatMessage({
+                      id: "common.deleteSuccess",
+                      defaultValue: "删除成功！",
+                    })
+                  );
+                  closeEditProjectModal();
+                  getProjectList({
+                    currentPage: 1,
+                  });
+                } else {
+                  message.error(
+                    intl.formatMessage({
+                      id: "common.deleteError",
+                      defaultValue: "删除失败，请稍后重试！",
+                    })
+                  );
+                }
+              });
+            }}>
+             <a className={styles.projectAction}>
               <FormattedMessage id="common.delete" defaultValue="删除" />
             </a>
+            </Popconfirm>,
           </span>
         );
       },

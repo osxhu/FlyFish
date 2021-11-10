@@ -7,9 +7,8 @@ import { useIntl } from "react-intl";
 const { Option } = Select;
 import store from '../model/index';
 import Collapse from '@/components/collapse';
-function SearchList({ onSearch,onSave ,onDelete}) {
+function SearchList({ onAdd,onSearch,onSave ,onDelete}) {
   const intl = useIntl();
-  
   // 筛选搜索框内容配置
   const searchContent = [
     {
@@ -76,8 +75,12 @@ function SearchList({ onSearch,onSave ,onDelete}) {
     },{
       searchContent, //搜索框配置  
       onSearch, //点击搜索的回调
-      state:2, //底部文字状态,1:应用模板  2:组件库
-      data:progressDetail1 
+      data:progressDetail1,
+      showCardFotter:false,
+      canAdd:true,
+      onAdd,
+      state:2
+
     }
   ];
   return (

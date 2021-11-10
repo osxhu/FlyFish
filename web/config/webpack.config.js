@@ -36,7 +36,7 @@ module.exports = {
     config.port = 8000;
     config.proxy = {
       '/api': {
-          target: 'http://10.2.3.56:3000',
+          target: ' http://10.2.3.56:7001',
           // changeOrigin:true,
           pathRewrite:{
             "^/api":""

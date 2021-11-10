@@ -22,7 +22,6 @@ export const getProjectManageListService = (options) => {
 
 export const saveProjectService = (options) => {
   //return fetchPost(API.SAVE_PROJECT_API, { body: options });
-
   return new Promise((res, rej) => {
     res({
       code: 200
@@ -30,3 +29,11 @@ export const saveProjectService = (options) => {
   });
 };
 
+export const deleteProjectService = (options) => {
+  //return fetchPost(API.SAVE_PROJECT_API, { body: options });
+  return new Promise((res, rej) => {
+    res({
+      code: 200
+    });
+  });
+};

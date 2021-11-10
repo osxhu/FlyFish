@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getUsertManageListService, saveProjectService } from "../services";
+import { getUsertManageListService, changeUserInformation } from "../services";
 import _ from "lodash";
 import { message } from 'antd';
 
@@ -11,8 +11,7 @@ const model = {
     searchParams: {},
     projectList: [],
     total: 0,
-    activeProject: null,
-    activeUser:null,
+    activeUser: null,
     isEditProjectModalVisible: false,
     isRoleModalVisible:false,
     deleteId:null,
@@ -20,6 +19,7 @@ const model = {
     pageSize:30
   },
   effects: {
+    
     // 获取项目列表数据
     *getProjectList(params = {}) {
       // 处理参数
@@ -33,11 +33,12 @@ const model = {
       const res = yield getUsertManageListService(options);
       this.setProjectList(res);
     },
-    *saveProject(params = {}, callback) {
+    *saveUser(params = {}, callback) {
       // 测试代码
-      const res = yield saveProjectService(params);
+      const res = yield changeUserInformation(params);
       callback && callback(res);
     },
+    
   },
   reducers: {
     setProjectList(res) {
@@ -50,7 +51,7 @@ const model = {
       this.searchParams = searchParams || {};
     },
     openEditProjectModal(project) {
-      this.activeProject = _.clone(project);
+      this.activeUser = _.clone(project);
       this.isEditProjectModalVisible = true;
     },
     openRoleModal(project){
@@ -62,7 +63,7 @@ const model = {
       this.isRoleModalVisible = false;
     },
     closeEditProjectModal() {
-      this.activeProject = null;
+      this.activeUser = null;
       this.isEditProjectModalVisible = false;
     },
     deleteOne(id){

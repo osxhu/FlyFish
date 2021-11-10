@@ -3,7 +3,7 @@ import { Modal, Input, Select, Form } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 
 export default Form.create({ name: "FORM_IN_USER_MODAL" })(
-  function EditRoleModal({ form, role = {}, onSave, onCancel }) {
+  function EditRoleModal({ form, role = {}, onSave,onChange, onCancel,flag }) {
     const intl = useIntl();
     const { getFieldDecorator } = form;
     return (
@@ -14,8 +14,11 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
           if (form) {
             form.validateFields((errors, values) => {
               if (errors == null) {
-                onSave &&
+               flag? onSave &&
                   onSave({
+                    ...role,
+                    ...values,
+                  }):onChange&&onChange({
                     ...role,
                     ...values,
                   });
@@ -25,7 +28,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
         }}
         size="middle"
         title={
-          role && role.id > 0
+          !flag
             ? intl.formatMessage({
               id: "pages.roleManage.edit",
               defaultValue: "编辑角色",

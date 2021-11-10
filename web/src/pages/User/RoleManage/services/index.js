@@ -1,39 +1,19 @@
-import { fetchGet, fetchPost } from "@/utils/request";
+import { fetchGet, fetchPost, fetchPut, fetchDelete } from "@/utils/request";
 import API from "@/services/api";
 
-export const getProjectManageListService = (options) => {
-  //return fetchGet(API.GET_PROJECT_MANAGELIST_API, { params: options });
+export const getUserListService = (options) => {
+  return fetchGet(API.GET_ROLE_MANAGELIST_API, { params: options });
 
-  return new Promise((res, rej) => {
-    res({
-      data: [
-        {
-          id: 1,
-          rolename: "泡泡",
-          describe: "admin管理员"
-
-        },
-        {
-          id: 2,
-          rolename: "花花",
-          describe: "开发一部前端"
-
-        },
-      ],
-      total: 10,
-      currentPage: 1,
-      pageSize: 20,
-    });
-  });
 };
 
-export const saveProjectService = (options) => {
-  //return fetchPost(API.SAVE_PROJECT_API, { body: options });
+export const changeRole = (options) => {
+  return fetchPut(API.CHANGE_ROLE + options.id + '/' + 'basic-info', { body: options });
 
-  return new Promise((res, rej) => {
-    res({
-      code: 200
-    });
-  });
+};
+export const addNewRole = (options) => {
+  return fetchPost(API.NEW_ROLE, { body: options });
 };
 
+export const deleteOneRole = (options) => {
+  return fetchDelete(API.DELETE_ROLE + options.id, { body: options });
+};

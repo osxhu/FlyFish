@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, saveProjectService } from "../services";
+import { getUserListService, changeRole, addNewRole ,deleteOneRole} from "../services";
 import _ from "lodash";
 import { message } from 'antd';
 
@@ -12,14 +12,14 @@ const model = {
     projectList: [],
     total: 0,
     activeProject: null,
-    activeUser:null,
+    activeUser: null,
     isEditRoleModalVisible: false,
-    isRoleModalVisible:false,
-    deleteId:null
+    isRoleModalVisible: false,
+    deleteId: null
   },
   effects: {
     // 获取项目列表数据
-    *getProjectList(params = {}) {
+    *getUserList(params = {}) {
       // 处理参数
       let options = {
         currentPage: this.currentPage,
@@ -28,18 +28,30 @@ const model = {
         ...params,
       };
       // 请求数据
-      const res = yield getProjectManageListService(options);
+      const res = yield getUserListService(options);
       this.setProjectList(res);
     },
     *saveProject(params = {}, callback) {
       // 测试代码
-      const res = yield saveProjectService(params);
+      const res = yield changeRole(params);
       callback && callback(res);
     },
+    * changeRole(params = {}, callback) {
+      const res = yield changeRole(params);
+      callback && callback(res);
+    },
+    * addNewRole(params = {}, callback) {
+      const res = yield addNewRole(params);
+      callback && callback(res);
+    },
+    * deleteRole(params = {}, callback) {
+    const res = yield deleteOneRole(params);
+    callback && callback(res);
+  }
   },
   reducers: {
     setProjectList(res) {
-      this.projectList = res.data;
+      this.projectList = res.data.list;
       this.total = res.total;
       this.currentPage = res.currentPage;
       this.pageSize = res.pageSize;
@@ -51,11 +63,11 @@ const model = {
       this.activeProject = _.clone(project);
       this.isEditRoleModalVisible = true;
     },
-    openRoleModal(project){
+    openRoleModal(project) {
       this.activeUser = _.clone(project);
       this.isRoleModalVisible = true;
     },
-    closeRoleModal(){
+    closeRoleModal() {
       this.activeUser = null;
       this.isRoleModalVisible = false;
     },
@@ -63,8 +75,8 @@ const model = {
       this.activeProject = null;
       this.isEditRoleModalVisible = false;
     },
-    deleteOne(id){
-      this.deleteId=id;
+    deleteOne(id) {
+      this.deleteId = id;
       message.success('删除成功');
     }
   },

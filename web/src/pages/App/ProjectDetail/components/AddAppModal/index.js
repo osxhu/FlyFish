@@ -28,12 +28,12 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         title={
           project && project.id > 0
             ? intl.formatMessage({
-                id: "pages.projectManage.edit",
-                defaultValue: "编辑项目",
+                id: "pages.applyDevelop.edit",
+                defaultValue: "编辑应用",
               })
             : intl.formatMessage({
-                id: "pages.projectManage.create",
-                defaultValue: "添加项目",
+                id: "pages.applyDevelop.create",
+                defaultValue: "添加应用",
               })
         }
         visible={true}

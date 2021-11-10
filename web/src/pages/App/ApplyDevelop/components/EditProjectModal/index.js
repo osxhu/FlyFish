@@ -48,9 +48,9 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           }}
           initialvalues={project || {}}
         >
-          <Form.Item label="应用名称" name={"projectName"}>
-            {getFieldDecorator("projectName", {
-              initialValue: project.projectName,
+          <Form.Item label="应用名称" name={"title"}>
+            {getFieldDecorator("title", {
+              initialValue: project.title,
               rules: [
                 {
                   required: true,

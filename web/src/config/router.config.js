@@ -30,7 +30,8 @@ module.exports = {
               name: "布局",
               path: "/app/:id/project-detail",
               component: "@/pages/App/ProjectDetail",
-              hideInMenu: true
+              hideInMenu: true,
+              activeMenuKey: "/app/project-manage"
             },
             {
               name: "应用开发",
@@ -39,6 +40,12 @@ module.exports = {
             }
             // { from: "/app", to: "/app/project-manage" },
           ],
+        },
+        {
+          icon: "pie-chart",
+          name: "测试登录",
+          path: "/login",
+          component: "@/pages/Login",
         },
         {
           icon: "pie-chart",

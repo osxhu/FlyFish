@@ -15,14 +15,14 @@ const UserList = observer(() => {
   const {
     getProjectList,
     setSearchParams,
-    saveProject,
+    saveUser,
     openEditProjectModal,
     openRoleModal,
     closeRoleModal,
     deleteOne,
     closeEditProjectModal,
   } = store;
-  const { total, projectList, isEditProjectModalVisible, isRoleModalVisible, activeUser, activeProject } =
+  const { total, projectList, isEditProjectModalVisible, isRoleModalVisible, activeUser } =
     store;
   const loading = loadingStore.loading["UserList/getProjectList"];
   // 表格列表数据
@@ -79,8 +79,28 @@ const UserList = observer(() => {
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
-            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={()=>{
-              deleteOne(record.id);
+            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+              saveUser({status:'invalid',id:record.id}, (res) => {
+                if (res.code === 0) {
+                  message.success(
+                    intl.formatMessage({
+                      id: "common.saveSuccess",
+                      defaultValue: "保存成功！",
+                    })
+                  );
+                  closeEditProjectModal();
+                  getProjectList({
+                    currentPage: 1,
+                  });
+                } else {
+                  message.error(
+                    intl.formatMessage({
+                      id: "common.saveError",
+                      defaultValue: "保存失败，请稍后重试！",
+                    })
+                  );
+                }
+              });
             }}>
               <a className={styles.projectAction} href='#'>
                 <FormattedMessage id="common.delete" defaultValue="删除" />
@@ -96,12 +116,13 @@ const UserList = observer(() => {
     {
       components: (
         <Input
-          id="name"
-          key="name"
+          id="username"
+          key="username"
           name='用户名'
           style={{ width: "150px" }}
           placeholder={intl.formatMessage({
             id: "pages.userManage.searchInputUsername",
+            defaultValue: "输入用户名进行查询",
           })}
         />
       ),
@@ -190,10 +211,10 @@ const UserList = observer(() => {
       ></CWTable>
       {isEditProjectModalVisible && (
         <EditProjectModal
-          project={activeProject}
+          project={activeUser}
           onSave={(project) => {
-            saveProject(project, (res) => {
-              if (res.code === successCode) {
+            saveUser(project, (res) => {
+              if (res.code === 0) {
                 message.success(
                   intl.formatMessage({
                     id: "common.saveSuccess",
@@ -221,7 +242,7 @@ const UserList = observer(() => {
         <ChangeRoleModal
           project={activeUser}
           onSave={(project) => {
-            saveProject(project, (res) => {
+            saveUser(project, (res) => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
