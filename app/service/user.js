@@ -49,10 +49,10 @@ class UserService extends Service {
 
   async updateUserInfo(id, requestData) {
     const { ctx } = this;
-    const { disable, password, phone, email } = requestData;
+    const { status, password, phone, email } = requestData;
 
     const updateData = {};
-    if (disable) updateData.status = Enum.COMMON_STATUS.INVALID;
+    if (status) updateData.status = status;
     if (password) updateData.password = md5(password);
 
     if (phone) updateData.phone = phone;

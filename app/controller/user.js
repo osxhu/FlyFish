@@ -3,6 +3,7 @@
 const BaseController = require('./base');
 const _ = require('lodash');
 const CODE = require('../lib/error');
+const Enum = require('../lib/enum');
 
 class UserController extends BaseController {
   async register() {
@@ -92,7 +93,7 @@ class UserController extends BaseController {
 
     const updateUserInfoSchema = app.Joi.object().keys({
       password: app.Joi.string(),
-      disable: app.Joi.boolean(),
+      status: app.Joi.valid(..._.values(Enum.COMMON_STATUS)),
       phone: app.Joi.string(),
       email: app.Joi.string().email(),
     });
