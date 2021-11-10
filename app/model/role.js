@@ -32,7 +32,7 @@ module.exports = app => {
 
   RoleSchema.statics._find = async function(params, projection, options) {
     const doc = _toDoc(params);
-    const res = await this.find(doc, projection, options);
+    const res = await this.find(doc, projection, options).lean(true);
     return res.map(_toObj);
   };
 
@@ -48,7 +48,7 @@ module.exports = app => {
 
   RoleSchema.statics._findOne = async function(params) {
     const doc = _toDoc(params);
-    const res = await this.findOne(doc);
+    const res = await this.findOne(doc).lean(true);
     return _toObj(res);
   };
 
@@ -66,13 +66,13 @@ module.exports = app => {
     return decamelizeKeys(obj);
   }
 
-  function _toObj(model) {
-    if (_.isEmpty(model)) return;
+  function _toObj(doc) {
+    if (_.isEmpty(doc)) return;
 
     const res = {};
-    res.id = model._id.toString();
+    res.id = doc._id.toString();
 
-    const camelizeRes = camelizeKeys(model._doc);
+    const camelizeRes = camelizeKeys(doc);
 
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();
