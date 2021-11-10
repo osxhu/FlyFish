@@ -34,6 +34,7 @@
   },
   "scripts": {
     "start": "EGG_SERVER_ENV=prod egg-scripts start --port=7001 --daemon --title=egg-server-FlyFish",
+    "development": "EGG_SERVER_ENV=development egg-scripts start --port=7001 --daemon --title=egg-server-FlyFish",
     "test": "EGG_SERVER_ENV=test egg-scripts start --port=7001 --daemon --title=egg-server-FlyFish",
     "stop": "egg-scripts stop --title=egg-server-FlyFish",
     "dev": "egg-bin dev",
