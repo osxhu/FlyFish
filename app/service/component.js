@@ -4,7 +4,7 @@ const Service = require('egg').Service;
 class ComponentService extends Service {
   async updateCategoryInfo(updateInfo) {
     const { ctx } = this;
-    await ctx.model.ComponentCategory._create({ category: updateInfo });
+    await ctx.model.ComponentCategory._create({ categories: updateInfo });
   }
 
   async getCategoryList() {

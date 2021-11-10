@@ -6,19 +6,6 @@ module.exports = app => {
   const mongoose = app.mongoose;
   const Schema = mongoose.Schema;
 
-  const CategoryChildrenSchema = new Schema({
-    name: {
-      type: String,
-    },
-  });
-
-  const CategorySchema = new Schema({
-    name: {
-      type: String,
-    },
-    children: [ CategoryChildrenSchema ],
-  });
-
   const ComponentCategorySchema = new Schema({
     create_time: {
       type: Date,
@@ -29,7 +16,16 @@ module.exports = app => {
       default: Date.now,
     },
 
-    categories: [ CategorySchema ],
+    categories: [{
+      name: {
+        type: String,
+      },
+      children: [{
+        name: {
+          type: String,
+        },
+      }],
+    }],
   });
 
   ComponentCategorySchema.statics._find = async function(params, projection, options) {
