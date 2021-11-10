@@ -15,14 +15,17 @@ const model = {
     activeUser: null,
     isEditRoleModalVisible: false,
     isRoleModalVisible: false,
-    deleteId: null
+    deleteId: null,
+    curPage:0,
+    pageSize:30
+    
   },
   effects: {
     // 获取项目列表数据
     *getUserList(params = {}) {
       // 处理参数
       let options = {
-        currentPage: this.currentPage,
+        curPage: this.curPage,
         pageSize: this.pageSize,
         ...this.searchParams,
         ...params,
@@ -36,8 +39,8 @@ const model = {
       const res = yield changeRole(params);
       callback && callback(res);
     },
-    * changeRole(params = {}, callback) {
-      const res = yield changeRole(params);
+    * changeRole(id,params = {}, callback) {
+      const res = yield changeRole(id,params);
       callback && callback(res);
     },
     * addNewRole(params = {}, callback) {
@@ -53,7 +56,7 @@ const model = {
     setProjectList(res) {
       this.projectList = res.data.list;
       this.total = res.total;
-      this.currentPage = res.currentPage;
+      this.curPage = res.curPage;
       this.pageSize = res.pageSize;
     },
     setSearchParams(searchParams) {

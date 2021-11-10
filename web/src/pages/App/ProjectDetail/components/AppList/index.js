@@ -8,7 +8,7 @@ import List from '../NavigationList/index';
 import { Icon, Select } from 'antd';
 const { Option } = Select;
 import Collapse from '@/components/collapse';
-
+import Drawer from '@/components/Drawer';
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
   function EditProjectModal({ ProgressId, checkPageFLag }) {
     const {
@@ -137,6 +137,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         {
           checkPageFLag === 'assemblyList' ? <List onSearch={onSearch} onSave={onSave} onDelete={onDelete} onAdd={onAdd} /> : null
         }
+        {/* <Drawer/> */}
       </>
 
     );

@@ -18,7 +18,7 @@ const model = {
     *getProjectList(params = {}) {
       // 处理参数
       let options = {
-        currentPage: this.currentPage,
+        curPage: this.curPage,
         pageSize: this.pageSize,
         ...this.searchParams,
         ...params,
@@ -37,7 +37,7 @@ const model = {
     setProjectList(res) {
       this.projectList = res.data;
       this.total = res.total;
-      this.currentPage = res.currentPage;
+      this.curPage = res.curPage;
       this.pageSize = res.pageSize;
     },
     setSearchParams(searchParams) {

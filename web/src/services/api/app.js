@@ -2,7 +2,7 @@
  * 应用
  */
 
-const baseUrl = "";
+const baseUrl = "/api";
 export default {
   LOGIN: `${baseUrl}/users/login`,
   REGISTER:`${baseUrl}/users/register`,

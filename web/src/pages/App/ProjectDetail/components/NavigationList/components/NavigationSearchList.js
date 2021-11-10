@@ -3,12 +3,12 @@ import { message, Button, CWTable, Input, FilterDropDown } from '@chaoswise/ui';
 import { observer, loadingStore, toJS } from '@chaoswise/cw-mobx';
 import { Icon, Select } from 'antd';
 import { useIntl } from "react-intl";
-
 const { Option } = Select;
 import store from '../model/index';
 import Collapse from '@/components/collapse';
-function SearchList({ onAdd,onSearch,onSave ,onDelete}) {
+function SearchList({ onSearch,onSave ,onDelete}) {
   const intl = useIntl();
+  const onAdd=()=>{};
   // 筛选搜索框内容配置
   const searchContent = [
     {
@@ -78,9 +78,7 @@ function SearchList({ onAdd,onSearch,onSave ,onDelete}) {
       data:progressDetail1,
       showCardFotter:false,
       canAdd:true,
-      onAdd,
       state:2
-
     }
   ];
   return (

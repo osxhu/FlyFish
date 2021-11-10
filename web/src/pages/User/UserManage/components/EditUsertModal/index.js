@@ -3,7 +3,7 @@ import { Modal, Input, Select, Form } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 
 export default Form.create({ name: "FORM_IN_USER_MODAL" })(
-  function EditProjectModal({ form, project = {}, onSave, onCancel }) {
+  function EditProjectModal({ form, project = {},flag, onSave, onChange,onCancel }) {
     const intl = useIntl();
     const { getFieldDecorator } = form;
     return (
@@ -14,11 +14,20 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
           if (form) {
             form.validateFields((errors, values) => {
               if (errors == null) {
-                onSave &&
+                if(flag){
+                  onSave &&
                   onSave({
                     ...project,
                     ...values,
                   });
+                }else{
+                  onChange &&
+                  onChange(project.id,{
+                    email:values.email,
+                    phone:values.phone,
+                    password:values.password
+                  });
+                }
               }
             });
           }
@@ -63,7 +72,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
               ],
             })(
               <Input
-                disabled={project && project.id > 0}
+                disabled={!flag}
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseInput",
@@ -107,6 +116,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
               initialValue: project.phone,
               rules: [
                 {
+                  required: true,
                   message:
                     intl.formatMessage({
                       id: "common.pleaseInput",
@@ -130,6 +140,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
               initialValue: project.password,
               rules: [
                 {
+                  required: true,
                   message:
                     intl.formatMessage({
                       id: "common.pleaseInput",

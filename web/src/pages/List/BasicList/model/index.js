@@ -7,7 +7,7 @@ const model = {
   // 状态
   state: {
     basicListData: [], // 基础列表数据
-    currentPage: 1, // 默认页码
+    curPage:0, // 默认页码
     pageSize: 30,// 默认页码size
     total: 10, // 默认总数
   },
@@ -17,7 +17,7 @@ const model = {
     *getBasicTableList(params = {}) {
       // 处理参数
       let options = {
-        currentPage: this.currentPage,
+        curPage: this.curPage,
         pageSize: this.pageSize,
         ...params,
       };

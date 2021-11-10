@@ -35,15 +35,15 @@ const RoleList = observer(() => {
   const columns = [
     {
       title: "角色名",
-      dataIndex: "rolename",
-      key: "rolename",
+      dataIndex: "name",
+      key: "name",
       disabled: true,
       width: 250
     },
     {
       title: "描述",
-      dataIndex: "describe",
-      key: "describe",
+      dataIndex: "desc",
+      key: "desc",
       disabled: true,
     },
     {
@@ -51,6 +51,10 @@ const RoleList = observer(() => {
       dataIndex: "createTime",
       key: "createTime",
       disabled: true,
+      // render(createTime){
+      //   console.log(new Date(createTime));
+      //   return '-';
+      // }
     },
     {
       title: intl.formatMessage({
@@ -75,7 +79,7 @@ const RoleList = observer(() => {
             <a
               className={styles.projectAction}
               onClick={() => {
-                openEditRoleModal(record);setSaveOrChangeFlag(false);
+                openEditRoleModal(record,0);setSaveOrChangeFlag(false);
               }}
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
@@ -91,7 +95,7 @@ const RoleList = observer(() => {
                   );
                   closeEditRoleModal();
                   getUserList({
-                    currentPage: 1,
+                    curPage:0,
                   });
                 } else {
                   message.error(
@@ -123,6 +127,7 @@ const RoleList = observer(() => {
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.roleManage.searchInputRoleName",
+            defaultValue: "输入角色名进行查询",
           })}
         />
       ),
@@ -136,13 +141,13 @@ const RoleList = observer(() => {
     getUserList();
   }, []);
   // 分页、排序、筛选变化时触发
-  const onPageChange = (currentPage, pageSize) => {
-    getUserList({ currentPage, pageSize });
+  const onPageChange = (curPage, pageSize) => {
+    getUserList({ curPage, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
     getUserList({
-      currentPage: 1,
+      curPage:0,
     });
   };
 
@@ -169,7 +174,7 @@ const RoleList = observer(() => {
                 type="primary"
                 key="create_project"
                 onClick={() => {
-                  openEditRoleModal({});setSaveOrChangeFlag(true);
+                  openEditRoleModal({},1);setSaveOrChangeFlag(true);
                 }}
               >
                 <FormattedMessage
@@ -186,8 +191,8 @@ const RoleList = observer(() => {
       {isEditRoleModalVisible && (
         <EditRoleModal
           role={activeProject}
-          onChange={(project) => {
-            changeRole({ id: 3, ...project }, (res) => {
+          onChange={(id,project) => {
+            changeRole(id,project, (res) => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
@@ -197,7 +202,7 @@ const RoleList = observer(() => {
                 );
                 closeEditRoleModal();
                 getUserList({
-                  currentPage: 1,
+                  curPage:0,
                 });
               } else {
                 message.error(
@@ -210,7 +215,7 @@ const RoleList = observer(() => {
             });
           }}
           onSave={(project) => {
-            addNewRole({ project }, (res) => {
+            addNewRole(project, (res) => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
@@ -220,7 +225,7 @@ const RoleList = observer(() => {
                 );
                 closeEditRoleModal();
                 getUserList({
-                  currentPage: 1,
+                  curPage:0,
                 });
               } else {
                 message.error(
@@ -250,7 +255,7 @@ const RoleList = observer(() => {
                 );
                 closeEditRoleModal();
                 getUserList({
-                  currentPage: 1,
+                  curPage:0,
                 });
               } else {
                 message.error(
