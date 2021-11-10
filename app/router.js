@@ -24,4 +24,10 @@ module.exports = app => {
   router.put('/roles/:id/basic', controller.role.updateBasicInfo);
   router.put('/roles/:id/members', controller.role.updateMembersInfo);
   router.put('/roles/:id/auth', controller.role.updateAuthInfo);
+
+  // project
+  router.post('/projects', controller.project.create);
+  router.delete('/projects/:projectId', controller.project.delete);
+  router.put('/projects/:projectId', controller.project.edit);
+  router.get('/projects/list', controller.project.list);
 };
