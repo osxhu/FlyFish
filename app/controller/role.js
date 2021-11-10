@@ -84,19 +84,13 @@ class RolesController extends BaseController {
     const { ctx, app, service } = this;
 
     const addRoleBasicInfoSchema = app.Joi.object().keys({
-      name: app.Joi.string().required(),
       desc: app.Joi.string(),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
     const { value: requestData } = ctx.validate(addRoleBasicInfoSchema, ctx.request.body);
 
-    const updateInfo = await service.role.updateBasicInfo(id, requestData);
-
-    if (updateInfo.msg === 'Exists Already') {
-      this.fail('更新失败, 角色名已存在', null, CODE.FAIL);
-    } else {
-      this.success('更新成功', { id });
-    }
+    await service.role.updateBasicInfo(id, requestData);
+    this.success('更新成功', { id });
   }
 
   async updateMembersInfo() {
@@ -132,6 +126,7 @@ class RolesController extends BaseController {
 
     const getRoleInfoSchema = app.Joi.object().keys({
       id: app.Joi.string(),
+      name: app.Joi.string(),
 
       curPage: app.Joi.number().default(0),
       pageSize: app.Joi.number().default(10),
