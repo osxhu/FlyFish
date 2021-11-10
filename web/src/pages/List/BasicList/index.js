@@ -62,8 +62,8 @@ const BasicList = observer(() => {
     getBasicTableList();
   }, []);
   // 分页、排序、筛选变化时触发
-  const onPageChange = (currentPage, pageSize) => {
-    getBasicTableList({ currentPage, pageSize });
+  const onPageChange = (curPage, pageSize) => {
+    getBasicTableList({ curPage, pageSize });
   };
 
   return (

@@ -8,7 +8,7 @@ mockInstance.onGet("/get/navigationtablelist", {
   let resultData = [];
   let totalNum = 0;
 
-  let currentPage = config.params.currentPage;
+  let curPage = config.params.curPage;
   let pageSize = config.params.pageSize;
   let searchInfo = config.params.searchInfo;
   let name = searchInfo.name ? searchInfo.name : '';
@@ -27,7 +27,7 @@ mockInstance.onGet("/get/navigationtablelist", {
 
   totalNum = filterData.length;
   // 根据分页截取过滤后的数据
-  resultData = filterData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  resultData = filterData.slice((curPage - 1) * pageSize, curPage * pageSize);
 
   return [200, {
     data: resultData,

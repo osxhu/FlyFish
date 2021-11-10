@@ -8,7 +8,7 @@ mockInstance.onGet("/get/searchtablelist", {
   let resultData = [];
   let totalNum = 0;
 
-  let currentPage = config.params.currentPage;
+  let curPage = config.params.curPage;
   let pageSize = config.params.pageSize;
   let searchInfo = config.params.searchInfo ? config.params.searchInfo : {};
   let name = searchInfo.name ? searchInfo.name : '';
@@ -22,7 +22,7 @@ mockInstance.onGet("/get/searchtablelist", {
   });
 
   totalNum = filterData.length;
-  resultData = filterData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  resultData = filterData.slice((curPage - 1) * pageSize, curPage * pageSize);
 
   return [200, {
     data: resultData,

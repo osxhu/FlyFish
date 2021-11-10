@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getUsertManageListService, changeUserInformation } from "../services";
+import { getUsertManageListService, changeUserInformation ,addUserInformation} from "../services";
 import _ from "lodash";
 import { message } from 'antd';
 
@@ -15,8 +15,9 @@ const model = {
     isEditProjectModalVisible: false,
     isRoleModalVisible:false,
     deleteId:null,
-    currentPage:1,
-    pageSize:30
+    curPage:0,
+    pageSize:30,
+    addOrChange:null
   },
   effects: {
     
@@ -24,7 +25,7 @@ const model = {
     *getProjectList(params = {}) {
       // 处理参数
       let options = {
-        currentPage: this.currentPage,
+        curPage: this.curPage,
         pageSize: this.pageSize,
         ...this.searchParams,
         ...params,
@@ -33,25 +34,36 @@ const model = {
       const res = yield getUsertManageListService(options);
       this.setProjectList(res);
     },
-    *saveUser(params = {}, callback) {
+    *saveUser(id,params = {},callback) {
       // 测试代码
-      const res = yield changeUserInformation(params);
+      const res = yield changeUserInformation(id,params);
       callback && callback(res);
     },
-    
+    *addUser(params = {},callback) {
+      // 测试代码
+      const res = yield addUserInformation(params);
+      callback && callback(res);
+    },
   },
   reducers: {
     setProjectList(res) {
       this.projectList = res.data.list;
       this.total = res.total;
-      this.currentPage = res.currentPage;
+      this.curPage = res.curPage;
       this.pageSize = res.pageSize;
     },
     setSearchParams(searchParams) {
-      this.searchParams = searchParams || {};
+      let sendParams = {};
+      for(let i in searchParams){
+        if(searchParams[i]){
+          sendParams[i] = searchParams[i];
+        }
+      }
+      this.searchParams = sendParams || {};
     },
-    openEditProjectModal(project) {
+    openEditProjectModal(project,flag) {
       this.activeUser = _.clone(project);
+      this.addOrChange=flag;
       this.isEditProjectModalVisible = true;
     },
     openRoleModal(project){

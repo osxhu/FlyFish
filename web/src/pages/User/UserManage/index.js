@@ -16,9 +16,11 @@ const UserList = observer(() => {
     getProjectList,
     setSearchParams,
     saveUser,
+    addUser,
     openEditProjectModal,
     openRoleModal,
     closeRoleModal,
+    addOrChange,
     deleteOne,
     closeEditProjectModal,
   } = store;
@@ -74,13 +76,13 @@ const UserList = observer(() => {
             <a
               className={styles.projectAction}
               onClick={() => {
-                openEditProjectModal(record);
+                openEditProjectModal(record,0);
               }}
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
             <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
-              saveUser({status:'invalid',id:record.id}, (res) => {
+              saveUser(record.id,{ status: 'invalid' }, (res) => {
                 if (res.code === 0) {
                   message.success(
                     intl.formatMessage({
@@ -90,7 +92,7 @@ const UserList = observer(() => {
                   );
                   closeEditProjectModal();
                   getProjectList({
-                    currentPage: 1,
+                    curPage:0,
                   });
                 } else {
                   message.error(
@@ -162,13 +164,13 @@ const UserList = observer(() => {
     getProjectList();
   }, []);
   // 分页、排序、筛选变化时触发
-  const onPageChange = (currentPage, pageSize) => {
-    getProjectList({ currentPage, pageSize });
+  const onPageChange = (curPage, pageSize) => {
+    getProjectList({ curPage, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
     getProjectList({
-      currentPage: 1,
+      curPage: 0,
     });
   };
 
@@ -195,7 +197,7 @@ const UserList = observer(() => {
                 type="primary"
                 key="create_project"
                 onClick={() => {
-                  openEditProjectModal({});
+                  openEditProjectModal({},1);
                 }}
               >
                 <FormattedMessage
@@ -212,9 +214,11 @@ const UserList = observer(() => {
       {isEditProjectModalVisible && (
         <EditProjectModal
           project={activeUser}
+          flag={addOrChange}
           onSave={(project) => {
-            saveUser(project, (res) => {
-              if (res.code === 0) {
+            addUser(project, (res) => {
+              console.log('fhj ',res);
+              if (res.code == successCode) {
                 message.success(
                   intl.formatMessage({
                     id: "common.saveSuccess",
@@ -223,7 +227,7 @@ const UserList = observer(() => {
                 );
                 closeEditProjectModal();
                 getProjectList({
-                  currentPage: 1,
+                  curPage:0,
                 });
               } else {
                 message.error(
@@ -235,6 +239,30 @@ const UserList = observer(() => {
               }
             });
           }}
+          onChange={(id,project) => {
+            saveUser(id,project, (res) => {
+              if (res.code == successCode) {
+                message.success(
+                  intl.formatMessage({
+                    id: "common.saveSuccess",
+                    defaultValue: "保存成功！",
+                  })
+                );
+                closeEditProjectModal();
+                getProjectList({
+                  curPage:0,
+                });
+              } else {
+                message.error(
+                  intl.formatMessage({
+                    id: "common.saveError",
+                    defaultValue: "保存失败，请稍后重试！",
+                  })
+                );
+              }
+            });
+          }
+          }
           onCancel={closeEditProjectModal}
         />
       )}
@@ -252,7 +280,7 @@ const UserList = observer(() => {
                 );
                 closeEditProjectModal();
                 getProjectList({
-                  currentPage: 1,
+                  curPage:0,
                 });
               } else {
                 message.error(

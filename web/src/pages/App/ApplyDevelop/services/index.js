@@ -14,7 +14,7 @@ export const getProjectManageListService = (options) => {
         },
       ],
       total: 10,
-      currentPage: 1,
+      curPage:0,
       pageSize: 20,
     });
   });

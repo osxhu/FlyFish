@@ -50,7 +50,7 @@ const ProjectDetail = observer((props) => {
                 );
                 closeEditProjectModal();
                 getProjectList({
-                  currentPage: 1,
+                  curPage:0,
                 });
               } else {
                 message.error(

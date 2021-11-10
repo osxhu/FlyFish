@@ -100,13 +100,13 @@ const ApplyDevelop = observer(() => {
     getProjectList();
   }, []);
   // 分页、排序、筛选变化时触发
-  const onPageChange = (currentPage, pageSize) => {
-    getProjectList({ currentPage, pageSize });
+  const onPageChange = (curPage, pageSize) => {
+    getProjectList({ curPage, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
     getProjectList({
-      currentPage: 1,
+      curPage:0,
     });
   };
   const extra = () => {
@@ -180,7 +180,7 @@ const ApplyDevelop = observer(() => {
                 );
                 closeEditProjectModal();
                 getProjectList({
-                  currentPage: 1,
+                  curPage:0,
                 });
               } else {
                 message.error(

@@ -18,9 +18,9 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                   onSave({
                     ...role,
                     ...values,
-                  }):onChange&&onChange({
-                    ...role,
-                    ...values,
+                  }):onChange&&onChange(role.id,{
+                  
+                    desc:values.desc
                   });
               }
             });
@@ -51,9 +51,9 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
           }}
           initialvalues={role || {}}
         >
-          <Form.Item label="角色名" name={"rolename"}>
-            {getFieldDecorator("rolename", {
-              initialValue: role.rolename,
+          <Form.Item label="角色名" name={"name"}>
+            {getFieldDecorator("name", {
+              initialValue: role.name,
               rules: [
                 {
                   required: true,
@@ -63,14 +63,14 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                       defaultValue: "请输入",
                     }) + "角色名",
                 },
-                {
-                  pattern: /^[a-zA-Z]{6,20}$/,
-                  message: "请输入a~z的6~20位的字符，不限制大小写",
-                },
+                // {
+                //   pattern: /^[a-zA-Z]{6,20}$/,
+                //   message: "请输入a~z的6~20位的字符，不限制大小写",
+                // },
               ],
             })(
               <Input
-                disabled={role && role.id > 0}
+                disabled={!flag}
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseInput",
@@ -80,9 +80,9 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
               />
             )}
           </Form.Item>
-          <Form.Item label="描述" name={"describe"}>
-            {getFieldDecorator("describe", {
-              initialValue: role.describe,
+          <Form.Item label="描述" name={"desc"}>
+            {getFieldDecorator("desc", {
+              initialValue: role.desc,
             })(
               <Input.TextArea
               autoSize={{minRows:4}}

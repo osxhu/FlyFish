@@ -26,7 +26,7 @@ const model = {
     setProjectList(res) {
       this.projectList = res.data;
       this.total = res.total;
-      this.currentPage = res.currentPage;
+      this.curPage = res.curPage;
       this.pageSize = res.pageSize;
     },
     setSearchParams(searchParams) {

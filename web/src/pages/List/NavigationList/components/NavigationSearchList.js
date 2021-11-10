@@ -7,7 +7,7 @@ const SearchList = observer(() => {
   /** 
    * getNavigationTableList 获取列表数据方法
    * total                  表格数据总条数
-   * currentPage            当前页码
+   * curPage            当前页码
    * navigationListData     表格列表数据
    * loadingStore           loading状态监听
    * columns                表格列字段总集合
@@ -19,7 +19,7 @@ const SearchList = observer(() => {
    * selectItems            下拉筛选已选择字段集合
   */
   const { getNavigationTableList, getTableColumns } = store;
-  const { total, currentPage, navigationListData } = store;
+  const { total, curPage, navigationListData } = store;
   const { columns, setColumns } = store;
   const { showColumns, setShowColumns } = store;
   const loading = loadingStore.loading['navigationStore/getNavigationTableList'];
@@ -57,13 +57,13 @@ const SearchList = observer(() => {
   const onSearch = (searchFields) => {
     getNavigationTableList({
       searchInfo: searchFields,
-      currentPage: 1,
+      curPage:0,
     });
   };
 
   // 分页、排序、筛选变化时触发
-  const onPageChange = (currentPage, pageSize) => {
-    getNavigationTableList({ currentPage, pageSize });
+  const onPageChange = (curPage, pageSize) => {
+    getNavigationTableList({ curPage, pageSize });
   };
   // 下拉筛选列变化处理
   const changeColumns = (selectedColumns) => {
@@ -85,7 +85,7 @@ const SearchList = observer(() => {
       pagination={{
         showTotal: true,
         total: total,
-        current: currentPage,
+        current: curPage,
         onChange: onPageChange,
         onShowSizeChange: onPageChange,
         showSizeChanger: true,

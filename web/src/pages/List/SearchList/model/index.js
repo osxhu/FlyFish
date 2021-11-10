@@ -7,7 +7,7 @@ const model = {
   // 状态
   state: {
     searchListData: [], // 搜索列表数据
-    currentPage: 1, // 默认页码
+    curPage:0, // 默认页码
     pageSize: 30,// 默认页码size
     total: 10, // 默认总数
     searchInfo: {}, // 高级查询参数
@@ -52,16 +52,16 @@ const model = {
         this.searchInfo = searchInfo;
       }
       // 处理页码变化
-      const { currentPage } = params;
-      if (currentPage) {
-        this.currentPage = currentPage;
+      const { curPage } = params;
+      if (curPage) {
+        this.curPage = curPage;
       } else {
-        this.currentPage = 1;
+        this.curPage = 1;
       }
       // 请求参数
       let options = {
         searchInfo: this.searchInfo,
-        currentPage: this.currentPage,
+        curPage: this.curPage,
         pageSize: this.pageSize,
         ...params
       };

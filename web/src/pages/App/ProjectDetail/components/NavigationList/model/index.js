@@ -7,7 +7,7 @@ const model = {
   // 状态
   state: {
     navigationListData: [], // 导航列表数据
-    currentPage: 1, // 默认页码
+    curPage:0, // 默认页码
     pageSize: 30,// 默认页码size
     total: 10, // 默认总数
     treeData: [], // 树形数据
@@ -64,15 +64,15 @@ const model = {
         this.searchInfo = searchInfo;
       }
       // 处理页码变化
-      const { currentPage } = params;
-      if (currentPage) {
-        this.currentPage = currentPage;
+      const { curPage } = params;
+      if (curPage) {
+        this.curPage = curPage;
       }
       // 请求参数
       let options = {
         departmentKey: this.departmentKey,
         searchInfo: this.searchInfo,
-        currentPage: this.currentPage,
+        curPage: this.curPage,
         pageSize: this.pageSize,
         ...params
       };
@@ -88,12 +88,12 @@ const model = {
     onClickSelect(departmentKey) {
       // 更新树节点和重置页码、高级查询参数
       this.departmentKey = departmentKey[0];
-      this.currentPage = 1,
+      this.curPage = 1,
         this.searchInfo = {};
       // 请求数据
       this.getNavigationTableList({
         departmentKey: this.departmentKey,
-        currentPage: this.currentPage
+        curPage: this.curPage
       });
     },
     // 处理需要展示的列字段集合
