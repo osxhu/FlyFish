@@ -19,7 +19,6 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                     ...role,
                     ...values,
                   }):onChange&&onChange(role.id,{
-                  
                     desc:values.desc
                   });
               }

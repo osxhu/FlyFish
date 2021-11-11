@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { CWTable, Input, Button, message, Select } from "@chaoswise/ui";
+const { Option } = Select;
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import EditProjectModal from "./components/EditUsertModal";
-import ChangeRoleModal from "./components/changeRoleMoal";
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
 import { Popconfirm } from 'antd';
+import { formatDate } from '@/config/global';
 
 import { FormattedMessage, useIntl } from "react-intl";
 const UserList = observer(() => {
@@ -18,13 +19,10 @@ const UserList = observer(() => {
     saveUser,
     addUser,
     openEditProjectModal,
-    openRoleModal,
-    closeRoleModal,
     addOrChange,
-    deleteOne,
     closeEditProjectModal,
   } = store;
-  const { total, projectList, isEditProjectModalVisible, isRoleModalVisible, activeUser } =
+  const { total, projectList, isEditProjectModalVisible, activeUser } =
     store;
   const loading = loadingStore.loading["UserList/getProjectList"];
   // 表格列表数据
@@ -42,16 +40,30 @@ const UserList = observer(() => {
       dataIndex: "email",
       key: "email",
       disabled: true,
+      width: 200,
     },
     {
       title: "手机号",
       dataIndex: "phone",
       key: "phone"
     },
+
     {
       title: "创建时间",
       dataIndex: "createTime",
       key: "createTime",
+      render(createTime) {
+        return formatDate(createTime);
+      },
+      width: 200
+    },
+    {
+      title: "状态",
+      dataIndex: "status",
+      key: "status",
+      render(status) {
+        return <div style={status === 'valid' ? { color: 'green' } : { color: 'red' }}>{status === 'valid' ? '正常' : '禁用'}</div>;
+      }
     },
     {
       title: intl.formatMessage({
@@ -63,51 +75,45 @@ const UserList = observer(() => {
       render(text, record, index) {
         return (
           <span className={styles.projectActionList}>
-            <a className={styles.projectAction}
-              onClick={() => {
-                openRoleModal(record);
-              }}
-            >
-              <FormattedMessage
-                id="pages.userManage.configurePermissions"
-                defaultValue="配置权限"
-              />
-            </a>
             <a
               className={styles.projectAction}
               onClick={() => {
-                openEditProjectModal(record,0);
+                openEditProjectModal(record, 0);
               }}
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
-            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
-              saveUser(record.id,{ status: 'invalid' }, (res) => {
+            <Popconfirm title={record.status==='valid'?"确认禁用？":'确认恢复?'} okText="确认" cancelText="取消" onConfirm={() => {
+              let result=record.status==='valid'?{status: 'invalid'}:{status: 'valid'};
+              saveUser(record.id, result, (res) => {
                 if (res.code === 0) {
                   message.success(
-                    intl.formatMessage({
-                      id: "common.saveSuccess",
-                      defaultValue: "保存成功！",
+                    record.status==='valid'?intl.formatMessage({
+                      id: "common.disableSuccess",
+                      defaultValue: "禁用成功！",
+                    }):intl.formatMessage({
+                      id: "common.recoverySuccess",
+                      defaultValue: "恢复成功！",
                     })
                   );
                   closeEditProjectModal();
                   getProjectList({
-                    curPage:0,
+                    curPage: 0,
                   });
                 } else {
                   message.error(
                     intl.formatMessage({
-                      id: "common.saveError",
-                      defaultValue: "保存失败，请稍后重试！",
+                      id: "common.disableError",
+                      defaultValue: "禁用失败，请稍后重试！",
                     })
                   );
                 }
               });
             }}>
               <a className={styles.projectAction} href='#'>
-                <FormattedMessage id="common.delete" defaultValue="删除" />
+                <FormattedMessage id={record.status === 'valid' ? "common.disable" : 'common.recovery'} defaultValue={record.status === 'valid' ? '禁用' : '恢复'} />
               </a>
-            </Popconfirm>,
+            </Popconfirm>
 
           </span>
         );
@@ -144,15 +150,19 @@ const UserList = observer(() => {
     }, {
       components: (
         <Select
-          id="state"
-          key="state"
+          id="status"
+          key="status"
           name='状态'
           style={{ width: "150px" }}
           placeholder={intl.formatMessage({
             id: "pages.userManage.searchInputstate",
             defaultValue: "输入状态进行查询",
           })}
-        />
+        >
+          <Option value="">全部</Option>
+          <Option value="valid">正常</Option>
+          <Option value="invalid">禁用</Option>
+        </Select>
       ),
     }
   ];
@@ -197,7 +207,7 @@ const UserList = observer(() => {
                 type="primary"
                 key="create_project"
                 onClick={() => {
-                  openEditProjectModal({},1);
+                  openEditProjectModal({}, 1);
                 }}
               >
                 <FormattedMessage
@@ -217,46 +227,44 @@ const UserList = observer(() => {
           flag={addOrChange}
           onSave={(project) => {
             addUser(project, (res) => {
-              console.log('fhj ',res);
               if (res.code == successCode) {
                 message.success(
                   intl.formatMessage({
-                    id: "common.saveSuccess",
-                    defaultValue: "保存成功！",
+                    id: "common.addSuccess",
+                    defaultValue: "新增成功！",
                   })
                 );
                 closeEditProjectModal();
                 getProjectList({
-                  curPage:0,
+                  curPage: 0,
                 });
               } else {
-                message.error(
-                  intl.formatMessage({
-                    id: "common.saveError",
-                    defaultValue: "保存失败，请稍后重试！",
-                  })
+                res.msg || message.error(intl.formatMessage({
+                  id: "common.addError",
+                  defaultValue: "编辑失败，请稍后重试！",
+                })
                 );
               }
             });
           }}
-          onChange={(id,project) => {
-            saveUser(id,project, (res) => {
+          onChange={(id, project) => {
+            saveUser(id, project, (res) => {
               if (res.code == successCode) {
                 message.success(
                   intl.formatMessage({
-                    id: "common.saveSuccess",
-                    defaultValue: "保存成功！",
+                    id: "common.changeSuccess",
+                    defaultValue: "编辑成功！",
                   })
                 );
                 closeEditProjectModal();
                 getProjectList({
-                  curPage:0,
+                  curPage: 0,
                 });
               } else {
-                message.error(
-                  intl.formatMessage({
-                    id: "common.saveError",
-                    defaultValue: "保存失败，请稍后重试！",
+                res.msg || message.error(
+                  res.msg || intl.formatMessage({
+                    id: "common.changeError",
+                    defaultValue: "编辑失败，请稍后重试！",
                   })
                 );
               }
@@ -266,37 +274,6 @@ const UserList = observer(() => {
           onCancel={closeEditProjectModal}
         />
       )}
-      {isRoleModalVisible && (
-        <ChangeRoleModal
-          project={activeUser}
-          onSave={(project) => {
-            saveUser(project, (res) => {
-              if (res.code === successCode) {
-                message.success(
-                  intl.formatMessage({
-                    id: "common.saveSuccess",
-                    defaultValue: "保存成功！",
-                  })
-                );
-                closeEditProjectModal();
-                getProjectList({
-                  curPage:0,
-                });
-              } else {
-                message.error(
-                  intl.formatMessage({
-                    id: "common.saveError",
-                    defaultValue: "保存失败，请稍后重试！",
-                  })
-                );
-              }
-            });
-          }}
-          onCancel={closeRoleModal}
-        />
-
-      )
-      }
     </React.Fragment>
   );
 });

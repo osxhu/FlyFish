@@ -17,3 +17,15 @@ export const addNewRole = (options) => {
 export const deleteOneRole = (options) => {
   return fetchDelete(API.DELETE_ROLE + options.id, { body: options });
 };
+// 获取角色详情
+export const roleDetail = (id) => {
+  return fetchGet(API.ROLE_DETAIL + id);
+};
+// 保存角色权限
+export const saveRoleAuth = (id,options) => {
+  return fetchPut(API.ROLE_AUTH + id + '/' + 'members', { body: options });
+};
+// 保存角色菜单
+export const saveRoleMenu = (id,options) => {
+  return fetchPut(API.ROLE_AUTH + id + '/' + 'auth', { body: options });
+};

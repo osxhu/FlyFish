@@ -7,7 +7,7 @@ import {
   ConfigProvider, 
 } from '@chaoswise/ui';
 import logo from './assets/logo.svg';
-
+import {Button} from 'antd';
 import actions from '@/shared/mainActions';
 
 import { connect } from '@chaoswise/cw-mobx';

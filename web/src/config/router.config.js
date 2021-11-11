@@ -11,6 +11,10 @@ module.exports = {
       component: "@/pages/Error",
     },
     {
+      path: "/login",
+      component: "@/pages/Login/UserLayout",
+    },
+    {
       path: "/",
       component: "@/layouts/BasicLayout",
       dynamic: false,

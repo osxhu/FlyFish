@@ -8,7 +8,8 @@ import ChangeRoleModal from "./components/changeRoleMoal";
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
 import { Popconfirm } from 'antd';
-
+import ChangeRoleJurisdiction from './components/changeRoleJurisdiction';
+import { formatDate } from '@/config/global';
 import { FormattedMessage, useIntl } from "react-intl";
 const RoleList = observer(() => {
   const intl = useIntl();
@@ -19,15 +20,18 @@ const RoleList = observer(() => {
     openEditRoleModal,
     openRoleModal,
     closeRoleModal,
-    deleteOne,
     deleteRole,
-    closeEditRoleModal,
+    getAllUserList, changeRoleMenu,
+    closeEditRoleModal, changeRoleAuth,
+    openRoleJurisdictionModal,
+    closeRoleJurisdictionModal, getRoleDetail,
     addNewRole
   } = store;
-  const { total, projectList, isEditRoleModalVisible, isRoleModalVisible, activeUser, activeProject } =
+
+  const { total, projectList, userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
     store;
   const [saveOrChangeFlag, setSaveOrChangeFlag] = useState(false);
-
+  // 成员列表的值
   const loading = loadingStore.loading["RoleList/getUserList"];
   // 表格列表数据
   let basicTableListData = toJS(projectList);
@@ -51,10 +55,9 @@ const RoleList = observer(() => {
       dataIndex: "createTime",
       key: "createTime",
       disabled: true,
-      // render(createTime){
-      //   console.log(new Date(createTime));
-      //   return '-';
-      // }
+      render(createTime) {
+        return formatDate(createTime);
+      }
     },
     {
       title: intl.formatMessage({
@@ -67,25 +70,38 @@ const RoleList = observer(() => {
         return (
           <span className={styles.projectActionList}>
             <a className={styles.projectAction}
-              onClick={() => {
+              onClick={async () => {
+                await getRoleDetail(record.id);
+                getAllUserList();
                 openRoleModal(record);
               }}
             >
               <FormattedMessage
                 id="pages.roleManage.member"
-                defaultValue="成员"
+                defaultValue="成员列表"
+              />
+            </a>
+            <a className={styles.projectAction}
+              onClick={() => {
+
+                openRoleJurisdictionModal(record);
+              }}
+            >
+              <FormattedMessage
+                id="pages.roleManage.role"
+                defaultValue="权限配置"
               />
             </a>
             <a
               className={styles.projectAction}
               onClick={() => {
-                openEditRoleModal(record,0);setSaveOrChangeFlag(false);
+                openEditRoleModal(record);
               }}
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
             <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
-              deleteRole({id:3,...record}, (res) => {
+              deleteRole({ id: record.id, ...record }, (res) => {
                 if (res.code === successCode) {
                   message.success(
                     intl.formatMessage({
@@ -95,11 +111,11 @@ const RoleList = observer(() => {
                   );
                   closeEditRoleModal();
                   getUserList({
-                    curPage:0,
+                    curPage: 0,
                   });
                 } else {
                   message.error(
-                    intl.formatMessage({
+                    res.msg || intl.formatMessage({
                       id: "common.deleteError",
                       defaultValue: "删除失败，请稍后重试！",
                     })
@@ -110,8 +126,7 @@ const RoleList = observer(() => {
               <a className={styles.projectAction} href='#'>
                 <FormattedMessage id="common.delete" defaultValue="删除" />
               </a>
-            </Popconfirm>,
-
+            </Popconfirm>
           </span>
         );
       },
@@ -147,7 +162,7 @@ const RoleList = observer(() => {
   const onSearch = (params) => {
     setSearchParams(params);
     getUserList({
-      curPage:0,
+      curPage: 0,
     });
   };
 
@@ -174,7 +189,7 @@ const RoleList = observer(() => {
                 type="primary"
                 key="create_project"
                 onClick={() => {
-                  openEditRoleModal({},1);setSaveOrChangeFlag(true);
+                  openEditRoleModal({}, 1); setSaveOrChangeFlag(true);
                 }}
               >
                 <FormattedMessage
@@ -188,11 +203,12 @@ const RoleList = observer(() => {
           searchContent: searchContent,
         }}
       ></CWTable>
+      {/* 新增/编辑的弹窗 */}
       {isEditRoleModalVisible && (
         <EditRoleModal
           role={activeProject}
-          onChange={(id,project) => {
-            changeRole(id,project, (res) => {
+          onChange={(id, project) => {
+            changeRole(id, project, (res) => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
@@ -202,7 +218,7 @@ const RoleList = observer(() => {
                 );
                 closeEditRoleModal();
                 getUserList({
-                  curPage:0,
+                  curPage: 0,
                 });
               } else {
                 message.error(
@@ -225,7 +241,7 @@ const RoleList = observer(() => {
                 );
                 closeEditRoleModal();
                 getUserList({
-                  curPage:0,
+                  curPage: 0,
                 });
               } else {
                 message.error(
@@ -241,11 +257,14 @@ const RoleList = observer(() => {
           onCancel={closeEditRoleModal}
         />
       )}
+      {/* 修改用户角色 */}
       {isRoleModalVisible && (
         <ChangeRoleModal
-          project={activeUser}
-          onSave={(project) => {
-            saveProject(project, (res) => {
+          id={activeUser.id}
+          project={userList}
+          checkProject={oneRoleDetail}
+          onSave={(id, project) => {
+            changeRoleAuth(id, project, (res) => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
@@ -253,9 +272,9 @@ const RoleList = observer(() => {
                     defaultValue: "保存成功！",
                   })
                 );
-                closeEditRoleModal();
+                closeRoleModal();
                 getUserList({
-                  curPage:0,
+                  curPage: 0,
                 });
               } else {
                 message.error(
@@ -268,6 +287,38 @@ const RoleList = observer(() => {
             });
           }}
           onCancel={closeRoleModal}
+        />
+
+      )
+      }
+      {/* 修改菜单 */}
+      {isRoleJurisdictionModalVisible && (
+        <ChangeRoleJurisdiction
+          project={activeUser}
+          onSave={(project) => {
+            changeRoleMenu(activeUser.id, project, (res) => {
+              if (res.code === successCode) {
+                message.success(
+                  intl.formatMessage({
+                    id: "common.saveSuccess",
+                    defaultValue: "保存成功！",
+                  })
+                );
+                closeRoleJurisdictionModal();
+                getUserList({
+                  curPage: 0,
+                });
+              } else {
+                message.error(
+                  intl.formatMessage({
+                    id: "common.saveError",
+                    defaultValue: "保存失败，请稍后重试！",
+                  })
+                );
+              }
+            });
+          }}
+          onCancel={closeRoleJurisdictionModal}
         />
 
       )

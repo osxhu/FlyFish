@@ -13,7 +13,6 @@ const model = {
     total: 0,
     activeUser: null,
     isEditProjectModalVisible: false,
-    isRoleModalVisible:false,
     deleteId:null,
     curPage:0,
     pageSize:30,
@@ -65,14 +64,6 @@ const model = {
       this.activeUser = _.clone(project);
       this.addOrChange=flag;
       this.isEditProjectModalVisible = true;
-    },
-    openRoleModal(project){
-      this.activeUser = _.clone(project);
-      this.isRoleModalVisible = true;
-    },
-    closeRoleModal(){
-      this.activeUser = null;
-      this.isRoleModalVisible = false;
     },
     closeEditProjectModal() {
       this.activeUser = null;

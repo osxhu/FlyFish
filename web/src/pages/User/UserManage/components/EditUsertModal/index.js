@@ -123,6 +123,10 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                       defaultValue: "请输入",
                     }) + "手机号",
                 },
+                {
+                  pattern: /^[1]([3-9])[0-9]{9}$/ ,
+                  message: "请输入正确的手机号",
+                },
               ],
             })(
               <Input

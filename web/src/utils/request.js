@@ -42,8 +42,8 @@ initRequest({
   config: {
     // 请求错误码回调
     statusCallback: {
-      '401': () => {
-
+      '1001': (res) => {
+        console.log('符合u好',res);
       },
       '403': () => {
 
