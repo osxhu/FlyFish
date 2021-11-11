@@ -1,9 +1,7 @@
 'use strict';
 const Service = require('egg').Service;
 const Enum = require('../lib/enum');
-const path = require('path');
 const fs = require('fs');
-
 const _ = require('lodash');
 
 class ComponentService extends Service {
@@ -90,78 +88,152 @@ class ComponentService extends Service {
   async addComponent(createComponentInfo) {
     const { ctx } = this;
 
-    // const userInfo = ctx.userInfo;
+    const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
 
-    // const existsComponents = await ctx.model.Component._findOne({ name: createComponentInfo.name });
-    // if (!_.isEmpty(existsComponents)) {
-    //   returnData.msg = 'Exists Already';
-    //   return returnData;
-    // }
+    const existsComponents = await ctx.model.Component._findOne({ name: createComponentInfo.name });
+    if (!_.isEmpty(existsComponents)) {
+      returnData.msg = 'Exists Already';
+      return returnData;
+    }
 
-    // const createInfo = {
-    //   name: createComponentInfo.name,
-    //   category: createComponentInfo.category,
-    //   subCategory: createComponentInfo.subCategory,
-    //   type: createComponentInfo.type,
-    //   projects: createComponentInfo.projects,
-    //   tags: createComponentInfo.tags || [],
-    //   desc: createComponentInfo.desc || '无',
-    //   versions: [{
-    //     no: 'v1.0',
-    //     desc: '系统初始化',
-    //     status: Enum.COMMON_STATUS.VALID,
-    //   }],
-    //   cover: '',
-    //   creator: userInfo.userId,
-    // };
+    const createInfo = {
+      name: createComponentInfo.name,
+      category: createComponentInfo.category,
+      subCategory: createComponentInfo.subCategory,
+      type: createComponentInfo.type,
+      projects: createComponentInfo.projects,
+      tags: createComponentInfo.tags || [],
+      desc: createComponentInfo.desc || '无',
+      versions: [],
+      cover: '',
+      creator: userInfo.userId,
+    };
 
-    // const result = await ctx.model.Component._create(createInfo);
+    const result = await ctx.model.Component._create(createInfo);
 
-    // // Todo : init component
-    // returnData.data.id = result._id.toString();
-    await this.createDevWorkspace(111, 'true');
+    const componentId = result._id.toString();
+    returnData.data.id = componentId;
+
+    const createResult = await this.initDevWorkspace(componentId);
+    if (createResult.msg !== 'success') returnData.msg = createResult.msg;
 
     return returnData;
   }
 
-  async createDevWorkspace(componentId, init = false, force = false) {
-    // ignore force if init === true
+  async releaseComponent(componentId, releaseComponentInfo) {
+    const { ctx } = this;
+
+    const returnData = { msg: 'ok' };
+    const { no, compatible, desc } = releaseComponentInfo;
+    const componentInfo = await ctx.model.Component._findOne({ id: componentId });
+
+    if (!compatible) {
+      const existsVersion = (componentInfo.versions || []).find(version => version.no === no);
+
+      if (!_.isEmpty(existsVersion)) {
+        returnData.msg = 'Exists Already';
+        return returnData;
+      }
+      await ctx.model.Component._updateOne({ id: componentId }, { $push: { versions: { no, desc, status: Enum.COMMON_STATUS.VALID } } });
+    }
+
+    const createResult = this.initReleaseWorkspace(componentInfo, no, compatible);
+    if (createResult.msg !== 'Success') returnData.msg = createResult.msg;
+
+    return returnData;
+  }
+
+  // 初始化上线组件空间  compatible: 是否兼容旧版本组件
+  initReleaseWorkspace(componentInfo, no, compatible) {
     const { config, logger } = this;
-    const { pathConfig } = config;
-    const version = 'v1';
-    const { componentsPath, componentsTplPath } = pathConfig;
+    const { pathConfig: { componentsPath } } = config;
 
-    if (init) {
+    const returnInfo = { msg: 'Success' };
+    const componentId = componentInfo.id;
+    const version = compatible ? _.get(componentInfo, [ 'version', componentInfo.version || [], 'no' ], no || 'v1') : no;
+
+    try {
       const componentPath = `${componentsPath}/${componentId}`;
-      await fs.mkdirSync(`${componentPath}`);
+      const componentDevPath = `${componentPath}/current`;
+      const componentReleasePath = `${componentPath}/${version}`;
+      if (!compatible || (compatible && !fs.existsSync(componentReleasePath))) fs.mkdirSync(componentReleasePath);
 
-      const componentVersionPath = `${componentPath}/${version}`;
-      await fs.mkdirSync(componentVersionPath);
+      const devSrcPath = `${componentDevPath}/src`;
+      const releaseSrcPath = `${componentReleasePath}/src`;
+      if (!compatible || (compatible && !fs.existsSync(releaseSrcPath))) fs.mkdirSync(releaseSrcPath);
 
-      const srcPath = `${componentVersionPath}/src`;
+      fs.copyFileSync(`${devSrcPath}/main.js`, `${releaseSrcPath}/main.js`);
+      fs.copyFileSync(`${devSrcPath}/Component.js`, `${releaseSrcPath}/Component.js`);
+      fs.copyFileSync(`${devSrcPath}/setting.js`, `${releaseSrcPath}/setting.js`);
+
+      const devSettingPath = `${devSrcPath}/settings`;
+      const releaseSettingPath = `${releaseSrcPath}/settings`;
+      if (!compatible || (compatible && !fs.existsSync(releaseSettingPath))) fs.mkdirSync(releaseSettingPath);
+      fs.copyFileSync(`${devSettingPath}/options.js`, `${releaseSettingPath}/options.js`);
+      fs.copyFileSync(`${devSettingPath}/data.js`, `${releaseSettingPath}/data.js`);
+
+      const devBuildPath = `${componentDevPath}/build`;
+      const releaseBuildPath = `${componentReleasePath}/build`;
+      if (!compatible || (compatible && !fs.existsSync(releaseBuildPath))) fs.mkdirSync(releaseBuildPath);
+      fs.copyFileSync(`${devBuildPath}/webpack.config.dev.js`, `${releaseBuildPath}/webpack.config.dev.js`);
+      fs.copyFileSync(`${devBuildPath}/webpack.config.production.js`, `${releaseBuildPath}/webpack.config.production.js`);
+
+      fs.copyFileSync(`${componentDevPath}/editor.html`, `${componentReleasePath}/editor.html`);
+      fs.copyFileSync(`${componentDevPath}/env.js`, `${componentReleasePath}/env.js`);
+      fs.copyFileSync(`${componentDevPath}/options.js`, `${componentReleasePath}/options.js`);
+      fs.copyFileSync(`${componentDevPath}/package.js`, `${componentReleasePath}/package.js`);
+    } catch (error) {
+      returnInfo.msg = 'Fail';
+      logger.error('releaseCompatibleComponent error: ', error || error.stack);
+    }
+
+    return returnInfo;
+  }
+
+  // 初始化开发组件空间
+  initDevWorkspace(componentId) {
+    const { config, logger } = this;
+    const { pathConfig: { componentsPath, componentsTplPath } } = config;
+
+    const returnInfo = { msg: 'Success' };
+
+    const version = 'current';
+    try {
+      const componentPath = `${componentsPath}/${componentId}`;
+      fs.mkdirSync(`${componentPath}`);
+
+      const componentDevPath = `${componentPath}/${version}`;
+      fs.mkdirSync(componentDevPath);
+
+      const srcPath = `${componentDevPath}/src`;
       const srcTplPath = `${componentsTplPath}/src`;
-      await fs.mkdirSync(srcPath);
-      await fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId));
-      await fs.writeFileSync(`${srcPath}/Component.js`, require(`${srcTplPath}/ComponentJs.js`)(componentId));
-      await fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(componentId));
+      fs.mkdirSync(srcPath);
+      fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId));
+      fs.writeFileSync(`${srcPath}/Component.js`, require(`${srcTplPath}/ComponentJs.js`)(componentId));
+      fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(componentId));
 
       const settingPath = `${srcPath}/settings`;
-      await fs.mkdirSync(settingPath);
-      await fs.writeFileSync(`${settingPath}/options.js`, require(`${srcTplPath}/options.js`)(componentId));
-      await fs.writeFileSync(`${settingPath}/data.js`, require(`${srcTplPath}/data.js`)(componentId));
+      fs.mkdirSync(settingPath);
+      fs.writeFileSync(`${settingPath}/options.js`, require(`${srcTplPath}/options.js`)(componentId));
+      fs.writeFileSync(`${settingPath}/data.js`, require(`${srcTplPath}/data.js`)(componentId));
 
-      const buildPath = `${componentsPath}/${componentId}/${version}/build`;
+      const buildPath = `${componentDevPath}/build`;
       const buildTplPath = `${componentsTplPath}/build`;
-      await fs.mkdirSync(buildPath);
-      await fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(componentId));
-      await fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
+      fs.mkdirSync(buildPath);
+      fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(componentId));
+      fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
 
-      await fs.writeFileSync(`${componentVersionPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(componentId));
-      await fs.writeFileSync(`${componentVersionPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentsPath, componentId, version));
-      await fs.writeFileSync(`${componentVersionPath}/options.js`, require(`${componentsTplPath}/options.json.js`)(componentId));
-      await fs.writeFileSync(`${componentVersionPath}/package.js`, require(`${componentsTplPath}/package.json.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentsPath, componentId, version));
+      fs.writeFileSync(`${componentDevPath}/options.js`, require(`${componentsTplPath}/options.json.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/package.js`, require(`${componentsTplPath}/package.json.js`)(componentId));
+    } catch (error) {
+      returnInfo.msg = 'Fail';
+      logger.error('createDevWorkspace error: ', error || error.stack);
     }
+
+    return returnInfo;
   }
 }
 

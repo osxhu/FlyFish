@@ -61,6 +61,12 @@ module.exports = app => {
     return await this.create(doc);
   };
 
+  ComponentSchema.statics._updateOne = async function(cond, params) {
+    const docCond = _toDoc(cond);
+    const docData = _toDoc(params, true);
+    return await this.updateOne(docCond, docData);
+  };
+
   function _toDoc(obj, update = false) {
     if (_.isEmpty(obj)) return;
 

@@ -73,8 +73,35 @@ class ComponentsController extends BaseController {
 
     if (componentInfo.msg === 'Exists Already') {
       this.fail('创建失败, 组件名称已存在', null, CODE.FAIL);
+    } else if (componentInfo.msg === 'Fail') {
+      this.fail('创建失败, 初始化开发空间失败', null, CODE.FAIL);
     } else {
       this.success('创建成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
+    }
+  }
+
+  async release() {
+    const { ctx, app, service } = this;
+
+    const releaseComponentSchema = app.Joi.object().keys({
+      compatible: app.Joi.boolean().required(),
+
+      no: app.Joi.string(),
+      desc: app.Joi.string(),
+    });
+
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+    const { value: requestData } = ctx.validate(releaseComponentSchema, ctx.request.body);
+
+    if (!requestData.compatible && !requestData.no) this.fail('组件版本不兼容旧版本，请添加版本号', null, CODE.PARAM_ERR);
+    const releaseComponent = await service.component.releaseComponent(id, requestData);
+
+    if (releaseComponent.msg === 'Exists Already') {
+      this.fail('发行版本失败, 组件版本已存在', null, CODE.FAIL);
+    } else if (releaseComponent.msg === 'Fail') {
+      this.fail('发行版本失败, 初始化空间失败', null, CODE.FAIL);
+    } else {
+      this.success('发行版本成功', null);
     }
   }
 }
