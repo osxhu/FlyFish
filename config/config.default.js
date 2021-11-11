@@ -1,6 +1,7 @@
 /* eslint valid-jsdoc: "off" */
 
 'use strict';
+const path = require('path');
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -77,6 +78,12 @@ module.exports = appInfo => {
     name: 'FLY_FISH_V2.0',
     domain: 'localhost',
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
+  };
+
+  config.pathConfig = {
+    appPath: path.resolve(__dirname, '../'),
+    componentsPath: path.resolve(__dirname, '../components'),
+    componentsTplPath: path.resolve(__dirname, '../component_tpl'),
   };
 
   // add your user config here

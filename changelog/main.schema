@@ -120,12 +120,10 @@ menus: {
 	update_time: Time,
 
 	menus: [{
-		uid: String,
 		name: String,
 		url: String,
 
 		children: [{
-			uid: String,
 			name: String,
 			url: String
 		}]

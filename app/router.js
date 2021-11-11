@@ -37,4 +37,7 @@ module.exports = app => {
   router.put('/components/categories', controller.component.updateCategory);
   router.post('/components/list', controller.component.getList);
   router.post('/components', controller.component.add);
+
+  // menu
+  router.get('/menus/list', controller.menu.list);
 };
