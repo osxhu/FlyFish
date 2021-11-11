@@ -111,7 +111,8 @@ const HandleMenu = observer((props)=>{
                         })
                       })
                       getTreeData();
-                      setEditName('')
+                      setEditName('');
+                      message.success('修改成功！')
                     }
                     
                   }}
@@ -158,6 +159,7 @@ const HandleMenu = observer((props)=>{
                     const res = await updateTreeDataService({categories:datas});
                     if (res && res.code==0) {
                       getTreeData();
+                      message.success('删除成功！')
                     }
                   }
                 }}
@@ -263,7 +265,8 @@ const HandleMenu = observer((props)=>{
                         })
                       })
                       getTreeData();
-                      setEditName('')
+                      setEditName('');
+                      message.success('修改成功！')
                     }
                     
                   }}
@@ -307,6 +310,7 @@ const HandleMenu = observer((props)=>{
                     const res = await updateTreeDataService({categories:datas});
                     if (res && res.code==0) {
                       getTreeData();
+                      message.success('删除成功!')
                     }
                   }}
                 />
@@ -348,7 +352,8 @@ const HandleMenu = observer((props)=>{
                     })
                   })
                   getTreeData();
-                  setAddCateName('')
+                  setAddCateName('');
+                  message.success('添加成功！')
                 }
                 
               }}

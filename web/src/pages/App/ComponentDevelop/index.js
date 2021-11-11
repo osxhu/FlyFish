@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-11 18:16:34
+ * @LastEditTime: 2021-11-11 19:50:29
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -19,7 +19,7 @@ import HandleMenu from "./components/handleMenu";
 import AddComponent from "./components/addComponent";
 import Detail from "./components/detail";
 import _ from "lodash";
-import { updateTreeDataService } from './services';
+import { updateTreeDataService,getListData } from './services';
 
 const {Option} = Select;
 
