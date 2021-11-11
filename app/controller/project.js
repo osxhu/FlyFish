@@ -61,8 +61,20 @@ class ProjectController extends BaseController {
       skip: (curPage - 1) * pageSize,
       limit: pageSize,
     };
-    const list = await service.project.getList({ key }, options);
-    this.success('获取成功', list);
+    const { list, total } = await service.project.getList({ key }, options);
+    this.success('获取成功', { total, list, curPage, pageSize });
+  }
+
+  async info() {
+    const { ctx, app: { Joi }, service } = this;
+
+    const infoSchema = Joi.object().keys({
+      projectId: Joi.string().required(),
+    });
+
+    const { projectId } = await infoSchema.validateAsync(ctx.params);
+    const info = await service.project.getInfo(projectId);
+    this.success('获取成功', info);
   }
 
 

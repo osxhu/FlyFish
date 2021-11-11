@@ -29,6 +29,7 @@ module.exports = app => {
   router.post('/projects', controller.project.create);
   router.delete('/projects/:projectId', controller.project.delete);
   router.put('/projects/:projectId', controller.project.edit);
+  router.get('/projects/:projectId', controller.project.info);
   router.get('/projects/list', controller.project.list);
 
   // components

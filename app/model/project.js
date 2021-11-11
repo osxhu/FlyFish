@@ -45,14 +45,19 @@ module.exports = app => {
 
   ProjectSchema.statics._findOne = async function(params) {
     const doc = _toDoc(params);
-    const res = await this.findOne(doc);
-    return _toObj(res._doc);
+    const res = await this.findOne(doc).lean(true);
+    return _toObj(res);
   };
 
   ProjectSchema.statics._find = async function(query, projection, options) {
     const filter = _toDoc(query);
-    const res = await this.find(filter, projection, options);
-    return res.map(item => _toObj(item._doc));
+    const res = await this.find(filter, projection, options).lean(true);
+    return res.map(_toObj);
+  };
+
+  ProjectSchema.statics._count = async function(query) {
+    const filter = _toDoc(query);
+    return await this.count(filter);
   };
 
   ProjectSchema.statics._updateOne = async function(query, params) {
@@ -71,6 +76,8 @@ module.exports = app => {
   }
 
   function _toObj(doc) {
+    if (_.isEmpty(doc)) return;
+
     const res = {};
     res.id = doc._id.toString();
 

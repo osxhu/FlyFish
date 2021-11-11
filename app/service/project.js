@@ -36,7 +36,19 @@ class ProjectService extends Service {
         },
       ],
     };
-    return await ctx.model.Project._find(filter, null, options);
+    const total = await ctx.model.Project._count(filter);
+    const list = await ctx.model.Project._find(filter, null, options);
+    return {
+      total,
+      list,
+    };
+  }
+
+  async getInfo(id) {
+    const { ctx } = this;
+    // TODO: 拼接trades name信息
+    const info = await ctx.model.Project._findOne({ id });
+    return info;
   }
 }
 
