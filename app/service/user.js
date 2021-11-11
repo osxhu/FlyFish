@@ -64,18 +64,17 @@ class UserService extends Service {
   async getUserList(requestData) {
     const { ctx } = this;
 
-    const { id, username, phone, email } = requestData;
-    const queryCond = {
-      status: Enum.COMMON_STATUS.VALID,
-    };
+    const { id, username, status, phone, email } = requestData;
+    const queryCond = {};
 
     if (id) queryCond.id = id;
     if (username) queryCond.username = username;
     if (phone) queryCond.phone = phone;
     if (email) queryCond.email = email;
+    if (status) queryCond.status = status;
 
     const total = await ctx.model.User._count(queryCond);
-    const data = await ctx.model.User._find(queryCond, null, { sort: '-update_time', skip: requestData.curPage, limit: requestData.pageSize });
+    const data = await ctx.model.User._find(queryCond, null, { sort: '-update_time', skip: requestData.curPage * requestData.pageSize, limit: requestData.pageSize });
 
     return { total, data };
   }

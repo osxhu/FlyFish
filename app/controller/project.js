@@ -1,9 +1,6 @@
 'use strict';
 
 const BaseController = require('./base');
-const _ = require('lodash');
-const CODE = require('../lib/error');
-
 class ProjectController extends BaseController {
   async create() {
     const { ctx, app: { Joi }, service } = this;
@@ -58,7 +55,7 @@ class ProjectController extends BaseController {
 
     const { key, curPage, pageSize } = await listSchema.validateAsync(ctx.query);
     const options = {
-      skip: (curPage - 1) * pageSize,
+      skip: curPage * pageSize,
       limit: pageSize,
     };
     const { list, total } = await service.project.getList({ key }, options);

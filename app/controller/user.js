@@ -113,6 +113,7 @@ class UserController extends BaseController {
       username: app.Joi.string(),
       phone: app.Joi.string(),
       email: app.Joi.string(),
+      status: app.Joi.valid(..._.values(Enum.COMMON_STATUS)),
 
       curPage: app.Joi.number().default(0),
       pageSize: app.Joi.number().default(10),

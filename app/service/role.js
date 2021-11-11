@@ -14,7 +14,7 @@ class RoleService extends Service {
       return returnData;
     }
 
-    await ctx.model.Role.create(createRoleInfo);
+    await ctx.model.Role._create(createRoleInfo);
     const result = await ctx.model.Role._findOne({ name: createRoleInfo.name });
     returnData.data = result;
 
@@ -73,7 +73,7 @@ class RoleService extends Service {
     if (requestData.name) queryCond.name = requestData.name;
 
     const total = await ctx.model.Role._count(queryCond);
-    const data = await ctx.model.Role._find(queryCond, null, { sort: '-update_time', skip: requestData.curPage, limit: requestData.pageSize });
+    const data = await ctx.model.Role._find(queryCond, null, { sort: '-update_time', skip: requestData.curPage * requestData.pageSize, limit: requestData.pageSize });
 
     return { total, data };
   }

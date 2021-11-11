@@ -35,4 +35,6 @@ module.exports = app => {
   // components
   router.post('/components/categories/list', controller.component.getCategoryList);
   router.put('/components/categories', controller.component.updateCategory);
+  router.post('/components/list', controller.component.getList);
+  router.post('/components', controller.component.add);
 };

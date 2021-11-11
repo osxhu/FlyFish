@@ -42,11 +42,10 @@ components: {
 	update_time: Time,
 
 	name: String,
-	category_id: String, 			// 分类id
-	sub_category_id: String, 		// 子分类id
+	category: String, 				// 分类id
+	sub_category: String, 			// 子分类id
 	type: String, 					// 公共组件/项目组件 enum#COMPONENT_TYPE
 	projects: [String], 			// 所属项目
-	trades: [String], 				// 行业
 	tags: [String],					// 标签
 	desc: String,			
 	versions: [{
