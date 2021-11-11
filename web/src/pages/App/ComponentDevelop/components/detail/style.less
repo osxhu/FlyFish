@@ -1,3 +1,11 @@
+.shadow{
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
 .wrap{
   position: fixed;
   right: 0;
@@ -13,4 +21,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.baseInfo{
+  &>div{
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+  }
+}
+.imgWrap{
+  padding: 20px;
+}
+.dataWrap{
+  padding: 0 20px;
+  border: 1px solid #eee;
+}
+.main{
+  height: calc(~'100% - 60px');
+  overflow-y: auto;
 }

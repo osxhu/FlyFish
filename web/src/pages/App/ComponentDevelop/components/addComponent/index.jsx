@@ -1,12 +1,17 @@
 import React from 'react';
 import styles from './style.less';
+import { observer } from "@chaoswise/cw-mobx";
+import store from "../../model/index";
 import { Form,Input,Select,Button,Row,Col,Icon,Popover } from 'antd';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
-const AddComponent = function(props){
+const AddComponent = observer((props)=>{
   const { getFieldDecorator } = props.form;
+
+  const { setAddModalvisible } = store;
+
   const formItemLayout = {
     labelCol: { span:4 },
     wrapperCol: { span:18 }
@@ -47,7 +52,7 @@ const AddComponent = function(props){
             </p>
           </>
         }>
-        <Icon type="question-circle" style={{margin:'8px 5px'}}/>
+        <Icon type="question-circle" style={{margin:'12px 5px'}}/>
       </Popover>
       <span>组件类别</span>
     </>}>
@@ -105,13 +110,15 @@ const AddComponent = function(props){
     </Form.Item>
     <Row>
       <Col span={2} push={18}>
-        <Button>取消</Button>
+        <Button onClick={()=>{
+          setAddModalvisible(false)
+        }}>取消</Button>
       </Col>
       <Col span={2} push={18}>
         <Button type='primary' htmlType='submit'>保存</Button>
       </Col>
     </Row>
   </Form>
-}
+})
 
 export default Form.create({name:'addComponent'})(AddComponent);

@@ -1,57 +1,40 @@
+/*
+ * @Descripttion: 
+ * @Author: zhangzhiyong
+ * @Date: 2021-11-10 19:08:41
+ * @LastEditors: zhangzhiyong
+ * @LastEditTime: 2021-11-11 17:53:42
+ */
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, saveProjectService } from "../services";
-import _ from "lodash";
+import { getTreeDataService } from '../services';
 
 const model = {
   // 唯一命名空间
-  namespace: "ApplyDevelop",
+  namespace: "ComponentDevelop",
   // 状态
   state: {
-    searchParams: {},
-    projectList: [],
-    total: 0,
-    activeProject: null,
-    isEditProjectModalVisible: false,
+    detailShow:false,
+    addModalvisible:false,
+    treeData:null
   },
   effects: {
-    // 获取项目列表数据
-    *getProjectList(params = {}) {
-      // 处理参数
-      let options = {
-        currentPage: this.currentPage,
-        pageSize: this.pageSize,
-        ...this.searchParams,
-        ...params,
-      };
+    *getTreeData() {
       // 请求数据
-      const res = yield getProjectManageListService(options);
-      this.setProjectList(res);
-    },
-    *saveProject(params = {}, callback) {
-      // 测试代码
-      const res = yield saveProjectService(params);
-      callback && callback(res);
+      const res = yield getTreeDataService();
+      this.setTreeData(res.data[0].categories);
     },
   },
   reducers: {
-    setProjectList(res) {
-      this.projectList = res.data;
-      this.total = res.total;
-      this.currentPage = res.currentPage;
-      this.pageSize = res.pageSize;
+    setDetailShow(res){
+      this.detailShow = res;
     },
-    setSearchParams(searchParams) {
-      this.searchParams = searchParams || {};
+    setAddModalvisible(res){
+      this.addModalvisible = res;
     },
-    openEditProjectModal(project) {
-      this.activeProject = _.clone(project);
-      this.isEditProjectModalVisible = true;
-    },
-    closeEditProjectModal() {
-      this.activeProject = null;
-      this.isEditProjectModalVisible = false;
-    },
-  },
+    setTreeData(res){
+      this.treeData = res;
+    }
+  }
 };
 
 export default toMobx(model);

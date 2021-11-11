@@ -3,16 +3,13 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-10 19:16:22
+ * @LastEditTime: 2021-11-11 18:16:34
  */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import { AbreastLayout } from "@chaoswise/ui";
-import { Icon,Select,Input,Table,Popover,Button,Modal } from 'antd';
-import {
-  observer, loadingStore, toJS, Form, Row,
-  Col
-} from "@chaoswise/cw-mobx";
+import { Icon,Select,Input,Table,Popover,Button,Modal,Row,Col } from 'antd';
+import { observer,toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 
 import { successCode } from "@/config/global";
@@ -21,44 +18,20 @@ import { FormattedMessage, useIntl } from "react-intl";
 import HandleMenu from "./components/handleMenu";
 import AddComponent from "./components/addComponent";
 import Detail from "./components/detail";
+import _ from "lodash";
+import { updateTreeDataService } from './services';
 
 const {Option} = Select;
 
 const ComponentDevelop = observer(() => {
   const intl = useIntl();
   const {
-    getProjectList
+    setDetailShow,
+    addModalvisible,
+    setAddModalvisible,
+    getTreeData
   } = store;
-  const data = [
-    {
-      name:'2d图表',
-      value:'tubiao1',
-      children:[
-        {
-          name:'柱状图',
-          value:'zhuzhuangtu'
-        },
-        {
-          name:'饼图',
-          value:'bingtu'
-        }
-      ]
-    },
-    {
-      name:'3d图表',
-      value:'tubiao2',
-      children:[
-        {
-          name:'城市',
-          value:'chengshi'
-        },
-        {
-          name:'地图',
-          value:'ditu'
-        }
-      ]
-    }
-  ];
+  const { treeData } = store;
   const columns = [
     {
       title: '组件类型',
@@ -152,12 +125,12 @@ const ComponentDevelop = observer(() => {
       creator:''
     }
   ];
-  const [treeData,setTreeData] = useState(data);
-  const [addModalvisible, setAddModalvisible] = useState(false);
-  const [detailShow, setDetailShow] = useState(false);
+  const [addCateName, setAddCateName] = useState('');
+  const [addingCate, setAddingCate] = useState(false);
+  const addCateRef = useRef();
   // 请求列表数据
   useEffect(() => {
-    // getProjectList();
+    getTreeData();
   }, []);
   return <>
     <AbreastLayout
@@ -167,23 +140,52 @@ const ComponentDevelop = observer(() => {
           <div className={styles.leftWrap}>
             <div className={styles.leftBigTitle}>
               <span style={{marginLeft:10}}>组件列表</span>
-              <Icon type="plus-square" style={{float:'right',marginRight:20,cursor:'pointer'}}/>
+              <Icon 
+                type="plus-square" 
+                style={{float:'right',marginRight:20,cursor:'pointer'}} 
+                onClick={()=>{
+                  setAddingCate(true);
+                  setTimeout(() => {
+                    addCateRef.current.input.focus();
+                  }, 0);
+                }}
+              />
             </div>
+            <Input 
+              ref={addCateRef}
+              style={{display:addingCate?'block':'none'}}
+              value={addCateName}
+              onChange={(e)=>{
+                setAddCateName(e.target.value);
+              }}
+              onBlur={()=>{
+                setAddingCate(false);
+              }}
+              onPressEnter={async ()=>{
+                const datas = _.cloneDeep(toJS(treeData));
+                datas.push({name:addCateName,children:[]});
+                const res = await updateTreeDataService({categories:datas});
+                if (res && res.code==0) {
+                  setAddingCate(false);
+                  getTreeData();
+                  setAddCateName('');
+                }
+              }}
+            ></Input>
             <div className={styles.allBtn}>全部组件</div>
             <div className={styles.treeWrap}>
-              <HandleMenu dataSource={treeData}/>
+              <HandleMenu/>
             </div>
           </div>
         )}
       >
         <div className={styles.rightWraper}>
-          <div className={styles.handleWraper}>
-            <div className={styles.handleLeft}>
-              <div>
+          <Row className={styles.handleWrap}>
+            <Col span={4}>
               <span>项目名称：</span>
               <Select
                 showSearch
-                style={{ width: 150 }}
+                style={{width:150}}
                 placeholder="请选择"
                 filterOption={(input, option) =>
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -193,32 +195,31 @@ const ComponentDevelop = observer(() => {
                 <Option value="002">项目002</Option>
                 <Option value="003">项目003</Option>
               </Select>
-              </div>
-              <div>
-                <Input style={{width:400}} placeholder='输入组件名称/项目名称/描述/标签/创建人查找组件'></Input>
-              </div>
-              <div>
-                <span>开发状态：</span>
-                <Select
-                  placeholder='请选择'
-                  style={{ width: 150 }}
-                >
-                  <Option value="1">开发中</Option>
-                  <Option value="2">已交付</Option>
-                </Select>
-              </div>
-              <div>
-                <span>组件类别：</span>
-                <Select
-                  placeholder='请选择'
-                  style={{ width: 150 }}
-                >
-                  <Option value="1">全部</Option>
-                  <Option value="2">基础组件</Option>
-                </Select>
-              </div>
-            </div>
-            <div>
+            </Col>
+            <Col span={5}>
+              <Input style={{width:'90%'}} placeholder='输入组件名称/项目名称/描述/标签/创建人查找组件'></Input>
+            </Col>
+            <Col span={5}>
+              <span>开发状态：</span>
+              <Select
+                placeholder='请选择'
+                style={{ width: 150 }}
+              >
+                <Option value="1">开发中</Option>
+                <Option value="2">已交付</Option>
+              </Select>
+            </Col>
+            <Col span={5}>
+              <span>组件类别：</span>
+              <Select
+                placeholder='请选择'
+                style={{ width: 150 }}
+              >
+                <Option value="1">全部</Option>
+                <Option value="2">基础组件</Option>
+              </Select>
+            </Col>
+            <Col span={2} push={3}>
               <Button 
                 type='primary' 
                 style={{borderRadius:'5px'}}
@@ -226,8 +227,8 @@ const ComponentDevelop = observer(() => {
                   setAddModalvisible(true);
                 }}
               >添加组件</Button>
-            </div>
-          </div>
+            </Col>
+          </Row>
           <div className={styles.listWraper}>
             <Table columns={columns} dataSource={data2} />
           </div>
@@ -241,9 +242,7 @@ const ComponentDevelop = observer(() => {
         >
           <AddComponent/>
         </Modal>
-        <Detail
-          show={false}
-        />
+        <Detail/>
       </AbreastLayout>
   </>;
 });

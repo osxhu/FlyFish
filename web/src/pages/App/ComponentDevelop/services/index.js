@@ -1,32 +1,19 @@
-import { fetchGet, fetchPost } from "@/utils/request";
-import API from "@/services/api";
+/*
+ * @Descripttion: 
+ * @Author: zhangzhiyong
+ * @Date: 2021-11-10 19:08:41
+ * @LastEditors: zhangzhiyong
+ * @LastEditTime: 2021-11-11 17:01:04
+ */
+import { fetchGet, fetchPost,fetchPut } from "@/utils/request";
+import API from "@/services/api/component";
 
-export const getProjectManageListService = (options) => {
-  //return fetchGet(API.GET_PROJECT_MANAGELIST_API, { params: options });
+export const getTreeDataService = () => {
 
-  return new Promise((res, rej) => {
-    res({
-      data: [
-        {
-          id: 1,
-          projectMark: "12212",
-          name: "test",
-        },
-      ],
-      total: 10,
-      currentPage: 1,
-      pageSize: 20,
-    });
-  });
+  return fetchPost(API.GET_TREEDATA, { });
 };
 
-export const saveProjectService = (options) => {
-  //return fetchPost(API.SAVE_PROJECT_API, { body: options });
-
-  return new Promise((res, rej) => {
-    res({
-      code: 200
-    });
-  });
+export const updateTreeDataService = (param)=>{
+  return fetchPut(API.UPDATE_TREEDATA,{ body: param });
 };
 
