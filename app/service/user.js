@@ -65,12 +65,12 @@ class UserService extends Service {
     const { ctx } = this;
 
     const { id, username, status, phone, email } = requestData;
-    const queryCond = {};
 
+    const queryCond = {};
     if (id) queryCond.id = id;
-    if (username) queryCond.username = username;
-    if (phone) queryCond.phone = phone;
-    if (email) queryCond.email = email;
+    if (username) queryCond.username = { $regex: username };
+    if (phone) queryCond.phone = { $regex: phone };
+    if (email) queryCond.email = { $regex: email };
     if (status) queryCond.status = status;
 
     const total = await ctx.model.User._count(queryCond);

@@ -70,7 +70,7 @@ class RoleService extends Service {
       status: Enum.COMMON_STATUS.VALID,
     };
     if (requestData.id) queryCond.id = requestData.id;
-    if (requestData.name) queryCond.name = requestData.name;
+    if (requestData.name) queryCond.name = { $regex: requestData.name };
 
     const total = await ctx.model.Role._count(queryCond);
     const data = await ctx.model.Role._find(queryCond, null, { sort: '-update_time', skip: requestData.curPage * requestData.pageSize, limit: requestData.pageSize });

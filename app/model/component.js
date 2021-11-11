@@ -50,6 +50,12 @@ module.exports = app => {
     return res.map(_toObj);
   };
 
+  ComponentSchema.statics._findOne = async function(params) {
+    const doc = _toDoc(params);
+    const res = await this.findOne(doc).lean(true);
+    return _toObj(res);
+  };
+
   ComponentSchema.statics._create = async function(params) {
     const doc = _toDoc(params);
     return await this.create(doc);

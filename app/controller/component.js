@@ -1,6 +1,8 @@
 'use strict';
 
 const BaseController = require('./base');
+const CODE = require('../lib/error');
+const _ = require('lodash');
 
 class ComponentsController extends BaseController {
   async updateCategory() {
@@ -68,7 +70,12 @@ class ComponentsController extends BaseController {
     const { value: requestData } = ctx.validate(addComponentSchema, ctx.request.body);
 
     const componentInfo = await service.component.addComponent(requestData);
-    this.success('创建成功', { id: componentInfo.data.id });
+
+    if (componentInfo.msg === 'Exists Already') {
+      this.fail('创建失败, 组件名称已存在', null, CODE.FAIL);
+    } else {
+      this.success('创建成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
+    }
   }
 }
 

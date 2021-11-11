@@ -88,6 +88,13 @@ class ComponentService extends Service {
 
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
+
+    const existsComponents = await ctx.model.Component._findOne({ name: createComponentInfo.name });
+    if (!_.isEmpty(existsComponents)) {
+      returnData.msg = 'Exists Already';
+      return returnData;
+    }
+
     const createInfo = {
       name: createComponentInfo.name,
       category: createComponentInfo.category,
@@ -106,6 +113,8 @@ class ComponentService extends Service {
     };
 
     const result = await ctx.model.Component._create(createInfo);
+
+    // Todo : init component
     returnData.data.id = result._id.toString();
 
     return returnData;
