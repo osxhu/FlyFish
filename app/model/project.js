@@ -69,6 +69,7 @@ module.exports = app => {
 
   function _toDoc(obj) {
     if (_.isEmpty(obj)) return;
+    obj = _.omitBy(obj, _.isNil);
 
     if (!_.isNil(obj.id)) {
       obj._id = obj.id;

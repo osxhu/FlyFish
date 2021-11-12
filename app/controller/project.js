@@ -8,7 +8,7 @@ class ProjectController extends BaseController {
     const addSchema = Joi.object().keys({
       name: Joi.string().required(),
       trades: Joi.array().items(Joi.string()).required(),
-      desc: Joi.string().required(),
+      desc: Joi.string(),
     });
     const body = await addSchema.validateAsync(ctx.request.body);
     const res = await service.project.create(body);
