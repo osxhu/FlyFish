@@ -42,4 +42,8 @@ module.exports = app => {
 
   // menu
   router.get('/menus/list', controller.menu.list);
+
+  // tag
+  router.get('/tags/get-all', controller.tag.getAll);
+  router.post('/tags/add', controller.tag.add);
 };

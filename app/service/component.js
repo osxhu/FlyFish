@@ -86,19 +86,45 @@ class ComponentService extends Service {
     return { total, data };
   }
 
-  async getComponentInfo(userId) {
+  async getComponentInfo(id) {
     const { ctx } = this;
 
-    const userInfo = await ctx.model.User._findOne({ id: userId });
+    const componentInfo = await ctx.model.Component._findOne({ id });
+    const userInfo = await ctx.model.User._findOne({ id: componentInfo.creator });
 
-    userInfo.isAdmin = false; userInfo.menus = [];
-    if (userInfo.role) {
-      const roleInfo = await ctx.model.Role._findOne({ id: userInfo.role });
-      userInfo.isAdmin = roleInfo.name === Enum.ROLE.ADMIN;
-      userInfo.menus = roleInfo.menus || [];
-    }
+    const projectIds = componentInfo.projects || [];
+    const projectsInfo = await ctx.model.Project._find({ id: { $in: projectIds } });
 
-    return userInfo || {};
+    const tagIds = componentInfo.tags || [];
+    const tagsInfo = await ctx.model.Tag._find({ id: { $in: tagIds } });
+
+    const returnInfo = {
+      id: componentInfo.id,
+      name: componentInfo.name,
+      projects: (componentInfo.projects || []).map(project => {
+        const curProject = (projectsInfo || []).find(projectInfo => projectInfo.id === project) || {};
+        return {
+          id: curProject.id || '',
+          name: curProject.name || '',
+        };
+      }),
+      tags: (componentInfo.tags || []).map(tag => {
+        const curTag = (tagsInfo || []).find(tagInfo => tagInfo.id === tag) || {};
+        return {
+          id: curTag.id || '',
+          name: curTag.name || '',
+        };
+      }),
+      desc: componentInfo.desc,
+      cover: componentInfo.cover,
+      creatorInfo: {
+        id: userInfo.id,
+        username: userInfo.username,
+      },
+      developStatus: componentInfo.developStatus,
+    };
+
+    return returnInfo || {};
   }
 
   async addComponent(createComponentInfo) {
