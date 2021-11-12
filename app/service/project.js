@@ -21,20 +21,24 @@ class ProjectService extends Service {
   async getList(query, options) {
     const { ctx } = this;
     // TODO: 行业搜索
-    const filter = {
-      $or: [
-        {
-          name: {
-            $regex: query.key,
+    const filter = {};
+
+    if (!_.isEmpty(query.key)) {
+      Object.assign(filter, {
+        $or: [
+          {
+            name: {
+              $regex: query.key,
+            },
           },
-        },
-        {
-          desc: {
-            $regex: query.key,
+          {
+            desc: {
+              $regex: query.key,
+            },
           },
-        },
-      ],
-    };
+        ],
+      });
+    }
     const total = await ctx.model.Project._count(filter);
     const list = await ctx.model.Project._find(filter, null, options);
     const tradeIds = [];
