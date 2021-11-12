@@ -38,7 +38,7 @@ export default flattenMessages({
       create: "添加项目",
       edit: "编辑项目",
       goToProject: "进入项目",
-      searchInputPlaceholder: "输入项目名称/项目标识/行业/描述进行查询",
+      searchInputPlaceholder: "输入项目名称/行业/描述进行查询",
       searchInputTag:'选择标签进行查询'
     },
     applyDevelop: {

@@ -1,39 +1,18 @@
-import { fetchGet, fetchPost } from "@/utils/request";
+import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api";
-
+// 获取项目列表
 export const getProjectManageListService = (options) => {
-  //return fetchGet(API.GET_PROJECT_MANAGELIST_API, { params: options });
-
-  return new Promise((res, rej) => {
-    res({
-      data: [
-        {
-          id: '011',
-          projectMark: "12212",
-          name: "test",
-        },
-      ],
-      total: 10,
-      curPage:0,
-      pageSize: 20,
-    });
-  });
+  return fetchGet(API.GET_PROJECT_MANAGELIST_API, { params: options });
 };
-
+// 新增项目
 export const saveProjectService = (options) => {
-  //return fetchPost(API.SAVE_PROJECT_API, { body: options });
-  return new Promise((res, rej) => {
-    res({
-      code: 200
-    });
-  });
+  return fetchPost(API.SAVE_PROJECT_API, { body: options });
 };
-
+// 编辑项目
+export const changeProjectService = (id,options) => {
+  return fetchPut(API.CHANGE_PROJECT_API+id, { body: options });
+};
+// 删除项目
 export const deleteProjectService = (options) => {
-  //return fetchPost(API.SAVE_PROJECT_API, { body: options });
-  return new Promise((res, rej) => {
-    res({
-      code: 200
-    });
-  });
+  return fetchDelete(API.DETLETE_PROJECT_API+options.id);
 };

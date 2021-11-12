@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
-import { CWTable, Input, Button, message,Popconfirm } from "@chaoswise/ui";
+import React, { useEffect, useState } from "react";
+import { CWTable, Input, Button, message, Popconfirm } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
+import { formatDate } from '@/config/global';
+
 import EditProjectModal from "./components/EditProjectModal";
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
@@ -13,24 +15,18 @@ const AppProjectManage = observer((props) => {
   const {
     getProjectList,
     setSearchParams,
-    saveProject,
+    saveProject, changeProject,
     openEditProjectModal, openProjectPage,
-    closeEditProjectModal,deleteProject
+    closeEditProjectModal, deleteProject
   } = store;
-  const { total, projectList, isEditProjectModalVisible, activeProject } =
+  const { total, current, pageSize, projectList, isEditProjectModalVisible, activeProject } =
     store;
-  let checkid=null;
+  let [checkFlag, setCheckFlag] = useState(false);
   const loading = loadingStore.loading["AppProjectManage/getProjectList"];
   // 表格列表数据
   let basicTableListData = toJS(projectList);
   // 表格列配置信息
   const columns = [
-    {
-      title: "项目标识",
-      dataIndex: "projectMark",
-      key: "projectMark",
-      disabled: true,
-    },
     {
       title: "项目名称",
       dataIndex: "name",
@@ -39,19 +35,26 @@ const AppProjectManage = observer((props) => {
     },
     {
       title: "行业",
-      dataIndex: "industry",
-      key: "industry",
+      dataIndex: "trades",
+      key: "trades",
+      render(trades) {
+        return trades.map(item => item.name);
+      },
     },
     {
       title: "描述",
-      dataIndex: "describe",
-      key: "describe",
-      width: 300,
+      dataIndex: "desc",
+      key: "desc",
+
     },
     {
       title: "创建时间",
       dataIndex: "createTime",
       key: "createTime",
+      render(createTime) {
+        return formatDate(createTime);
+      },
+      width: 300
     },
     {
       title: "创建人",
@@ -83,13 +86,15 @@ const AppProjectManage = observer((props) => {
             <a
               className={styles.projectAction}
               onClick={() => {
+                setCheckFlag(false);
+                record.trades = record.trades.map(item => item.id);
                 openEditProjectModal(record);
               }}
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
-            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={()=>{
-              deleteProject(record.id, (res) => {
+            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+              deleteProject(record, (res) => {
                 if (res.code === successCode) {
                   message.success(
                     intl.formatMessage({
@@ -99,7 +104,7 @@ const AppProjectManage = observer((props) => {
                   );
                   closeEditProjectModal();
                   getProjectList({
-                    curPage:0,
+                    curPage: 0,
                   });
                 } else {
                   message.error(
@@ -111,10 +116,10 @@ const AppProjectManage = observer((props) => {
                 }
               });
             }}>
-             <a className={styles.projectAction}>
-              <FormattedMessage id="common.delete" defaultValue="删除" />
-            </a>
-            </Popconfirm>,
+              <a className={styles.projectAction}>
+                <FormattedMessage id="common.delete" defaultValue="删除" />
+              </a>
+            </Popconfirm>
           </span>
         );
       },
@@ -124,12 +129,12 @@ const AppProjectManage = observer((props) => {
     {
       components: (
         <Input
-          id="name"
-          key="name"
+          id="key"
+          key="key"
           style={{ width: "300px" }}
           placeholder={intl.formatMessage({
             id: "pages.projectManage.searchInputPlaceholder",
-            defaultValue: "输入项目名称/项目标识/行业/描述进行查询",
+            defaultValue: "输入项目名称/行业/描述进行查询",
           })}
         />
       ),
@@ -139,17 +144,18 @@ const AppProjectManage = observer((props) => {
   useEffect(() => {
     getProjectList();
   }, []);
-  const goRoute=(id)=>{
-    props.history.push(`/app/${id}/project-detail`);  
+  const goRoute = (id) => {
+    props.history.push(`/app/${id}/project-detail`);
   };
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
-    getProjectList({ curPage, pageSize });
+    getProjectList({ curPage: curPage - 1, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
     getProjectList({
-      curPage:0,
+      curPage: 0,
+      pageSize: 10
     });
   };
 
@@ -163,10 +169,11 @@ const AppProjectManage = observer((props) => {
         pagination={{
           showTotal: true,
           total: total,
+          current: current,
+          pageSize: pageSize,
           onChange: onPageChange,
           onShowSizeChange: onPageChange,
-          showSizeChanger: true,
-          showQuickJumper: true,
+          showSizeChanger: true
         }}
         searchBar={{
           onSearch: onSearch,
@@ -176,6 +183,7 @@ const AppProjectManage = observer((props) => {
                 type="primary"
                 key="create_project"
                 onClick={() => {
+                  setCheckFlag(true);
                   openEditProjectModal({});
                 }}
               >
@@ -191,25 +199,51 @@ const AppProjectManage = observer((props) => {
       ></CWTable>
       {isEditProjectModalVisible && (
         <EditProjectModal
+          flag={checkFlag}
           project={activeProject}
           onSave={(project) => {
+           
             saveProject(project, (res) => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
-                    id: "common.saveSuccess",
-                    defaultValue: "保存成功！",
+                    id: "common.addSuccess",
+                    defaultValue: "新增成功！",
                   })
                 );
                 closeEditProjectModal();
                 getProjectList({
-                  curPage:0,
+                  curPage: 0,
                 });
               } else {
                 message.error(
+                  res.msg || intl.formatMessage({
+                    id: "common.addError",
+                    defaultValue: "新增失败，请稍后重试！",
+                  })
+                );
+              }
+            });
+          }}
+          onChange={(id,project) => {
+            changeProject(id,project, (res) => {
+              
+              if (res.code === successCode) {
+                message.success(
                   intl.formatMessage({
-                    id: "common.saveError",
-                    defaultValue: "保存失败，请稍后重试！",
+                    id: "common.changeSuccess",
+                    defaultValue: "编辑成功！",
+                  })
+                );
+                closeEditProjectModal();
+                getProjectList({
+                  curPage: 0,
+                });
+              } else {
+                message.error(
+                  res.msg || intl.formatMessage({
+                    id: "common.changeError",
+                    defaultValue: "编辑失败，请稍后重试！",
                   })
                 );
               }

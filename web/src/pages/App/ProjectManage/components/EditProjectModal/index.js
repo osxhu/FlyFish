@@ -1,10 +1,12 @@
 import React from "react";
 import { Modal, Input, Select, Form } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
+import { toJS } from "@chaoswise/cw-mobx";
 
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
-  function EditProjectModal({ form, project = {}, onSave, onCancel }) {
+  function EditProjectModal({ flag, form, onChange, project = {}, onSave, onCancel }) {
     const intl = useIntl();
+    let newarr = toJS(project).trades;
     const { getFieldDecorator } = form;
     return (
       <Modal
@@ -14,26 +16,35 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           if (form) {
             form.validateFields((errors, values) => {
               if (errors == null) {
-                onSave &&
+                let sendParams = {};
+                for (let i in values) {
+                  if (values[i]) {
+                    sendParams[i] = values[i];
+                  }
+                }
+                flag ? onSave &&
                   onSave({
-                    ...project,
-                    ...values,
-                  });
+                    ...values
+
+                  }) : onChange &&
+                onChange(project.id, {
+                  ...values
+                });
               }
             });
           }
         }}
         size="middle"
         title={
-          project && project.id > 0
+          !flag
             ? intl.formatMessage({
-                id: "pages.projectManage.edit",
-                defaultValue: "编辑项目",
-              })
+              id: "pages.projectManage.edit",
+              defaultValue: "编辑项目",
+            })
             : intl.formatMessage({
-                id: "pages.projectManage.create",
-                defaultValue: "添加项目",
-              })
+              id: "pages.projectManage.create",
+              defaultValue: "添加项目",
+            })
         }
         visible={true}
       >
@@ -48,31 +59,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           }}
           initialvalues={project || {}}
         >
-          <Form.Item label="项目标识" name={"projectMark"}>
-            {getFieldDecorator("projectMark", {
-              initialValue: project.projectMark,
-              rules: [
-                {
-                  required: true,
-                  message:
-                    intl.formatMessage({
-                      id: "common.pleaseInput",
-                      defaultValue: "请输入",
-                    }) + "项目标识",
-                },
-              ],
-            })(
-              <Input
-                disabled={project && project.id > 0}
-                placeholder={
-                  intl.formatMessage({
-                    id: "common.pleaseInput",
-                    defaultValue: "请输入",
-                  }) + "项目标识"
-                }
-              />
-            )}
-          </Form.Item>
           <Form.Item label="项目名称" name={"name"}>
             {getFieldDecorator("name", {
               initialValue: project.name,
@@ -97,9 +83,9 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               />
             )}
           </Form.Item>
-          <Form.Item label="行业" name={"industry"}>
-            {getFieldDecorator("industry", {
-              initialValue: project.industry,
+          {flag ? <Form.Item label="行业" name={"trades"}>
+            {getFieldDecorator("trades", {
+              initialValue: project.trades,
               rules: [
                 {
                   required: true,
@@ -112,6 +98,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Select
+                mode='tags'
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseSelect",
@@ -119,13 +106,43 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   }) + "行业"
                 }
               >
-                <Select.Option value="1">1</Select.Option>
+                <Select.Option value="618de46a18859555b43ee212">电力</Select.Option>
+                <Select.Option value="618de46a18859555b43ee222">水务</Select.Option>
+
               </Select>
             )}
-          </Form.Item>
-          <Form.Item label="描述" name={"describe"}>
-            {getFieldDecorator("describe", {
-              initialValue: project.describe,
+          </Form.Item> : <Form.Item label="行业" name={"trades"}>
+            {getFieldDecorator("trades", {
+              initialValue: newarr,
+              rules: [
+                {
+                  required: true,
+                  message:
+                    intl.formatMessage({
+                      id: "common.pleaseSelect",
+                      defaultValue: "请选择",
+                    }) + "行业",
+                },
+              ],
+            })(
+              <Select
+                mode='tags'
+                placeholder={
+                  intl.formatMessage({
+                    id: "common.pleaseSelect",
+                    defaultValue: "请选择",
+                  }) + "行业"
+                }
+              >
+                <Select.Option value="618de46a18859555b43ee212">电力</Select.Option>
+                <Select.Option value="618de46a18859555b43ee222">水务</Select.Option>
+
+              </Select>
+            )}
+          </Form.Item>}
+          <Form.Item label="描述" name={"desc"}>
+            {getFieldDecorator("desc", {
+              initialValue: project.desc,
             })(
               <Input.TextArea
                 row={3}

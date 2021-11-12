@@ -75,6 +75,7 @@ class UserLayout extends React.PureComponent {
        if(!this.state.loginType){
         login(values,(res)=>{
           if (res.code == 0) {
+            localStorage.setItem('id',res.data.id);
             message.success('登录成功');
             this.props.history.push('/app/project-manage');
           }else{
@@ -156,7 +157,11 @@ class UserLayout extends React.PureComponent {
                    {
                      required: true,
                      message: '请输入手机号！',
-                   }
+                   },
+                   {
+                    pattern: /^[1]([3-9])[0-9]{9}$/ ,
+                    message: "请输入正确的手机号",
+                  },
                  ],
                })(
                  <Input
@@ -175,7 +180,11 @@ class UserLayout extends React.PureComponent {
                     {
                       required: true,
                       message: '请输入邮箱！',
-                    }
+                    },
+                    {
+                      pattern: /^[A-Za-zd0-9]+([-_.][A-Za-zd]+)*@([A-Za-zd]+[-.])+[A-Za-zd]{2,5}$/,
+                      message: "请输入正确的邮箱格式",
+                    },
                   ],
                 })(
                   <Input

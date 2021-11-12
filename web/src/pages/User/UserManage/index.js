@@ -153,6 +153,7 @@ const UserList = observer(() => {
     }, {
       components: (
         <Select
+        allowClear={true}
           id="status"
           key="status"
           name='状态'

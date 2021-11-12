@@ -1,21 +1,21 @@
 import React, { useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
-import { 
-  BasicLayout, 
-  Icon, 
+import { useHistory, Link } from 'react-router-dom';
+import {
+  BasicLayout,
+  Icon,
   ThemeProvider,
-  ConfigProvider, 
+  ConfigProvider,
 } from '@chaoswise/ui';
 import logo from './assets/logo.svg';
-import {Button} from 'antd';
+import { Button } from 'antd';
 import actions from '@/shared/mainActions';
-
+import { loginout } from './services';
 import { connect } from '@chaoswise/cw-mobx';
 
 // import styles from './index.less';
 
 const Layout = ({
-  children, 
+  children,
   route, // 路由数据
   currentRoute // 当前路由数据 （当前地址的）
 }) => {
@@ -46,8 +46,8 @@ const Layout = ({
    * @param {Arrary} routeData 路由配置
    */
   const getMenuData = (routeData) => {
-    return routeData.map((item,index) => {
-      if(item.routes) {
+    return routeData.map((item, index) => {
+      if (item.routes) {
         return {
           ...item,
           icon: item.icon ? <Icon type={item.icon} /> : null,
@@ -66,12 +66,12 @@ const Layout = ({
   const onPathChange = (e) => {
 
     const menuProps = e.item.props;
-    if(menuProps.target === 'open') {
+    if (menuProps.target === 'open') {
       window.open(menuProps.url, 'target');
       return;
     }
 
-    if(e.key === currentPath) {
+    if (e.key === currentPath) {
       return;
     }
     history.push(e.key);
@@ -83,7 +83,7 @@ const Layout = ({
   const getActiveMenuKey = () => {
 
     // 映射高亮菜单
-    if(currentRoute && currentRoute.activeMenuKey) {
+    if (currentRoute && currentRoute.activeMenuKey) {
       return currentRoute.activeMenuKey;
     }
     // 默认
@@ -96,11 +96,14 @@ const Layout = ({
   const goBack = () => {
     history.goBack();
   };
-
+  const clearCookies = () => {
+    loginout();
+    history.replace('/login');
+  };
   return (
     <BasicLayout
-      logo={<img src={logo}/>}
-      headerTitle='LCAP' 
+      logo={<img src={logo} />}
+      headerTitle='LCAP'
       showTopNavigation={false}
       showBack={showBack}
       showBreadcrumb={true}
@@ -118,16 +121,10 @@ const Layout = ({
           return data;
         },
       }}
-      // headerExtra={ // 可以放置其它功能按钮
-      //   <div className={styles.extra}>
-      //     <ThemeProvider.Switcher 
-      //       key='1' 
-      //     />
-      //     <ConfigProvider.Switcher 
-      //       key='2' 
-      //     />
-      //   </div>
-      // }
+      headerExtra={ // 可以放置其它功能按钮
+        <div style={{ color: 'white' ,cursor:'pointer'}} onClick={clearCookies}>退出</div>
+  
+      }
       onClickBack={goBack}
       menuOptions={{
         menuData: getMenuData(route.routes || [], []),
@@ -135,12 +132,12 @@ const Layout = ({
         onClick: onPathChange
       }}
     >
-      { children }
+      {children}
     </BasicLayout>
   );
 };
 
-export default connect(({globalStore}) => {
+export default connect(({ globalStore }) => {
   return {
     currentRoute: globalStore.currentRoute
   };

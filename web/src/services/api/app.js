@@ -12,8 +12,14 @@
 const baseUrl = "/api";
 export default {
   LOGIN: `${baseUrl}/users/login`,
+  LOGINOUT:`${baseUrl}/users/logout`,
   REGISTER:`${baseUrl}/users/register`,
   //项目管理
-  GET_PROJECT_MANAGELIST_API: `${baseUrl}/get/projectlist`,
-  SAVE_PROJECT_API: `${baseUrl}/save/project`,
+  GET_PROJECT_MANAGELIST_API: `${baseUrl}/projects/list`,
+  // 新增项目
+  SAVE_PROJECT_API: `${baseUrl}/projects`,
+  // 编辑项目
+  CHANGE_PROJECT_API:`${baseUrl}/projects/`,
+  // 删除项目
+  DETLETE_PROJECT_API:`${baseUrl}/projects/`,
 };

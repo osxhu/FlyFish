@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, saveProjectService,deleteProjectService } from "../services";
+import { getProjectManageListService, changeProjectService,saveProjectService,deleteProjectService } from "../services";
 import _ from "lodash";
 
 
@@ -11,43 +11,54 @@ const model = {
     searchParams: {},
     projectList: [],
     total: 0,
+    curPage:0,
+    pageSize:10,
     activeProject: null,
     isEditProjectModalVisible: false,
   },
   effects: {
-    // 获取项目列表数据
+    // 获取项目列表
     *getProjectList(params = {}) {
-      // 处理参数
       let options = {
         curPage: this.curPage,
         pageSize: this.pageSize,
         ...this.searchParams,
         ...params,
       };
-      // 请求数据
       const res = yield getProjectManageListService(options);
       this.setProjectList(res);
     },
+    // 新增项目
     *saveProject(params = {}, callback) {
-      // 测试代码
       const res = yield saveProjectService(params);
       callback && callback(res);
     },
+    // 编辑项目
+    *changeProject(id,params = {}, callback) {
+      const res = yield changeProjectService(id,params);
+      callback && callback(res);
+    },
     *deleteProject(params = {}, callback) {
-      // 测试代码
       const res = yield deleteProjectService(params);
       callback && callback(res);
     },
   },
   reducers: {
     setProjectList(res) {
-      this.projectList = res.data;
-      this.total = res.total;
-      this.curPage = res.curPage;
-      this.pageSize = res.pageSize;
+      
+      this.projectList = res.data.list;
+      this.total = res.data.total;
+      this.curPage = res.data.curPage;
+      this.pageSize = res.data.pageSize;
     },
     setSearchParams(searchParams) {
-      this.searchParams = searchParams || {};
+      let sendParams = {};
+      for (let i in searchParams) {
+        if (searchParams[i]) {
+          sendParams[i] = searchParams[i];
+        }
+      }
+      this.searchParams = sendParams || {};
     },
     openEditProjectModal(project) {
       this.activeProject = _.clone(project);

@@ -52,12 +52,6 @@ module.exports = {
         },
         {
           icon: "pie-chart",
-          name: "测试登录",
-          path: "/login",
-          component: "@/pages/Login",
-        },
-        {
-          icon: "pie-chart",
           name: "列表页",
           path: "/list",
           component: "@/layouts/NestedRouterLayout",
@@ -134,7 +128,7 @@ module.exports = {
             },
           ],
         },
-        { from: "/", to: "/app" },
+        { from: "/", to: "/app/project-manage" },
       ],
     },
   ],
