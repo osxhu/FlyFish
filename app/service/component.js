@@ -1,6 +1,7 @@
 'use strict';
 const Service = require('egg').Service;
 const Enum = require('../lib/enum');
+const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
 
@@ -146,7 +147,7 @@ class ComponentService extends Service {
 
   // 初始化上线组件空间  compatible: 是否兼容旧版本组件
   initReleaseWorkspace(componentInfo, no, compatible) {
-    const { config, logger } = this;
+    const { ctx, config, logger } = this;
     const { pathConfig: { componentsPath } } = config;
 
     const returnInfo = { msg: 'Success' };
@@ -157,32 +158,9 @@ class ComponentService extends Service {
       const componentPath = `${componentsPath}/${componentId}`;
       const componentDevPath = `${componentPath}/current`;
       const componentReleasePath = `${componentPath}/${version}`;
-      if (!compatible || (compatible && !fs.existsSync(componentReleasePath))) fs.mkdirSync(componentReleasePath);
 
-      const devSrcPath = `${componentDevPath}/src`;
-      const releaseSrcPath = `${componentReleasePath}/src`;
-      if (!compatible || (compatible && !fs.existsSync(releaseSrcPath))) fs.mkdirSync(releaseSrcPath);
-
-      fs.copyFileSync(`${devSrcPath}/main.js`, `${releaseSrcPath}/main.js`);
-      fs.copyFileSync(`${devSrcPath}/Component.js`, `${releaseSrcPath}/Component.js`);
-      fs.copyFileSync(`${devSrcPath}/setting.js`, `${releaseSrcPath}/setting.js`);
-
-      const devSettingPath = `${devSrcPath}/settings`;
-      const releaseSettingPath = `${releaseSrcPath}/settings`;
-      if (!compatible || (compatible && !fs.existsSync(releaseSettingPath))) fs.mkdirSync(releaseSettingPath);
-      fs.copyFileSync(`${devSettingPath}/options.js`, `${releaseSettingPath}/options.js`);
-      fs.copyFileSync(`${devSettingPath}/data.js`, `${releaseSettingPath}/data.js`);
-
-      const devBuildPath = `${componentDevPath}/build`;
-      const releaseBuildPath = `${componentReleasePath}/build`;
-      if (!compatible || (compatible && !fs.existsSync(releaseBuildPath))) fs.mkdirSync(releaseBuildPath);
-      fs.copyFileSync(`${devBuildPath}/webpack.config.dev.js`, `${releaseBuildPath}/webpack.config.dev.js`);
-      fs.copyFileSync(`${devBuildPath}/webpack.config.production.js`, `${releaseBuildPath}/webpack.config.production.js`);
-
-      fs.copyFileSync(`${componentDevPath}/editor.html`, `${componentReleasePath}/editor.html`);
-      fs.copyFileSync(`${componentDevPath}/env.js`, `${componentReleasePath}/env.js`);
-      fs.copyFileSync(`${componentDevPath}/options.js`, `${componentReleasePath}/options.js`);
-      fs.copyFileSync(`${componentDevPath}/package.js`, `${componentReleasePath}/package.js`);
+      const ignoreDirs = [ 'node_modules' ];
+      ctx.helper.copyDirSync(componentDevPath, componentReleasePath, ignoreDirs);
     } catch (error) {
       returnInfo.msg = 'Fail';
       logger.error('releaseCompatibleComponent error: ', error || error.stack);

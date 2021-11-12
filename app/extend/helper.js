@@ -4,6 +4,10 @@
 'use strict';
 const crypto = require('crypto');
 const _ = require('lodash');
+const path = require('path');
+const fs = require('fs');
+const copyDir = require('copy-dir');
+
 
 module.exports = {
   setCookie(cookieValue) {
@@ -52,6 +56,50 @@ module.exports = {
     const { ctx, config } = this;
 
     return ctx.cookies.set(config.cookieConfig.name, null);
+  },
+
+  // 安全复制文件夹  存在文件会跳过
+  safeCopyDirSync(src, dist) {
+    if (!fs.existsSync(dist)) fs.mkdirSync(dist);
+
+    fs.readdirSync(src).forEach(file => {
+      const pathname = path.join(src, file);
+
+      if (fs.statSync(pathname).isDirectory()) {
+        const subSrcDir = `${src}/${file}`;
+        const subDistDir = `${dist}/${file}`;
+        if (!fs.existsSync(subDistDir)) fs.mkdirSync(subDistDir);
+        this.safeCopyDirSync(subSrcDir, subDistDir);
+      } else {
+        copyDir(`${src}/${file}`, `${dist}/${file}`, { utimes: true, mode: true, cover: false });
+      }
+    });
+  },
+
+  // 非安全复制文件夹  如存在文件会覆盖
+  copyDirSync(src, dist, ignoreDirs = [ 'node_modules' ]) {
+    if (!fs.statSync(src).isDirectory()) return null;
+    if (!fs.existsSync(dist)) fs.mkdirSync(dist);
+
+    for (const file of fs.readdirSync(src)) {
+      const pathname = path.join(src, file);
+
+      if (fs.statSync(pathname).isDirectory()) {
+        const paths = pathname.split('/') || [];
+        if (ignoreDirs.includes(paths[paths.length - 1])) continue;
+
+        const subSrcDir = `${src}/${file}`;
+        const subDistDir = `${dist}/${file}`;
+        if (!fs.existsSync(subDistDir)) fs.mkdirSync(subDistDir);
+        this.copyDirSync(subSrcDir, subDistDir);
+      } else {
+        copyDir(`${src}/${file}`, `${dist}/${file}`, {
+          utimes: true,
+          mode: true,
+          cover: true,
+        });
+      }
+    }
   },
 };
 

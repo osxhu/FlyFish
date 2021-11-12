@@ -51,13 +51,17 @@ class RoleService extends Service {
     const { ctx } = this;
 
     const returnData = { msg: 'ok' };
-    const result = await ctx.model.Role._findOne({ id });
-    if (!_.isEmpty(result)) {
+    const curRoleUsers = await ctx.model.User._findOne({ role: id, status: Enum.COMMON_STATUS.VALID });
+    if (!_.isEmpty(curRoleUsers)) {
       returnData.msg = 'Exists Already';
-      if ([ Enum.ROLE.ADMIN, Enum.ROLE.MEMBER ].includes(result.name)) returnData.msg = 'Can Not Delete';
       return returnData;
     }
 
+    const result = await ctx.model.Role._findOne({ id });
+    if (!_.isEmpty(result) && [ Enum.ROLE.ADMIN, Enum.ROLE.MEMBER ].includes(result.name)) {
+      returnData.msg = 'Can Not Delete';
+      return returnData;
+    }
 
     await ctx.model.Role._updateOne({ id }, { status: Enum.COMMON_STATUS.INVALID });
     return returnData;

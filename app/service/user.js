@@ -27,9 +27,15 @@ class UserService extends Service {
   async userLogin(username, password) {
     const { ctx } = this;
 
-    const result = await ctx.model.User._findOne({ status: Enum.COMMON_STATUS.VALID, username, password: md5(password) });
+    const returnData = { msg: 'ok', data: {} };
+    const userInfo = await ctx.model.User._findOne({ status: Enum.COMMON_STATUS.VALID, username, password: md5(password) });
+    if (_.isEmpty(userInfo)) {
+      returnData.msg = 'account Or password error';
+      return returnData;
+    }
 
-    return result || {};
+    returnData.data = userInfo;
+    return returnData;
   }
 
   async getUserInfo(userId) {

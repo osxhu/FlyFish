@@ -11,8 +11,8 @@ class UserController extends BaseController {
 
     const UserRegisterSchema = app.Joi.object().keys({
       username: app.Joi.string().required(),
-      phone: app.Joi.string().required(),
-      email: app.Joi.string().required(),
+      phone: app.Joi.string().length(11).required(),
+      email: app.Joi.string().email().required(),
       password: app.Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
       rePassword: app.Joi.ref('password'),
     });
@@ -37,20 +37,19 @@ class UserController extends BaseController {
     const { username, password } = ctx.request.body;
 
     const userInfo = await service.user.userLogin(username, password);
-
-    const cookieToSet = {
-      userId: userInfo.id,
-      username: userInfo.username,
-      role: userInfo.role,
-      phone: userInfo.phone,
-      email: userInfo.email,
-    };
-    ctx.helper.setCookie(cookieToSet);
-
-    if (_.isEmpty(userInfo)) {
-      this.fail('登录失败', null, CODE.FAIL);
+    if (userInfo.msg === 'account Or password error') {
+      this.fail('登录失败, 账号或密码错误', null, CODE.FAIL);
     } else {
-      this.success('登录成功', { id: userInfo.id });
+      const cookieToSet = {
+        userId: userInfo.id,
+        username: userInfo.username,
+        role: userInfo.role,
+        phone: userInfo.phone,
+        email: userInfo.email,
+      };
+      ctx.helper.setCookie(cookieToSet);
+
+      this.success('登录成功', { id: userInfo.data.id });
     }
   }
 
