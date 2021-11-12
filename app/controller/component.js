@@ -104,6 +104,18 @@ class ComponentsController extends BaseController {
       this.success('发行版本成功', null);
     }
   }
+
+  async getInfo() {
+    const { ctx, app, service } = this;
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+
+    const componentInfo = await service.component.getComponentInfo(id);
+    if (_.isEmpty(componentInfo)) {
+      this.fail('获取失败', null, CODE.FAIL);
+    } else {
+      this.success('获取成功', componentInfo);
+    }
+  }
 }
 
 module.exports = ComponentsController;

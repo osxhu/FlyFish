@@ -38,6 +38,7 @@ module.exports = app => {
   router.post('/components/list', controller.component.getList);
   router.post('/components', controller.component.add);
   router.post('/components/release/:id', controller.component.release);
+  router.get('/components/:id', controller.component.getInfo);
 
   // menu
   router.get('/menus/list', controller.menu.list);

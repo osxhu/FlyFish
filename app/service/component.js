@@ -86,6 +86,21 @@ class ComponentService extends Service {
     return { total, data };
   }
 
+  async getComponentInfo(userId) {
+    const { ctx } = this;
+
+    const userInfo = await ctx.model.User._findOne({ id: userId });
+
+    userInfo.isAdmin = false; userInfo.menus = [];
+    if (userInfo.role) {
+      const roleInfo = await ctx.model.Role._findOne({ id: userInfo.role });
+      userInfo.isAdmin = roleInfo.name === Enum.ROLE.ADMIN;
+      userInfo.menus = roleInfo.menus || [];
+    }
+
+    return userInfo || {};
+  }
+
   async addComponent(createComponentInfo) {
     const { ctx } = this;
 

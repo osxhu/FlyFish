@@ -41,11 +41,11 @@ class UserController extends BaseController {
       this.fail('登录失败, 账号或密码错误', null, CODE.FAIL);
     } else {
       const cookieToSet = {
-        userId: userInfo.id,
-        username: userInfo.username,
-        role: userInfo.role,
-        phone: userInfo.phone,
-        email: userInfo.email,
+        userId: userInfo.data.id,
+        username: userInfo.data.username,
+        role: userInfo.data.role,
+        phone: userInfo.data.phone,
+        email: userInfo.data.email,
       };
       ctx.helper.setCookie(cookieToSet);
 
