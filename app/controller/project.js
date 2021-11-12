@@ -1,6 +1,7 @@
 'use strict';
 
 const BaseController = require('./base');
+const _ = require('lodash');
 class ProjectController extends BaseController {
   async create() {
     const { ctx, app: { Joi }, service } = this;
@@ -49,15 +50,19 @@ class ProjectController extends BaseController {
 
     const listSchema = Joi.object().keys({
       key: Joi.string(),
-      curPage: Joi.number().default(1).required(),
-      pageSize: Joi.number().default(10).required(),
+      curPage: Joi.number(),
+      pageSize: Joi.number(),
     });
 
     const { key, curPage, pageSize } = await listSchema.validateAsync(ctx.query);
-    const options = {
-      skip: curPage * pageSize,
-      limit: pageSize,
-    };
+    let options = {};
+    if (!_.isNil(curPage) && !_.isNil(pageSize)) {
+      options = {
+        skip: curPage * pageSize,
+        limit: pageSize,
+      };
+    }
+
     const { list, total } = await service.project.getList({ key }, options);
     this.success('获取成功', { total, list, curPage, pageSize });
   }
