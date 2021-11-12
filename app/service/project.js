@@ -1,7 +1,6 @@
 'use strict';
 const Service = require('egg').Service;
-// const Enum = require('../lib/enum');
-// const _ = require('lodash');
+const _ = require('lodash');
 
 class ProjectService extends Service {
   async create(params) {
@@ -38,6 +37,19 @@ class ProjectService extends Service {
     };
     const total = await ctx.model.Project._count(filter);
     const list = await ctx.model.Project._find(filter, null, options);
+    const tradeIds = [];
+    list.forEach(l => {
+      tradeIds.push(...l.trades);
+    });
+    const tradeInfos = await ctx.model.Trade._find({ id: { $in: _.uniq(tradeIds) } }, null, options);
+    const tradeMap = _.keyBy(tradeInfos, 'id');
+    list.forEach(l => {
+      l.trades = l.trades.map(id => ({
+        id,
+        name: tradeMap[id] && tradeMap[id].name || '',
+      }));
+    });
+
     return {
       total,
       list,
