@@ -15,7 +15,9 @@ class UserService extends Service {
       return returnData;
     }
 
+    const initRoleInfo = await ctx.model.Role._findOne({ name: Enum.ROLE.MEMBER });
     createUserInfo.password = md5(createUserInfo.password);
+    createUserInfo.role = initRoleInfo.id;
     await ctx.model.User._create(createUserInfo);
     const userInfo = await ctx.model.User._findOne({ username: createUserInfo.username });
 
@@ -28,9 +30,25 @@ class UserService extends Service {
     const { ctx } = this;
 
     const returnData = { msg: 'ok', data: {} };
-    const userInfo = await ctx.model.User._findOne({ status: Enum.COMMON_STATUS.VALID, username, password: md5(password) });
+    const userInfo = await ctx.model.User._findOne({ username, password: md5(password) });
     if (_.isEmpty(userInfo)) {
-      returnData.msg = 'account Or password error';
+      returnData.msg = 'Account Or Password Error';
+      return returnData;
+    }
+
+    if (_.isEmpty(userInfo.status) || userInfo.status === Enum.COMMON_STATUS.INVALID) {
+      returnData.msg = 'User Status Error';
+      return returnData;
+    }
+
+    if (userInfo.role) {
+      const roleInfo = await ctx.model.Role._findOne({ id: userInfo.role, status: Enum.COMMON_STATUS.VALID });
+      if (_.isEmpty(roleInfo)) {
+        returnData.msg = 'No Auth';
+        return returnData;
+      }
+    } else {
+      returnData.msg = 'No Auth';
       return returnData;
     }
 

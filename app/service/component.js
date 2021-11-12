@@ -163,6 +163,76 @@ class ComponentService extends Service {
     return returnData;
   }
 
+  async copyComponent(id, componentInfo) {
+    const { ctx } = this;
+
+    const userInfo = ctx.userInfo;
+    const returnData = { msg: 'ok', data: {} };
+
+    const copyComponent = await ctx.model.Component._findOne({ id });
+    if (_.isEmpty(copyComponent)) {
+      returnData.msg = 'No Exists';
+      return returnData;
+    }
+
+    const existsComponents = await ctx.model.Component._findOne({ name: componentInfo.name });
+    if (!_.isEmpty(existsComponents)) {
+      returnData.msg = 'Exists Already';
+      return returnData;
+    }
+
+    const createInfo = {
+      name: componentInfo.name,
+      category: copyComponent.category,
+      subCategory: copyComponent.subCategory,
+      type: copyComponent.type,
+      projects: copyComponent.projects,
+      tags: copyComponent.tags || [],
+      desc: copyComponent.desc || '无',
+      cover: copyComponent.cover,
+      creator: userInfo.userId,
+      versions: [],
+    };
+
+    const result = await ctx.model.Component._create(createInfo);
+
+    const componentId = result._id.toString();
+    returnData.data.id = componentId;
+
+    const createResult = await this.initDevWorkspace(componentId);
+    if (createResult.msg !== 'success') returnData.msg = createResult.msg;
+
+    return returnData;
+  }
+
+  async updateInfo(id, requestData) {
+    const { ctx } = this;
+
+    const { status, type, projects, tags, category, subCategory, desc } = requestData;
+
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (type) updateData.type = type;
+
+    if (projects) updateData.projects = projects;
+    if (tags) updateData.tags = tags;
+    if (category) updateData.category = category;
+    if (subCategory) updateData.subCategory = subCategory;
+    if (desc) updateData.desc = desc;
+
+    await ctx.model.User._updateOne({ id }, updateData);
+  }
+
+  async delete(id) {
+    const { ctx } = this;
+
+    const updateData = {
+      status: Enum.COMMON_STATUS.INVALID,
+    };
+
+    await ctx.model.User._updateOne({ id }, updateData);
+  }
+
   async releaseComponent(componentId, releaseComponentInfo) {
     const { ctx } = this;
 

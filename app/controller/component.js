@@ -3,6 +3,7 @@
 const BaseController = require('./base');
 const CODE = require('../lib/error');
 const _ = require('lodash');
+const Enum = require('../lib/enum');
 
 class ComponentsController extends BaseController {
   async updateCategory() {
@@ -78,6 +79,55 @@ class ComponentsController extends BaseController {
     } else {
       this.success('创建成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
     }
+  }
+
+  async copy() {
+    const { ctx, app, service } = this;
+
+    const addComponentSchema = app.Joi.object().keys({
+      name: app.Joi.string(),
+    });
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+    const { value: requestData } = ctx.validate(addComponentSchema, ctx.request.body);
+
+    const componentInfo = await service.component.copyComponent(id, requestData);
+
+    if (componentInfo.msg === 'Exists Already') {
+      this.fail('创建失败, 组件名称已存在', null, CODE.FAIL);
+    } else if (componentInfo.msg === 'Fail') {
+      this.fail('创建失败, 初始化开发空间失败', null, CODE.FAIL);
+    } else if (componentInfo.msg === 'No Exists') {
+      this.fail('创建失败, 复制组件不存在', null, CODE.FAIL);
+    } else {
+      this.success('创建成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
+    }
+  }
+
+  async updateInfo() {
+    const { ctx, app, service } = this;
+
+    const updateInfoSchema = app.Joi.object().keys({
+      type: app.Joi.string(),
+      projects: app.Joi.array().items(app.Joi.string()).min(1),
+      tags: app.Joi.array().items(app.Joi.string()),
+      category: app.Joi.string().required(),
+      subCategory: app.Joi.string().required(),
+      desc: app.Joi.string(),
+    });
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+    const { value: requestData } = ctx.validate(updateInfoSchema, ctx.request.body);
+
+    await service.component.updateInfo(id, requestData);
+
+    this.success('更新成功', { id });
+  }
+
+  async delete() {
+    const { ctx, app, service } = this;
+
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+    await service.component.delete(id);
+    this.success('更新成功', { id });
   }
 
   async release() {

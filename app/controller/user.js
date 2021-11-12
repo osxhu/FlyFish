@@ -37,8 +37,12 @@ class UserController extends BaseController {
     const { username, password } = ctx.request.body;
 
     const userInfo = await service.user.userLogin(username, password);
-    if (userInfo.msg === 'account Or password error') {
+    if (userInfo.msg === 'Account Or Password Error') {
       this.fail('登录失败, 账号或密码错误', null, CODE.FAIL);
+    } else if (userInfo.msg === 'User Status Error') {
+      this.fail('登录失败, 用户状态异常', null, CODE.FAIL);
+    } else if (userInfo.msg === 'No Auth') {
+      this.fail('登录失败, 无权限', null, CODE.FAIL);
     } else {
       const cookieToSet = {
         userId: userInfo.data.id,
