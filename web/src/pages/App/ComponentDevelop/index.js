@@ -3,12 +3,12 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-11 19:50:29
+ * @LastEditTime: 2021-11-12 16:54:14
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
 import { AbreastLayout } from "@chaoswise/ui";
-import { Icon,Select,Input,Table,Popover,Button,Modal,Row,Col } from 'antd';
+import { Icon,Select,Input,Table,Popover,Button,Modal,Row,Col,message } from 'antd';
 import { observer,toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 
@@ -19,19 +19,12 @@ import HandleMenu from "./components/handleMenu";
 import AddComponent from "./components/addComponent";
 import Detail from "./components/detail";
 import _ from "lodash";
-import { updateTreeDataService,getListData } from './services';
+import { updateTreeDataService } from './services';
+import moment from 'moment';
 
 const {Option} = Select;
 
 const ComponentDevelop = observer(() => {
-  const intl = useIntl();
-  const {
-    setDetailShow,
-    addModalvisible,
-    setAddModalvisible,
-    getTreeData
-  } = store;
-  const { treeData } = store;
   const columns = [
     {
       title: '组件类型',
@@ -48,23 +41,40 @@ const ComponentDevelop = observer(() => {
     },
     {
       title: '所属项目',
-      dataIndex: 'project',
-      key: 'project',
+      dataIndex: 'projects',
+      key: 'projects',
+      render:(text,record)=>{
+        return text.map((v,k)=>{
+          return <span key={k}>
+            {v.name+(k===(text.length-1)?'':',')}
+          </span>;
+        });
+      }
     },
     {
       title: '组件快照',
-      dataIndex: 'photo',
-      key: 'photo',
+      dataIndex: 'cover',
+      key: 'cover',
+      render:(text)=>{
+        return <img src={text}></img>;
+      }
     },
     {
       title: '组件标签',
-      dataIndex: 'tag',
-      key: 'tag',
+      dataIndex: 'tags',
+      key: 'tags',
+      render:(text,record)=>{
+        return text.map((v,k)=>{
+          return <span key={k}>
+            {v.name+(k===(text.length-1)?'':',')}
+          </span>;
+        });
+      }
     },
     {
       title: '组件状态',
-      dataIndex: 'status',
-      key: 'status',
+      dataIndex: 'developStatus',
+      key: 'developStatus'
     },
     {
       title: '版本',
@@ -73,13 +83,16 @@ const ComponentDevelop = observer(() => {
     },
     {
       title: '组件类别',
-      dataIndex: 'cate',
-      key: 'cate',
+      dataIndex: 'subCategory',
+      key: 'subCategory',
     },
     {
       title: '最近更新时间',
-      dataIndex: 'time',
-      key: 'time',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      render:(text)=>{
+        return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss');
+      }
     },
     {
       title: '创建人',
@@ -109,33 +122,35 @@ const ComponentDevelop = observer(() => {
       ),
     },
   ];
-  
-  const data2 = [
-    {
-      key: '1',
-      type:'柱状图',
-      name: '柱状图1',
-      project: '1',
-      photo: '1',
-      tag:'1',
-      status:'1',
-      version:'1',
-      cate:'1',
-      time:'2021-11-09',
-      creator:''
-    }
-  ];
+  const intl = useIntl();
+  const {
+    setDetailShow,
+    addModalvisible,
+    setAddModalvisible,
+    getTreeData,
+    getListData,
+    setSelectedData
+  } = store;
+  const { treeData,listData,selectedData } = store;
+  // const { list,curPage,pageSize,total } = listData;
+
   const [addCateName, setAddCateName] = useState('');
   const [addingCate, setAddingCate] = useState(false);
   const addCateRef = useRef();
+
   // 请求列表数据
   useEffect(() => {
     getTreeData();
+    getListData();
   }, []);
+  useEffect(() => {
+    getListData();
+  }, [selectedData]);
   return <>
     <AbreastLayout
         type='leftOperationArea'
         showCollapsedBtn
+        SiderWidth={300}
         Siderbar={(
           <div className={styles.leftWrap}>
             <div className={styles.leftBigTitle}>
@@ -163,16 +178,37 @@ const ComponentDevelop = observer(() => {
               }}
               onPressEnter={async ()=>{
                 const datas = _.cloneDeep(toJS(treeData));
-                datas.push({name:addCateName,children:[]});
-                const res = await updateTreeDataService({categories:datas});
-                if (res && res.code==0) {
-                  setAddingCate(false);
-                  getTreeData();
-                  setAddCateName('');
+                let has = false;
+                datas.map(item=>{
+                  if (item.name===addCateName) {
+                    has = true;
+                  }
+                  return item;
+                });
+                if (has) {
+                  message.error('组件分类名称已存在，请修改！');
+                }else{
+                  datas.push({name:addCateName,children:[]});
+                  const res = await updateTreeDataService({categories:datas});
+                  if (res && res.code==0) {
+                    setAddingCate(false);
+                    getTreeData();
+                    setAddCateName('');
+                  }
                 }
+                
               }}
             ></Input>
-            <div className={styles.allBtn}>全部组件</div>
+            <div className={styles.allBtn + ' '+ (selectedData.category==='全部组件'?styles.selected:'')}
+              onClick={
+                ()=>{
+                  setSelectedData({
+                    category:'全部组件',
+                    subCategory:''
+                  });
+                }
+              }
+            >全部组件</div>
             <div className={styles.treeWrap}>
               <HandleMenu/>
             </div>
@@ -181,7 +217,7 @@ const ComponentDevelop = observer(() => {
       >
         <div className={styles.rightWraper}>
           <Row className={styles.handleWrap}>
-            <Col span={4}>
+            <Col span={5}>
               <span>项目名称：</span>
               <Select
                 showSearch
@@ -219,7 +255,7 @@ const ComponentDevelop = observer(() => {
                 <Option value="2">基础组件</Option>
               </Select>
             </Col>
-            <Col span={2} push={3}>
+            <Col span={2} push={2}>
               <Button 
                 type='primary' 
                 style={{borderRadius:'5px'}}
@@ -230,7 +266,7 @@ const ComponentDevelop = observer(() => {
             </Col>
           </Row>
           <div className={styles.listWraper}>
-            <Table columns={columns} dataSource={data2} />
+            <Table columns={columns} dataSource={listData?toJS(listData).list:[]} rowKey="id"/>
           </div>
         </div>
         <Modal

@@ -9,7 +9,12 @@ import { updateTreeDataService } from '../../services';
 
 const HandleMenu = observer((props)=>{
   const { defaultExpandAll=true } = props;
-  const { treeData,getTreeData } = store;
+  const { 
+    treeData,
+    getTreeData,
+    setSelectedData,
+    selectedData
+  } = store;
   const [data, setData] = useState([]);
   const addinput = useRef();
   const editInput = useRef();
@@ -39,6 +44,7 @@ const HandleMenu = observer((props)=>{
   return <div style={{position:'relative'}}>
     {
       data.map((v,k)=>{
+        console.log();
         return <div key={k+''}>
           <div 
             className={styles.firstLine}
@@ -186,7 +192,7 @@ const HandleMenu = observer((props)=>{
           {v.children?v.children.map((v2,k2)=>{
             return <div
               key={k+'-'+k2}
-              className={styles.secondLine}
+              className={styles.secondLine + ((selectedData.category===v.name && selectedData.subCategory===v2.name)?(' '+styles.selected):'')}
               style={{display:v.expand?'flex':'none'}}
               onMouseOver={()=>{
                 setData(olddata=>{
@@ -212,6 +218,12 @@ const HandleMenu = observer((props)=>{
                     }
                     return v1;
                   })
+                })
+              }}
+              onClick={()=>{
+                setSelectedData({
+                  category:v.name,
+                  subCategory:v2.name
                 })
               }}
             >
@@ -277,7 +289,8 @@ const HandleMenu = observer((props)=>{
               </div>
               <div className={styles.secondBtnWrap}>
                 <Icon type="form" style={{display:v2.showBtn?'inline':'none'}}
-                  onClick={()=>{
+                  onClick={(e)=>{
+                    e.stopPropagation()
                     setEditName(v2.name)
                     setData(olddata=>{
                       return olddata.map((v1,k1)=>{
@@ -297,7 +310,8 @@ const HandleMenu = observer((props)=>{
                   }}
                 />
                 <Icon type="delete" style={{display:v2.showBtn?'inline':'none'}}
-                  onClick={async ()=>{
+                  onClick={async (e)=>{
+                    e.stopPropagation()
                     const _treeData = _.cloneDeep(toJS(treeData));
                     const datas = _treeData.map((v3,k3)=>{
                       if (k3===k) {
