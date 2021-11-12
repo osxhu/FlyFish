@@ -24,6 +24,8 @@ const UserList = observer(() => {
   } = store;
   const { total,current, projectList, pageSize,isEditProjectModalVisible, activeUser } =
     store;
+    const [saveOrChangeFlag, setSaveOrChangeFlag] = React.useState(false);
+
   const loading = loadingStore.loading["UserList/getProjectList"];
   // 表格列表数据
   let basicTableListData = toJS(projectList);
@@ -78,6 +80,7 @@ const UserList = observer(() => {
             <a
               className={styles.projectAction}
               onClick={() => {
+                setSaveOrChangeFlag(false);
                 openEditProjectModal(record, 0);
               }}
             >
@@ -211,6 +214,7 @@ const UserList = observer(() => {
                 type="primary"
                 key="create_project"
                 onClick={() => {
+                  setSaveOrChangeFlag(true);
                   openEditProjectModal({}, 1);
                 }}
               >
@@ -228,7 +232,7 @@ const UserList = observer(() => {
       {isEditProjectModalVisible && (
         <EditProjectModal
           project={activeUser}
-          flag={addOrChange}
+          flag={saveOrChangeFlag}
           onSave={(project) => {
             addUser(project, (res) => {
               if (res.code == successCode) {
@@ -243,9 +247,9 @@ const UserList = observer(() => {
                   curPage: 0,
                 });
               } else {
-                res.msg || message.error(intl.formatMessage({
+                message.error(res.msg ||intl.formatMessage({
                   id: "common.addError",
-                  defaultValue: "编辑失败，请稍后重试！",
+                  defaultValue: "新增失败，请稍后重试！",
                 })
                 );
               }
@@ -265,7 +269,7 @@ const UserList = observer(() => {
                   curPage: 0,
                 });
               } else {
-                res.msg || message.error(
+                 message.error(
                   res.msg || intl.formatMessage({
                     id: "common.changeError",
                     defaultValue: "编辑失败，请稍后重试！",

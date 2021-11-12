@@ -28,7 +28,7 @@ const RoleList = observer(() => {
     addNewRole
   } = store;
 
-  const { total, projectList,pageSize, current,userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
+  const { total, projectList, pageSize, current, userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
     store;
   const [saveOrChangeFlag, setSaveOrChangeFlag] = useState(false);
   // 成员列表的值
@@ -95,6 +95,7 @@ const RoleList = observer(() => {
             <a
               className={styles.projectAction}
               onClick={() => {
+                setSaveOrChangeFlag(false);
                 openEditRoleModal(record);
               }}
             >
@@ -157,13 +158,13 @@ const RoleList = observer(() => {
   }, []);
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
-    getUserList({ curPage:curPage-1, pageSize });
+    getUserList({ curPage: curPage - 1, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
     getUserList({
       curPage: 0,
-      pageSize:10
+      pageSize: 10
     });
   };
 
@@ -177,9 +178,9 @@ const RoleList = observer(() => {
         pagination={{
           showTotal: true,
           total: total,
-          current:current,
-          pageSize:pageSize,
-          defaultPageSize:10,
+          current: current,
+          pageSize: pageSize,
+          defaultPageSize: 10,
           onChange: onPageChange,
           onShowSizeChange: onPageChange,
           showSizeChanger: true
@@ -192,6 +193,7 @@ const RoleList = observer(() => {
                 type="primary"
                 key="create_project"
                 onClick={() => {
+                  setSaveOrChangeFlag(true);
                   openEditRoleModal({}, 1); setSaveOrChangeFlag(true);
                 }}
               >
@@ -225,7 +227,7 @@ const RoleList = observer(() => {
                 });
               } else {
                 message.error(
-                 res.msg|| intl.formatMessage({
+                  res.msg || intl.formatMessage({
                     id: "common.changeError",
                     defaultValue: "修改失败，请稍后重试！",
                   })
@@ -248,7 +250,7 @@ const RoleList = observer(() => {
                 });
               } else {
                 message.error(
-                  res.msg|| intl.formatMessage({
+                  res.msg || intl.formatMessage({
                     id: "common.saveError",
                     defaultValue: "新增失败，请稍后重试！",
                   })
@@ -280,7 +282,8 @@ const RoleList = observer(() => {
                   curPage: 0,
                 });
               } else {
-                res.mag|| message.error(
+                message.error(
+                  res.mag ||
                   intl.formatMessage({
                     id: "common.saveError",
                     defaultValue: "保存失败，请稍后重试！",
@@ -313,7 +316,8 @@ const RoleList = observer(() => {
                   curPage: 0,
                 });
               } else {
-                res.mag|| message.error(
+                message.error(
+                  res.msg ||
                   intl.formatMessage({
                     id: "common.saveError",
                     defaultValue: "保存失败，请稍后重试！",

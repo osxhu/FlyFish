@@ -34,7 +34,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
         }}
         size="middle"
         title={
-          project && project.id > 0
+          !flag
             ? intl.formatMessage({
               id: "pages.userManage.edit",
               defaultValue: "编辑用户",

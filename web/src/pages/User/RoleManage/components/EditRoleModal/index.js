@@ -62,10 +62,6 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                       defaultValue: "请输入",
                     }) + "角色名",
                 },
-                // {
-                //   pattern: /^[a-zA-Z]{6,20}$/,
-                //   message: "请输入a~z的6~20位的字符，不限制大小写",
-                // },
               ],
             })(
               <Input
@@ -78,22 +74,26 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                 }
               />
             )}
-          </Form.Item>
-          <Form.Item label="描述" name={"desc"}>
+          </Form.Item><Form.Item label="描述" name={"desc"}>
             {getFieldDecorator("desc", {
               initialValue: role.desc,
+              rules: [
+                {
+                  required: !flag?true:false,
+                  message:
+                    intl.formatMessage({
+                      id: "common.pleaseInput",
+                      defaultValue: "请输入",
+                    }) + "描述",
+                }
+              ],
             })(
               <Input.TextArea
               autoSize={{minRows:4}}
-                placeholder={
-                  intl.formatMessage({
-                    id: "common.pleaseInput",
-                    defaultValue: "请输入",
-                  }) + "描述"
-                }
               />
             )}
           </Form.Item>
+         
           
         </Form>
       </Modal>
