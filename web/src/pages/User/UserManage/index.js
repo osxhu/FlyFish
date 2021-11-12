@@ -22,7 +22,7 @@ const UserList = observer(() => {
     addOrChange,
     closeEditProjectModal,
   } = store;
-  const { total, projectList, isEditProjectModalVisible, activeUser } =
+  const { total,current, projectList, pageSize,isEditProjectModalVisible, activeUser } =
     store;
   const loading = loadingStore.loading["UserList/getProjectList"];
   // 表格列表数据
@@ -175,12 +175,14 @@ const UserList = observer(() => {
   }, []);
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
-    getProjectList({ curPage, pageSize });
+    console.log('dajg ',curPage,pageSize);
+    getProjectList({ curPage:curPage-1, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
     getProjectList({
       curPage: 0,
+      pageSize:10
     });
   };
 
@@ -194,10 +196,12 @@ const UserList = observer(() => {
         pagination={{
           showTotal: true,
           total: total,
+          current:current,
+          pageSize:pageSize,
+          defaultPageSize:10,
           onChange: onPageChange,
           onShowSizeChange: onPageChange,
-          showSizeChanger: true,
-          showQuickJumper: true,
+          showSizeChanger: true
         }}
         searchBar={{
           onSearch: onSearch,

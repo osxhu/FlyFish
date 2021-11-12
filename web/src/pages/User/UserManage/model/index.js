@@ -15,7 +15,7 @@ const model = {
     isEditProjectModalVisible: false,
     deleteId:null,
     curPage:0,
-    pageSize:30,
+    pageSize:10,
     addOrChange:null
   },
   effects: {
@@ -47,9 +47,9 @@ const model = {
   reducers: {
     setProjectList(res) {
       this.projectList = res.data.list;
-      this.total = res.total;
-      this.curPage = res.curPage;
-      this.pageSize = res.pageSize;
+      this.total = res.data.total;
+      this.curPage = res.data.curPage;
+      this.pageSize = res.data.pageSize;
     },
     setSearchParams(searchParams) {
       let sendParams = {};

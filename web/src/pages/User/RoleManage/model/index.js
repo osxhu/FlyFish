@@ -20,7 +20,7 @@ const model = {
     isRoleJurisdictionModalVisible: false,
     deleteId: null,
     curPage: 0,
-    pageSize: 30,
+    pageSize: 10,
     oneRoleDetail: [], //单个角色详情
     userList: [] ,//角色列表需要的所有用户信息
     oneRoleMenu:[]
@@ -96,9 +96,9 @@ const model = {
     },
     setProjectList(res) {
       this.projectList = res.data.list;
-      this.total = res.total;
-      this.curPage = res.curPage;
-      this.pageSize = res.pageSize;
+      this.total = res.data.total;
+      this.curPage = res.data.curPage;
+      this.pageSize = res.data.pageSize;
     },
     setSearchParams(searchParams) {
       let sendParams = {};

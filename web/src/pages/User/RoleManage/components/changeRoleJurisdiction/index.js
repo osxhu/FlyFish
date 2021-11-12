@@ -1,11 +1,11 @@
 import React from "react";
-import { Modal, Form } from "@chaoswise/ui";
+import { Modal, Form,message } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 import { Tree } from 'antd';
 const { TreeNode } = Tree;
 import styles from './style.less';
 export default Form.create({ name: "FORM_IN_USER_MODAL" })(
-    function ChangeRoleJurisdiction({ checkProject, form, project = {}, onSave, onCancel }) {
+    function ChangeRoleJurisdiction({ close,checkProject, form, project = {}, onSave, onCancel }) {
         const new1 = project.menus.map(item => item);
         let menu = [
             { name: '应用创建', url: '/path1/1', children: [{ name: '项目管理', url: '/path1/1-1' }, { name: '应用开发', url: '/path1/1-2' }, { name: '组件开发', url: '/path1/1-3' }] },
@@ -17,6 +17,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
             onSave && onSave(selectedKeys);
         };
         let sendarr = [];
+        sendarr={menus:new1};
         const onCheck = (checkedKeys, info) => {
             sendarr = { menus: checkedKeys };
         };
@@ -40,6 +41,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                 onCancel={() => onCancel && onCancel()}
                 onOk={() => {
                     onSave && onSave(sendarr);
+                    
                 }}
                 size="middle"
                 title='设置栏目权限'
