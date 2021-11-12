@@ -8,7 +8,7 @@ class ProjectController extends BaseController {
 
     const addSchema = Joi.object().keys({
       name: Joi.string().required(),
-      trades: Joi.array().items(Joi.string()).required(),
+      trades: Joi.array().items(Joi.string().length(24)).required(),
       desc: Joi.string(),
     });
     const body = await addSchema.validateAsync(ctx.request.body);
@@ -19,7 +19,7 @@ class ProjectController extends BaseController {
   async delete() {
     const { ctx, app: { Joi }, service } = this;
     const deleteSchema = Joi.object().keys({
-      projectId: Joi.string().required(),
+      projectId: Joi.string().length(24).required(),
     });
 
     const { projectId } = await deleteSchema.validateAsync(ctx.params);
@@ -30,7 +30,7 @@ class ProjectController extends BaseController {
   async edit() {
     const { ctx, app: { Joi }, service } = this;
     const editParamSchema = Joi.object().keys({
-      projectId: Joi.string().required(),
+      projectId: Joi.string().length(24).required(),
     });
 
     const editBodySchema = Joi.object().keys({
@@ -71,7 +71,7 @@ class ProjectController extends BaseController {
     const { ctx, app: { Joi }, service } = this;
 
     const infoSchema = Joi.object().keys({
-      projectId: Joi.string().required(),
+      projectId: Joi.string().length(24).required(),
     });
 
     const { projectId } = await infoSchema.validateAsync(ctx.params);
