@@ -4,10 +4,20 @@ import { useIntl } from "react-intl";
 import { toJS } from "@chaoswise/cw-mobx";
 
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
-  function EditProjectModal({ flag, form, onChange, project = {}, onSave, onCancel }) {
+  function EditProjectModal({ flag, list, form, addIndusty, onChange, project = {}, onSave, onCancel }) {
     const intl = useIntl();
+    let selectArr = toJS(list);//下拉框总数据
     let newarr = toJS(project).trades;
     const { getFieldDecorator } = form;
+    const onSelect = async (item) => {
+      if (item.length !== 24) {
+        await addIndusty({ name: item });
+        // if (selectArr[selectArr.length - 1].name === item) {
+        //   newarr.push(selectArr[selectArr.length - 1].id);
+        // }
+
+      }
+    };
     return (
       <Modal
         draggable
@@ -24,12 +34,12 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                 }
                 flag ? onSave &&
                   onSave({
-                    ...values
-
-                  }) : onChange &&
-                onChange(project.id, {
-                  ...values
-                });
+                    ...sendParams
+                  }) :null;
+                //  onChange &&
+                // onChange(project.id, {
+                //   ...sendParams
+                // });
               }
             });
           }
@@ -98,6 +108,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Select
+                onSelect={onSelect}
                 mode='tags'
                 placeholder={
                   intl.formatMessage({
@@ -106,8 +117,11 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   }) + "行业"
                 }
               >
-                <Select.Option value="618de46a18859555b43ee212">电力</Select.Option>
-                <Select.Option value="618de46a18859555b43ee222">水务</Select.Option>
+                {
+                  selectArr.map(item => {
+                    return <Select.Option key='item.id' value={item.id}>{item.name}</Select.Option>;
+                  })
+                }
 
               </Select>
             )}
@@ -126,6 +140,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Select
+                onSelect={onSelect}
                 mode='tags'
                 placeholder={
                   intl.formatMessage({
@@ -134,8 +149,11 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   }) + "行业"
                 }
               >
-                <Select.Option value="618de46a18859555b43ee212">电力</Select.Option>
-                <Select.Option value="618de46a18859555b43ee222">水务</Select.Option>
+                {
+                  selectArr.map(item => {
+                    return <Select.Option key='item.id' value={item.id}>{item.name}</Select.Option>;
+                  })
+                }
 
               </Select>
             )}

@@ -3,7 +3,7 @@ import { Modal, Input, Form, Button, SearchBar } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 import styles from "./index.less";
 import store from "../../model";
-
+import TestList from '../ComponentDevelop';
 import List from '../NavigationList/index';
 import { Icon, Select } from 'antd';
 const { Option } = Select;
@@ -135,7 +135,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           </div> : null
         }
         {
-          checkPageFLag === 'assemblyList' ? <List onSearch={onSearch} onSave={onSave} onDelete={onDelete} onAdd={onAdd} /> : null
+          checkPageFLag === 'assemblyList' ? <TestList ProgressId={ProgressId}/> : null
         }
         {/* <Drawer/> */}
       </>

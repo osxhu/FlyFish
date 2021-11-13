@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, changeProjectService,saveProjectService,deleteProjectService } from "../services";
+import { getProjectManageListService, industryList,addNewIndustry,changeProjectService,saveProjectService,deleteProjectService } from "../services";
 import _ from "lodash";
 
 
@@ -8,13 +8,14 @@ const model = {
   namespace: "AppProjectManage",
   // 状态
   state: {
-    searchParams: {},
-    projectList: [],
+    searchParams: {}, 
+    projectList: [], //项目列表
     total: 0,
     curPage:0,
     pageSize:10,
-    activeProject: null,
-    isEditProjectModalVisible: false,
+    activeProject: null, //选中项目
+    isEditProjectModalVisible: false, 
+    industryList:[]//行业列表
   },
   effects: {
     // 获取项目列表
@@ -38,14 +39,27 @@ const model = {
       const res = yield changeProjectService(id,params);
       callback && callback(res);
     },
+    // 删除项目
     *deleteProject(params = {}, callback) {
       const res = yield deleteProjectService(params);
       callback && callback(res);
     },
+    // 新增行业
+    *addNewIndustrys(params,callback) {
+      const res = yield addNewIndustry(params);
+      callback && callback(res);
+    },
+     // 行业列表
+     *getIndustrysList(callback) {
+      const res = yield industryList();
+      this.setIndustryList(res);
+    },
   },
   reducers: {
+    setIndustryList(res){
+      this.industryList = res.data.list;
+    },
     setProjectList(res) {
-      
       this.projectList = res.data.list;
       this.total = res.data.total;
       this.curPage = res.data.curPage;

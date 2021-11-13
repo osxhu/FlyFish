@@ -205,6 +205,10 @@ class UserLayout extends React.PureComponent {
                     }
                   ],
                 })(
+                  loginType == 0 ? <Input.Password
+                    prefix={<Icon type="mobile" style={{ color: '#1890FF' }} />}
+                    placeholder={`${loginType == 0 ? '' : '*'}请输入密码`}
+                  />:
                   <Input
                     prefix={<Icon type="mobile" style={{ color: '#1890FF' }} />}
                     placeholder={`${loginType == 0 ? '' : '*'}请输入密码`}

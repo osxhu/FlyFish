@@ -51,6 +51,11 @@ export default flattenMessages({
       searchInputAppName:'输入应用名称进行查询',
       searchInputApplyLabel:'选择应用标签进行查询'
     },
+    projectDetailDevelop:{
+      searchInputKey:'输入组件名称/项目名称/描述/标签/创建人查找组件',
+      selectTags:'输入组件标签进行查询',
+      search:'搜索'
+    },
     userManage: {
       create: "添加用户",
       edit: "编辑用户",

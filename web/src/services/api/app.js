@@ -22,4 +22,10 @@ export default {
   CHANGE_PROJECT_API:`${baseUrl}/projects/`,
   // 删除项目
   DETLETE_PROJECT_API:`${baseUrl}/projects/`,
+  // 新增行业
+  ADD_INDUSTRY:`${baseUrl}/trades`,
+  // 行业列表
+  INDUSTRY_LIST:`${baseUrl}/trades`,
+ //编辑组件 
+CHANGE_ASSEMBLY:`${baseUrl}/components/`,
 };

@@ -30,13 +30,13 @@ module.exports = {
               path: "/app/project-manage",
               component: "@/pages/App/ProjectManage",
             },
-            // {
-            //   name: "布局",
-            //   path: "/app/:id/project-detail",
-            //   component: "@/pages/App/ProjectDetail",
-            //   hideInMenu: true,
-            //   activeMenuKey: "/app/project-manage"
-            // },
+            {
+              name: "布局",
+              path: "/app/:id/project-detail",
+              component: "@/pages/App/ProjectDetail",
+              hideInMenu: true,
+              activeMenuKey: "/app/project-manage"
+            },
             {
               name: "应用开发",
               path: "/app/apply-develop",
@@ -49,30 +49,6 @@ module.exports = {
               component: "@/pages/App/ComponentDevelop",
             }
           ],
-        },
-        {
-          icon: "pie-chart",
-          name: "模板库",
-          path: "/template",
-          component: "@/pages/Template",
-          routes: [
-            {
-              name: "组件库",
-              path: "/template/template-component",
-              component: "@/pages/Template/TemplateComponent",
-            },
-            {
-              name: "应用模板库",
-              path: "/template/template-app",
-              component: "@/pages/Template/TemplateApp",
-            }
-          ],
-        },
-        {
-          icon: "pie-chart",
-          name: "测试登录",
-          path: "/login",
-          component: "@/pages/Login",
         },
         // {
         //   icon: "pie-chart",

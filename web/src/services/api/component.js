@@ -17,4 +17,6 @@ export default {
   GET_PROJECTS: `${baseUrl}/projects/list`,
   GET_TAGS: `${baseUrl}/tags/get-all`,
   ADD_COMPONENT: `${baseUrl}/components`,
+   // 删除组件 
+   DELETE_ASSEMBLY:`${baseUrl}/components/`,
 };

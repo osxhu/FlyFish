@@ -16,3 +16,11 @@ export const changeProjectService = (id,options) => {
 export const deleteProjectService = (options) => {
   return fetchDelete(API.DETLETE_PROJECT_API+options.id);
 };
+// 新增行业
+export const addNewIndustry = (options) => {
+  return fetchPost(API.ADD_INDUSTRY,{ body: options });
+};
+// 行业列表
+export const industryList = () => {
+  return fetchGet(API.INDUSTRY_LIST);
+};

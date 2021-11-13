@@ -15,11 +15,11 @@ const AppProjectManage = observer((props) => {
   const {
     getProjectList,
     setSearchParams,
-    saveProject, changeProject,
+    saveProject, changeProject, getIndustrysList,
     openEditProjectModal, openProjectPage,
-    closeEditProjectModal, deleteProject
+    closeEditProjectModal, deleteProject, addNewIndustrys
   } = store;
-  const { total, current, pageSize, projectList, isEditProjectModalVisible, activeProject } =
+  const { total, industryList, current, pageSize, projectList, isEditProjectModalVisible, activeProject } =
     store;
   let [checkFlag, setCheckFlag] = useState(false);
   const loading = loadingStore.loading["AppProjectManage/getProjectList"];
@@ -143,9 +143,10 @@ const AppProjectManage = observer((props) => {
   // 请求列表数据
   useEffect(() => {
     getProjectList();
+    getIndustrysList();
   }, []);
   const goRoute = (id) => {
-    props.history.push(`/app/${id}/project-detail`);
+    props.history.replace(`/app/${id}/project-detail`);
   };
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
@@ -201,8 +202,28 @@ const AppProjectManage = observer((props) => {
         <EditProjectModal
           flag={checkFlag}
           project={activeProject}
+          list={industryList}
+          addIndusty={(name) => {
+            addNewIndustrys(name, (res => {
+              if (res.code === successCode) {
+                message.success(
+                  intl.formatMessage({
+                    id: "common.addSuccess",
+                    defaultValue: "新增成功！",
+                  })
+                );
+                getIndustrysList();
+              } else {
+                message.error(
+                  res.msg || intl.formatMessage({
+                    id: "common.addError",
+                    defaultValue: "新增失败，请稍后重试！",
+                  })
+                );
+              }
+            }));
+          }}
           onSave={(project) => {
-           
             saveProject(project, (res) => {
               if (res.code === successCode) {
                 message.success(
@@ -225,9 +246,9 @@ const AppProjectManage = observer((props) => {
               }
             });
           }}
-          onChange={(id,project) => {
-            changeProject(id,project, (res) => {
-              
+          onChange={(id, project) => {
+            changeProject(id, project, (res) => {
+
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
