@@ -344,6 +344,8 @@ class ComponentService extends Service {
     }
 
     const createResult = this.initReleaseWorkspace(componentInfo, no, compatible);
+    await ctx.model.Component._updateOne({ id: componentId }, { status: Enum.COMPONENT_DEVELOP_STATUS.ONLINE });
+
     if (createResult.msg !== 'Success') returnData.msg = createResult.msg;
 
     return returnData;
