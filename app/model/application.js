@@ -18,38 +18,22 @@ module.exports = app => {
       default: Date.now,
     },
 
-    name: {
-      type: String,
-    },
-    projects: {
-      type: [ String ],
-    },
-    tags: {
-      type: [ String ],
-    },
-    develop_status: {
-      type: String,
-    },
-    type: {
-      type: String,
-    },
-    cover: {
-      type: String,
-    },
-    creator: {
-      type: String,
-    },
-    updater: {
-      type: String,
-    },
+    name: String,
+    project_id: String,
+    tags: [ String ],
+    develop_status: String,
+    type: String,
+    cover: String,
+    creator: String,
+    updater: String,
     status: {
       type: String,
       default: Enum.COMMON_STATUS.VALID,
     },
     screens: {
       type: [ new Schema({
-        uid: { type: String },
-        name: { type: String },
+        uid: String,
+        name: String,
         components: { type: [
           new Schema({
             id: { type: String },
