@@ -42,11 +42,49 @@ module.exports = app => {
     }],
   });
 
-  function _toDoc(obj, update = false) {
-    if (_.isEmpty(obj)) return;
+  ApplicationSchema.statics._create = async function(params) {
+    const doc = _toDoc(params);
+    const res = await this.create(doc);
+    return { id: res._id.toString() };
+  };
 
-    if (obj.id) obj._id = obj.id; delete (obj.id);
-    if (update) obj.updateTime = Date.now();
+  ApplicationSchema.statics._deleteOne = async function(params) {
+    const doc = _toDoc(params);
+    return await this.deleteOne(doc);
+  };
+
+  ApplicationSchema.statics._findOne = async function(params) {
+    const doc = _toDoc(params);
+    const res = await this.findOne(doc).lean(true);
+    return _toObj(res);
+  };
+
+  ApplicationSchema.statics._find = async function(query, projection, options) {
+    const filter = _toDoc(query);
+    const res = await this.find(filter, projection, options).lean(true);
+    return res.map(_toObj);
+  };
+
+  ApplicationSchema.statics._count = async function(query) {
+    const filter = _toDoc(query);
+    return await this.count(filter);
+  };
+
+  ApplicationSchema.statics._updateOne = async function(query, params) {
+    const filter = _toDoc(query);
+    const doc = _toDoc(params);
+    return await this.updateOne(filter, doc);
+  };
+
+
+  function _toDoc(obj) {
+    if (_.isEmpty(obj)) return;
+    obj = _.omitBy(obj, _.isNil);
+
+    if (!_.isNil(obj.id)) {
+      obj._id = obj.id;
+      delete obj.id;
+    }
     return decamelizeKeys(obj);
   }
 
@@ -61,7 +99,6 @@ module.exports = app => {
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();
 
-    delete camelizeRes.password;
     return Object.assign({}, camelizeRes, res);
   }
 
