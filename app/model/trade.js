@@ -33,7 +33,7 @@ module.exports = app => {
   };
 
 
-  TradeSchema.statics._find = async function(query, projection, options) {
+  TradeSchema.statics._find = async function(query = {}, projection = null, options = {}) {
     const filter = _toDoc(query);
     const res = await this.find(filter, projection, options).lean(true);
     return res.map(_toObj);

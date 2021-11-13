@@ -16,6 +16,13 @@ class TradeController extends BaseController {
     if (!res) return this.fail('行业已存在，请重新添加', null, CODE.ALREADY_EXISTS);
     this.success('新建成功', res);
   }
+
+  async list() {
+    const { ctx, app: { Joi }, service } = this;
+
+    const { list } = await service.trade.getList();
+    this.success('获取成功', { list });
+  }
 }
 
 module.exports = TradeController;

@@ -52,4 +52,5 @@ module.exports = app => {
 
   // trade
   router.post('/trades', controller.trade.create);
+  router.get('/trades', controller.trade.list);
 };

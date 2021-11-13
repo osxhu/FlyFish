@@ -11,6 +11,15 @@ class TradeService extends Service {
     if (!_.isEmpty(isExist)) return;
     return await ctx.model.Trade._create(params);
   }
+
+  async getList() {
+    const { ctx } = this;
+    const list = await ctx.model.Trade._find({ status: Enum.COMMON_STATUS.VALID });
+
+    return {
+      list,
+    };
+  }
 }
 
 module.exports = TradeService;
