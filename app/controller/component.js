@@ -1,12 +1,10 @@
 'use strict';
-const path = require('path');
 const fs = require('fs-extra');
 const AdmZip = require('adm-zip');
 
 const BaseController = require('./base');
 const CODE = require('../lib/error');
 const _ = require('lodash');
-const Enum = require('../lib/enum');
 
 class ComponentsController extends BaseController {
   async updateCategory() {
@@ -221,6 +219,7 @@ class ComponentsController extends BaseController {
       zip.extractAllTo(targetPath, true);
     } finally {
       await fs.remove(file.filepath);
+      await fs.remove(`${targetPath}/${file.filename}`);
     }
 
     this.success('上传成功');
