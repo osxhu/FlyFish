@@ -30,18 +30,16 @@ module.exports = app => {
       type: String,
       default: Enum.COMMON_STATUS.VALID,
     },
-    screens: {
-      type: [ new Schema({
-        uid: String,
-        name: String,
-        components: { type: [
-          new Schema({
-            id: { type: String },
-            version: { type: String },
-          }),
-        ] },
-      }) ],
-    },
+    screens: [{
+      _id: false,
+      uid: String,
+      name: String,
+      components: [{
+        _id: false,
+        id: String,
+        version: String,
+      }],
+    }],
   });
 
   function _toDoc(obj, update = false) {
