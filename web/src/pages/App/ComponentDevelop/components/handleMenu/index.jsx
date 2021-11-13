@@ -13,7 +13,8 @@ const HandleMenu = observer((props)=>{
     treeData,
     getTreeData,
     setSelectedData,
-    selectedData
+    selectedData,
+    userInfo
   } = store;
   const [data, setData] = useState([]);
   const addinput = useRef();
@@ -144,7 +145,7 @@ const HandleMenu = observer((props)=>{
                   }, 0);
                 }}
               />
-              <Icon type="delete" style={{display:v.showBtn?'inline':'none'}}
+              <Icon type="delete" style={{display:userInfo.isAdmin?(v.showBtn?'inline':'none'):'none'}}
                 onClick={async ()=>{
                   let has = false;
                   data.map((v3,k3)=>{
@@ -309,7 +310,7 @@ const HandleMenu = observer((props)=>{
                     }, 0);
                   }}
                 />
-                <Icon type="delete" style={{display:v2.showBtn?'inline':'none'}}
+                <Icon type="delete" style={{display:userInfo.isAdmin?(v2.showBtn?'inline':'none'):'none'}}
                   onClick={async (e)=>{
                     e.stopPropagation()
                     const _treeData = _.cloneDeep(toJS(treeData));

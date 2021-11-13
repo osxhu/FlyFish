@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-12 16:00:40
+ * @LastEditTime: 2021-11-13 15:44:28
  */
 /*
  * 应用
@@ -17,4 +17,12 @@ export default {
   GET_PROJECTS: `${baseUrl}/projects/list`,
   GET_TAGS: `${baseUrl}/tags/get-all`,
   ADD_COMPONENT: `${baseUrl}/components`,
+  GET_USERINFO: `${baseUrl}/users/info`,
+  GET_DETAILDATA: `${baseUrl}/components`,
+  //编辑组件
+  EDIT_COMPONENT: `${baseUrl}/components`,
+  //复制组件
+  COPY_COMPONENT: `${baseUrl}/components/copy`,
+  //删除组件
+  DELETE_COMPONENT: `${baseUrl}/components`,
 };

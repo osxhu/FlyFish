@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-12 16:54:14
+ * @LastEditTime: 2021-11-13 15:45:59
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -17,10 +17,12 @@ import styles from "./assets/style.less";
 import { FormattedMessage, useIntl } from "react-intl";
 import HandleMenu from "./components/handleMenu";
 import AddComponent from "./components/addComponent";
+import EditComponent from "./components/editComponent";
 import Detail from "./components/detail";
 import _ from "lodash";
-import { updateTreeDataService } from './services';
+import { updateTreeDataService,copyComponentService,deleteComponentService } from './services';
 import moment from 'moment';
+import * as CONSTANT from './constant';
 
 const {Option} = Select;
 
@@ -29,14 +31,20 @@ const ComponentDevelop = observer(() => {
     {
       title: '组件类型',
       dataIndex: 'type',
-      key: 'type'
+      key: 'type',
+      render:(text)=>{
+      return <span>{CONSTANT.componentType_map_ch[text]}</span>;
+      }
     },
     {
       title: '组件名称',
       dataIndex: 'name',
       key: 'name',
       render:(text,record)=>{
-        return <a className={styles.nameLink} onClick={()=>{setDetailShow(true);}}>text</a>;
+        return <a className={styles.nameLink} onClick={()=>{
+          setViewId(record.id);
+          setDetailShow(true);
+        }}>{text}</a>;
       }
     },
     {
@@ -74,7 +82,10 @@ const ComponentDevelop = observer(() => {
     {
       title: '组件状态',
       dataIndex: 'developStatus',
-      key: 'developStatus'
+      key: 'developStatus',
+      render:(text)=>{
+      return <span>{CONSTANT.componentDevelopStatus_map_ch[text]}</span>;
+      }
     },
     {
       title: '版本',
@@ -107,12 +118,26 @@ const ComponentDevelop = observer(() => {
           content={
             <div className={styles.btnWraper}>
               <div>开发组件</div>
-              <div>复制组件</div>
+              <div
+                onClick={()=>{
+                  setCopyId(record.id);
+                  setCopyModalvisible(true);
+                }}
+              >复制组件</div>
               <div>导入源码</div>
               <div>导出源码</div>
               <div>上传组件库</div>
-              <div>编辑信息</div>
-              <div>删除</div>
+              <div 
+                onClick={()=>{
+                  setEditData(record);
+                  setEditModalvisible(true);
+                }}
+              >编辑信息</div>
+              <div
+                onClick={()=>{
+                  deleteComponet(record.id);
+                }}
+              >删除</div>
             </div>
           }
           placement="right"
@@ -125,27 +150,57 @@ const ComponentDevelop = observer(() => {
   const intl = useIntl();
   const {
     setDetailShow,
-    addModalvisible,
     setAddModalvisible,
+    setEditModalvisible,
     getTreeData,
     getListData,
-    setSelectedData
+    setSelectedData,
+    getUserInfo,
+    setSearchName,
+    setSearchKey,
+    setSearchStatus,
+    getListDataWithCate,
+    setViewId,
+    setEditData
   } = store;
-  const { treeData,listData,selectedData } = store;
+  const { addModalvisible,editModalvisible,treeData,listData,selectedData,searchName,searchKey,searchStatus } = store;
   // const { list,curPage,pageSize,total } = listData;
 
   const [addCateName, setAddCateName] = useState('');
   const [addingCate, setAddingCate] = useState(false);
+  const [copyModalvisible, setCopyModalvisible] = useState(false);
+  const [copyId, setCopyId] = useState('');
+  const [copyName, setCopyName] = useState('');
   const addCateRef = useRef();
 
   // 请求列表数据
   useEffect(() => {
+    getUserInfo();
     getTreeData();
     getListData();
   }, []);
   useEffect(() => {
     getListData();
   }, [selectedData]);
+  const copyComponent = async (id,name)=>{
+    const res = await copyComponentService(id,name);
+    if(res && res.code==0){
+      message.success('复制成功');
+      setCopyModalvisible(false);
+      getListData();
+    }else{
+      message.error(res.msg||'复制失败！');
+    }
+  };
+  const deleteComponet = async (id)=>{
+    const res = await deleteComponentService(id);
+    if(res && res.code==0){
+      message.success('删除成功');
+      getListData();
+    }else{
+      message.error(res.msg||'删除失败！');
+    }
+  };
   return <>
     <AbreastLayout
         type='leftOperationArea'
@@ -206,6 +261,9 @@ const ComponentDevelop = observer(() => {
                     category:'全部组件',
                     subCategory:''
                   });
+                  setSearchName('');
+                  setSearchKey('');
+                  setSearchStatus('');
                 }
               }
             >全部组件</div>
@@ -218,44 +276,61 @@ const ComponentDevelop = observer(() => {
         <div className={styles.rightWraper}>
           <Row className={styles.handleWrap}>
             <Col span={5}>
-              <span>项目名称：</span>
-              <Select
-                showSearch
-                style={{width:150}}
-                placeholder="请选择"
-                filterOption={(input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                <Option value="001">项目001</Option>
-                <Option value="002">项目002</Option>
-                <Option value="003">项目003</Option>
-              </Select>
+              <span>组件名称：</span>
+              <Input placeholder='请输入'
+              style={{width:150}}
+                value={searchName}
+                onChange={(e)=>{setSearchName(e.target.value);}}
+                onPressEnter={()=>{
+                  setSearchKey('');
+                  getListDataWithCate();
+                }}
+              ></Input>
             </Col>
-            <Col span={5}>
-              <Input style={{width:'90%'}} placeholder='输入组件名称/项目名称/描述/标签/创建人查找组件'></Input>
+            <Col span={8}>
+              <Input style={{width:'90%'}} placeholder='输入组件名称/项目名称/描述/标签/创建人查找组件'
+                value={searchKey}
+                onChange={(e)=>{
+                  setSearchKey(e.target.value);
+                }}
+                onPressEnter={()=>{
+                  setSearchName('');
+                  getListDataWithCate();
+                }}
+              ></Input>
             </Col>
             <Col span={5}>
               <span>开发状态：</span>
               <Select
                 placeholder='请选择'
                 style={{ width: 150 }}
+                value={searchStatus}
+                onChange={(val)=>{
+                  setSearchStatus(val);
+                  getListDataWithCate();
+                }}
               >
-                <Option value="1">开发中</Option>
-                <Option value="2">已交付</Option>
+                <Option value={0}>全部</Option>
+                <Option value="doing">开发中</Option>
+                <Option value="online">已交付</Option>
               </Select>
             </Col>
-            <Col span={5}>
+            {/* <Col span={5}>
               <span>组件类别：</span>
               <Select
                 placeholder='请选择'
                 style={{ width: 150 }}
+                value={searchCate}
+                onChange={(val)=>{
+                  setSearchCate(val);
+                  getListData();
+                }}
               >
                 <Option value="1">全部</Option>
                 <Option value="2">基础组件</Option>
               </Select>
-            </Col>
-            <Col span={2} push={2}>
+            </Col> */}
+            <Col span={2} push={4}>
               <Button 
                 type='primary' 
                 style={{borderRadius:'5px'}}
@@ -277,6 +352,35 @@ const ComponentDevelop = observer(() => {
           onCancel={()=>{setAddModalvisible(false);}}
         >
           <AddComponent/>
+        </Modal>
+        <Modal
+          title="编辑组件"
+          visible={editModalvisible}
+          footer={null}
+          width='50%'
+          onCancel={()=>{setEditModalvisible(false);}}
+        >
+          <EditComponent/>
+        </Modal>
+        <Modal
+          title="复制组件"
+          visible={copyModalvisible}
+          // footer={null}
+          width='30%'
+          onCancel={()=>{setCopyModalvisible(false);}}
+          onOk={()=>{
+            copyComponent(copyId,copyName);
+          }}
+        >
+          <div style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
+            <label>组件名称：</label>
+            <Input value={copyName}
+              style={{width:300}}
+              onChange={(e)=>{
+                setCopyName(e.target.value);
+              }}
+            ></Input>
+          </div>
         </Modal>
         <Detail/>
       </AbreastLayout>

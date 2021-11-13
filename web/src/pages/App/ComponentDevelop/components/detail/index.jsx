@@ -1,58 +1,52 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './style.less';
 import { Button,Input,Table } from 'antd';
 import { useState } from 'react';
 import store from "../../model/index";
 import { observer } from "@chaoswise/cw-mobx";
+import { getDetailDataService } from '../../services';
 
 const Detail = observer(()=>{
-  const { detailShow,setDetailShow,detailData={
-    name:'柱状图1',
-    serial:'01',
-    business:'通用航空',
-    tag:'标签1，标签2',
-    desc:'你好，这是描述',
-    charactor:'abc-aaa'
-  } } = store;
-
-  const [adding, setAdding] = useState(false);
-
   const columns = [
     {
-      title: 'Name',
+      title: '属性',
       dataIndex: 'name',
       render: text => <a>{text}</a>,
     },
     {
-      title: 'Cash Assets',
+      title: '描述',
       className: 'column-money',
       dataIndex: 'money',
     },
     {
-      title: 'Address',
+      title: '类型',
       dataIndex: 'address',
     },
+    {
+      title: '默认值',
+      dataIndex: 'defa',
+    },
   ];
+  const { detailShow,setDetailShow,viewId } = store;
+
+  const [adding, setAdding] = useState(false);
+  const [detailData, setDetailData] = useState([]);
+
+  useEffect(() => {
+    if (viewId) {
+      getDetailData();
+    }
+  }, [viewId]);
+
+  const getDetailData = async ()=>{
+    const res = await getDetailDataService({id:viewId});
+    if (res && res.data) {
+      setDetailData(res.data)
+    }
+  }
   
   const data = [
-    {
-      key: '1',
-      name: 'John Brown',
-      money: '￥300,000.00',
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      money: '￥1,256,000.00',
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      money: '￥120,000.00',
-      address: 'Sidney No. 1 Lake Park',
-    },
+
   ];
 
   return <>
@@ -82,16 +76,30 @@ const Detail = observer(()=>{
             <label>组件名称：</label>{detailData.name}
           </div>
           <div>
-            <label>组件编号：</label>{detailData.serial}
+            <label>组件编号：</label>{detailData.id}
           </div>
           <div>
-            <label>行业：</label>{detailData.business}
+            <label>行业：</label>{
+            detailData.projects?detailData.projects.map((v,k)=>{
+              return <span key={v.id}>{k===(detailData.projects.length-1)?v.name:(v.name+',')}</span>
+            }):''
+            }
           </div>
           <div>
-            <label>标签：</label>{detailData.tag}
+            <label>标签：</label>{
+              detailData.tags?detailData.tags.map((v,k)=>{
+                return <span key={v.id}>{k===(detailData.tags.length-1)?v.name:(v.name+',')}</span>
+              }):''
+            }
           </div>
           <div>
             <label>描述：</label>{detailData.desc}
+          </div>
+          <div>
+            <label>开发状态：</label>{detailData.developStatus==='doing'?'开发中':'已交付'}
+          </div>
+          <div>
+            <label>创建者信息：</label>{detailData.creatorInfo?detailData.creatorInfo.username:''}
           </div>
         </div>
         <div className={styles.imgWrap}>

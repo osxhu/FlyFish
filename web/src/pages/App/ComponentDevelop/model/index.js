@@ -3,30 +3,64 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-12 16:31:23
+ * @LastEditTime: 2021-11-13 14:51:32
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
-import { getTreeDataService,getListDataService } from '../services';
+import { 
+  getTreeDataService,
+  getListDataService,
+  getUserInfoService,
+  getProjectsService,
+  getTagsService
+} from '../services';
 
 const model = {
   // 唯一命名空间
   namespace: "ComponentDevelop",
   // 状态
   state: {
+    userInfo:null,
     detailShow:false,
     addModalvisible:false,
+    editModalvisible:false,
     treeData:null,
     listData:{},
     selectedData:{
       category:'全部组件',
       subCategory:''
-    }
+    },
+    searchName:'',
+    searchKey:'',
+    searchStatus:0,
+    viewId:'',
+    editData:null,
+    projectsData:null,
+    tagsData:null
   },
   effects: {
+    *getUserInfo() {
+      const id = localStorage.getItem('id');
+      const res = yield getUserInfoService({id});
+      if (res && res.data) {
+        this.setUserInfo(res.data);
+      }
+    },
     *getTreeData() {
       // 请求数据
       const res = yield getTreeDataService();
       this.setTreeData(res.data[0].categories);
+    },
+    *getProjectsData() {
+      const res = yield getProjectsService();
+      if (res && res.data) {
+        this.setProjectsData(res.data.list);
+      }
+    },
+    *getTagsData() {
+      const res = yield getTagsService();
+      if (res && res.data) {
+        this.setTags(res.data);
+      }
     },
     *getListData(){
       const { category,subCategory } = toJS(this.selectedData);
@@ -41,14 +75,36 @@ const model = {
         const res = yield getListDataService(params);
         this.setListData(res.data);
       }
+    },
+    *getListDataWithCate(){
+      const { category,subCategory } = toJS(this.selectedData);
+      const searchName = this.searchName;
+      const searchKey = this.searchKey;
+      const searchStatus = this.searchStatus;
+      const params = {
+        name:searchName?searchName:undefined,
+        key:searchKey?searchKey:undefined,
+        developStatus:searchStatus?searchStatus:undefined,
+
+        category:category==='全部组件'?undefined:category,
+        subCategory:category==='全部组件'?undefined:subCategory
+      };
+      const res = yield getListDataService(params);
+      this.setListData(res.data);
     }
   },
   reducers: {
+    setUserInfo(res){
+      this.userInfo = res;
+    },
     setDetailShow(res){
       this.detailShow = res;
     },
     setAddModalvisible(res){
       this.addModalvisible = res;
+    },
+    setEditModalvisible(res){
+      this.editModalvisible = res;
     },
     setTreeData(res){
       this.treeData = res;
@@ -58,6 +114,27 @@ const model = {
     },
     setSelectedData(res){
       this.selectedData = res;
+    },
+    setSearchName(res){
+      this.searchName = res;
+    },
+    setSearchKey(res){
+      this.searchKey = res;
+    },
+    setSearchStatus(res){
+      this.searchStatus = res;
+    },
+    setViewId(res){
+      this.viewId = res;
+    },
+    setEditData(res){
+      this.editData = res;
+    },
+    setProjectsData(res){
+      this.projectsData = res;
+    },
+    setTagsData(res){
+      this.tagsData = res;
     }
   }
 };
