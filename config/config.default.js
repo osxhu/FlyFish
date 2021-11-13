@@ -86,6 +86,10 @@ module.exports = appInfo => {
     componentsTplPath: path.resolve(__dirname, '../component_tpl'),
   };
 
+  config.multipart = {
+    mode: 'file',
+  };
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',

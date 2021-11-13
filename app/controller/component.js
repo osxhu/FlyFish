@@ -1,4 +1,7 @@
 'use strict';
+const path = require('path');
+const fs = require('fs-extra');
+const AdmZip = require('adm-zip');
 
 const BaseController = require('./base');
 const CODE = require('../lib/error');
@@ -205,6 +208,45 @@ class ComponentsController extends BaseController {
       this.success('获取成功', componentInfo);
     }
   }
+
+  async uploadComponentSource() {
+    const { ctx, app, service, config: { pathConfig: { componentsPath } } } = this;
+    const componentId = ctx.params.componentId;
+
+    const file = ctx.request.files[0];
+    const targetPath = `${componentsPath}/${componentId}/current`;
+    try {
+      await fs.copy(file.filepath, `${targetPath}/${file.filename}`);
+      const zip = new AdmZip(`${targetPath}/${file.filename}`);
+      zip.extractAllTo(targetPath, true);
+    } finally {
+      await fs.remove(file.filepath);
+    }
+
+    this.success('上传成功');
+  }
+
+  async exportComponentSource() {
+    const { ctx, app, service, config: { pathConfig: { componentsPath } } } = this;
+    const componentId = ctx.params.componentId;
+
+    const componentInfo = await ctx.model.Component._findOne({ id: componentId });
+    const sourceFolder = `${componentsPath}/${componentId}/current`;
+    const destZip = `${componentsPath}/${componentId}/${componentInfo.name}.zip`;
+    try {
+      const zip = new AdmZip();
+      zip.addLocalFolder(sourceFolder);
+      zip.writeZip(destZip);
+      const zipName = `${componentInfo.name}.zip`;
+
+      ctx.set('Content-Disposition', `attachment;filename=${encodeURIComponent(zipName)}`);
+      ctx.set('Content-Type', 'application/octet-stream');
+      ctx.body = fs.createReadStream(destZip);
+    } finally {
+      await fs.remove(destZip);
+    }
+  }
+
 }
 
 module.exports = ComponentsController;

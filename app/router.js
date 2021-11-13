@@ -38,12 +38,15 @@ module.exports = app => {
   router.post('/components/list', controller.component.getList);
   router.post('/components', controller.component.add);
   router.post('/components/release/:id', controller.component.release);
-  router.get('/components/:id', controller.component.getInfo);
   router.put('/components/:id', controller.component.updateInfo);
   router.delete('/components/:id', controller.component.delete);
   router.post('/components/copy/:id', controller.component.copy);
   router.post('/components/compile/:id', controller.component.compile);
   router.post('/components/install/:id', controller.component.installDepend);
+  router.post('/components/import-source-code/:componentId', controller.component.uploadComponentSource);
+  router.post('/components/export-source-code/:componentId', controller.component.exportComponentSource);
+  // 置于最后
+  router.get('/components/:id', controller.component.getInfo);
 
   // menu
   router.get('/menus/list', controller.menu.list);
