@@ -22,7 +22,7 @@ class ComponentService extends Service {
   async getList(requestData) {
     const { ctx } = this;
 
-    const { key, name, projectId, developStatus, type, category, subCategory, curPage, pageSize } = requestData;
+    const { key, isLib, name, projectId, developStatus, type, category, subCategory, curPage, pageSize } = requestData;
     const queryCond = {
       status: Enum.COMMON_STATUS.VALID,
     };
@@ -39,6 +39,7 @@ class ComponentService extends Service {
     if (developStatus) queryCond.developStatus = developStatus;
     if (type) queryCond.type = type;
     if (projectId) queryCond.projects = projectId;
+    if (_.isBoolean(isLib)) queryCond.isLib = isLib;
 
     const users = await ctx.model.User._find();
     const projects = await ctx.model.Project._find();
@@ -110,6 +111,7 @@ class ComponentService extends Service {
     const returnInfo = {
       id: componentInfo.id,
       name: componentInfo.name,
+      isLib: componentInfo.isLib,
       projects: (componentInfo.projects || []).map(project => {
         const curProject = (projectsInfo || []).find(projectInfo => projectInfo.id === project) || {};
         return {
@@ -176,11 +178,12 @@ class ComponentService extends Service {
   async updateInfo(id, requestData) {
     const { ctx } = this;
 
-    const { status, type, projects, tags, category, subCategory, desc } = requestData;
+    const { status, type, projects, tags, category, subCategory, isLib, desc } = requestData;
 
     const updateData = {};
     if (status) updateData.status = status;
     if (type) updateData.type = type;
+    if (_.isBoolean(isLib)) updateData.isLib = isLib;
 
     if (projects) updateData.projects = projects;
     if (tags) updateData.tags = tags;

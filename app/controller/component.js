@@ -37,6 +37,7 @@ class ComponentsController extends BaseController {
       key: app.Joi.string(),
       name: app.Joi.string(),
       projectId: app.Joi.string().length(24),
+      isLib: app.Joi.boolean().default(false),
       developStatus: app.Joi.string(),
       type: app.Joi.string(),
       category: app.Joi.string(),
@@ -158,6 +159,15 @@ class ComponentsController extends BaseController {
     const { value: requestData } = ctx.validate(updateInfoSchema, ctx.request.body);
 
     await service.component.updateInfo(id, requestData);
+
+    this.success('更新成功', { id });
+  }
+
+  async upToLib() {
+    const { ctx, app, service } = this;
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+
+    await service.component.updateInfo(id, { isLib: true });
 
     this.success('更新成功', { id });
   }

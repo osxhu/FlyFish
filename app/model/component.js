@@ -22,6 +22,7 @@ module.exports = app => {
     sub_category: String,
     type: String,
     desc: String,
+    is_lib: Boolean,
     projects: [ String ],
     tags: [ String ],
 

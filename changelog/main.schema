@@ -42,6 +42,7 @@ components: {
 	update_time: Time,
 
 	name: String,
+	is_lib: Boolean,
 	category: String, 				// 分类id
 	sub_category: String, 			// 子分类id
 	type: String, 					// 公共组件/项目组件 enum#COMPONENT_TYPE
