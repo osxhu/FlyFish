@@ -188,7 +188,7 @@ class ComponentService extends Service {
     if (subCategory) updateData.subCategory = subCategory;
     if (desc) updateData.desc = desc;
 
-    await ctx.model.User._updateOne({ id }, updateData);
+    await ctx.model.Component._updateOne({ id }, updateData);
   }
 
   async delete(id) {
@@ -198,7 +198,7 @@ class ComponentService extends Service {
       status: Enum.COMMON_STATUS.INVALID,
     };
 
-    await ctx.model.User._updateOne({ id }, updateData);
+    await ctx.model.Component._updateOne({ id }, updateData);
   }
 
   async copyComponent(id, componentInfo) {
@@ -260,12 +260,24 @@ class ComponentService extends Service {
       returnData.msg = 'No Exists Dir';
       return returnData;
     }
-    const { stderr } = await exec(`cd ${componentDevPath} && npm run ${config.env === 'prod' ? 'build-production' : 'build-dev'}`);
-    if (!_.isEmpty(stderr)) {
-      returnData.msg = 'Compile Fail';
-      returnData.data.error = stderr;
+
+    const componentDevPackageJsonPath = `${componentPath}/current/package.json`;
+    const componentDevNodeModulesPath = `${componentPath}/current/node_modules`;
+    const packageJson = JSON.parse(fs.readFileSync(componentDevPackageJsonPath).toString());
+
+    if ((!_.isEmpty(packageJson.dependencies) || !_.isEmpty(packageJson.devDependencies)) && !fs.existsSync(componentDevNodeModulesPath)) {
+      returnData.msg = 'No Install Depend';
       return returnData;
     }
+
+    try {
+      await exec(`cd ${componentDevPath} && npm run ${config.env === 'prod' ? 'build-production' : 'build-dev'}`);
+    } catch (error) {
+      returnData.msg = 'Compile Fail';
+      returnData.data.error = error.message || error.stack;
+      return returnData;
+    }
+
     return returnData;
   }
 
@@ -287,12 +299,14 @@ class ComponentService extends Service {
       return returnData;
     }
 
-    const { stderr } = await exec(`cd ${componentDevPath} && npm i`);
-    if (!_.isEmpty(stderr)) {
+    try {
+      await exec(`cd ${componentDevPath} && npm i`);
+    } catch (error) {
       returnData.msg = 'Install Fail';
-      returnData.data.error = stderr;
+      returnData.data.error = error.message || error.stack;
       return returnData;
     }
+
     return returnData;
   }
 
