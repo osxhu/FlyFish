@@ -151,10 +151,10 @@ class ComponentsController extends BaseController {
 
     const updateInfoSchema = app.Joi.object().keys({
       type: app.Joi.string(),
-      projects: app.Joi.array().items(app.Joi.string()).min(1),
+      projects: app.Joi.array().items(app.Joi.string()),
       tags: app.Joi.array().items(app.Joi.string()),
-      category: app.Joi.string().required(),
-      subCategory: app.Joi.string().required(),
+      category: app.Joi.string(),
+      subCategory: app.Joi.string(),
       desc: app.Joi.string(),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
