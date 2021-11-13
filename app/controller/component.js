@@ -251,7 +251,7 @@ class ComponentsController extends BaseController {
       const zipName = `${componentInfo.name}.zip`;
 
       ctx.set('Content-Disposition', `attachment;filename=${encodeURIComponent(zipName)}`);
-      ctx.set('Content-Type', 'application/octet-stream');
+      ctx.set('Content-Type', 'application/zip');
       ctx.body = fs.createReadStream(destZip);
     } finally {
       await fs.remove(destZip);
