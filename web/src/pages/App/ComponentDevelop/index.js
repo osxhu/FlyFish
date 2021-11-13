@@ -3,12 +3,12 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-13 15:45:59
+ * @LastEditTime: 2021-11-13 19:00:36
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
 import { AbreastLayout } from "@chaoswise/ui";
-import { Icon,Select,Input,Table,Popover,Button,Modal,Row,Col,message } from 'antd';
+import { Icon,Select,Input,Table,Popover,Button,Modal,Row,Col,message,Popconfirm,Upload } from 'antd';
 import { observer,toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 
@@ -20,9 +20,10 @@ import AddComponent from "./components/addComponent";
 import EditComponent from "./components/editComponent";
 import Detail from "./components/detail";
 import _ from "lodash";
-import { updateTreeDataService,copyComponentService,deleteComponentService } from './services';
+import { updateTreeDataService,copyComponentService,deleteComponentService,downloadComponentService } from './services';
 import moment from 'moment';
 import * as CONSTANT from './constant';
+import API from '../../../services/api/component';
 
 const {Option} = Select;
 
@@ -124,9 +125,31 @@ const ComponentDevelop = observer(() => {
                   setCopyModalvisible(true);
                 }}
               >复制组件</div>
-              <div>导入源码</div>
-              <div>导出源码</div>
-              <div>上传组件库</div>
+              <div
+                onClick={()=>{
+                  setUploadId(record.id);
+                  setImportModalvisible(true);
+                }}
+              >导入源码</div>
+              <div
+                onClick={()=>{
+                  exportCode(record.id);
+                }}
+              >导出源码</div>
+              {
+                userInfo.isAdmin?
+                <Popconfirm
+                  title="确定上传组件至组件库?上传后该组件可公开被查看及使用。"
+                  onConfirm={()=>{
+                    message.success('上传成功!');
+                  }}
+                  okText="是"
+                  cancelText="否"
+                >
+                  <div>上传组件库</div>
+                </Popconfirm>
+                :null
+              }
               <div 
                 onClick={()=>{
                   setEditData(record);
@@ -152,6 +175,7 @@ const ComponentDevelop = observer(() => {
     setDetailShow,
     setAddModalvisible,
     setEditModalvisible,
+    setImportModalvisible,
     getTreeData,
     getListData,
     setSelectedData,
@@ -161,9 +185,11 @@ const ComponentDevelop = observer(() => {
     setSearchStatus,
     getListDataWithCate,
     setViewId,
-    setEditData
+    setEditData,
+    getProjectsData,
+    getTagsData
   } = store;
-  const { addModalvisible,editModalvisible,treeData,listData,selectedData,searchName,searchKey,searchStatus } = store;
+  const { addModalvisible,editModalvisible,importModalvisible,treeData,listData,selectedData,searchName,searchKey,searchStatus,userInfo } = store;
   // const { list,curPage,pageSize,total } = listData;
 
   const [addCateName, setAddCateName] = useState('');
@@ -171,11 +197,14 @@ const ComponentDevelop = observer(() => {
   const [copyModalvisible, setCopyModalvisible] = useState(false);
   const [copyId, setCopyId] = useState('');
   const [copyName, setCopyName] = useState('');
+  const [uploadId, setUploadId] = useState('');
   const addCateRef = useRef();
 
   // 请求列表数据
   useEffect(() => {
     getUserInfo();
+    getProjectsData();
+    getTagsData();
     getTreeData();
     getListData();
   }, []);
@@ -200,6 +229,17 @@ const ComponentDevelop = observer(() => {
     }else{
       message.error(res.msg||'删除失败！');
     }
+  };
+  const exportCode = async (id)=>{
+    const res = await downloadComponentService(id);
+    
+    const $link = document.createElement("a");
+    $link.href = URL.createObjectURL(new Blob([res],{type:'application/zip'}));
+    $link.download = `component.zip`;
+    $link.click();
+    document.body.appendChild($link);
+    document.body.removeChild($link); // 下载完成移除元素
+    window.URL.revokeObjectURL($link.href); // 释放掉blob对象
   };
   return <>
     <AbreastLayout
@@ -310,7 +350,7 @@ const ComponentDevelop = observer(() => {
                   getListDataWithCate();
                 }}
               >
-                <Option value={0}>全部</Option>
+                <Option value='all'>全部</Option>
                 <Option value="doing">开发中</Option>
                 <Option value="online">已交付</Option>
               </Select>
@@ -380,6 +420,34 @@ const ComponentDevelop = observer(() => {
                 setCopyName(e.target.value);
               }}
             ></Input>
+          </div>
+        </Modal>
+        <Modal
+          title="导入组件源码"
+          visible={importModalvisible}
+          footer={null}
+          width={500}
+          onCancel={()=>{setImportModalvisible(false);}}
+        >
+          <div style={{display:'flex',justifyContent:'center'}}>
+          <Upload
+            accept=".zip"
+            // fileList={[]}
+            action={API.UPLOAD_COMPONENT+'/'+uploadId}
+            headers={{authorization: 'authorization-text'}}
+            method="post"
+            name="file"
+            onChange={({file,fileList,event})=>{
+              if (event && event.percent==100) {
+                message.success('上传成功！');
+                setImportModalvisible(false);
+              }
+            }}
+          >
+            <Button>
+              <Icon type="upload" />点击上传压缩包
+            </Button>
+          </Upload>
           </div>
         </Modal>
         <Detail/>

@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './style.less';
-import { observer } from "@chaoswise/cw-mobx";
+import { observer,toJS } from "@chaoswise/cw-mobx";
 import store from "../../model/index";
 import { Form,Input,Select,Button,Row,Col,Icon,Popover,TreeSelect,message } from 'antd';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { getProjectsService,getTagsService,addComponentService } from '../../services';
+import { getProjectsService,getTagsService,addComponentService, getListDataService } from '../../services';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -13,7 +13,7 @@ const { TextArea } = Input;
 const AddComponent = observer((props)=>{
   const { getFieldDecorator,validateFields } = props.form;
 
-  const { setAddModalvisible,treeData,projectsData,tagsData } = store;
+  const { setAddModalvisible,treeData,projectsData,tagsData,getListData } = store;
 
   const formItemLayout = {
     labelCol: { span:4 },
@@ -30,7 +30,8 @@ const AddComponent = observer((props)=>{
         const res = await addComponentService(values);
         if (res && res.code==0) {
           message.success('添加成功！');
-          setAddModalvisible(false)
+          setAddModalvisible(false);
+          getListData();
         }
       }
     });

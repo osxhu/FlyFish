@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-13 14:51:32
+ * @LastEditTime: 2021-11-13 17:24:18
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -19,11 +19,12 @@ const model = {
   namespace: "ComponentDevelop",
   // 状态
   state: {
-    userInfo:null,
+    userInfo:{},
     detailShow:false,
     addModalvisible:false,
     editModalvisible:false,
-    treeData:null,
+    importModalvisible:false,
+    treeData:[],
     listData:{},
     selectedData:{
       category:'全部组件',
@@ -31,11 +32,11 @@ const model = {
     },
     searchName:'',
     searchKey:'',
-    searchStatus:0,
+    searchStatus:'all',
     viewId:'',
-    editData:null,
-    projectsData:null,
-    tagsData:null
+    editData:{},
+    projectsData:[],
+    tagsData:[]
   },
   effects: {
     *getUserInfo() {
@@ -59,7 +60,7 @@ const model = {
     *getTagsData() {
       const res = yield getTagsService();
       if (res && res.data) {
-        this.setTags(res.data);
+        this.setTagsData(res.data);
       }
     },
     *getListData(){
@@ -84,7 +85,7 @@ const model = {
       const params = {
         name:searchName?searchName:undefined,
         key:searchKey?searchKey:undefined,
-        developStatus:searchStatus?searchStatus:undefined,
+        developStatus:searchStatus!=='all'?searchStatus:undefined,
 
         category:category==='全部组件'?undefined:category,
         subCategory:category==='全部组件'?undefined:subCategory
@@ -105,6 +106,9 @@ const model = {
     },
     setEditModalvisible(res){
       this.editModalvisible = res;
+    },
+    setImportModalvisible(res){
+      this.importModalvisible = res;
     },
     setTreeData(res){
       this.treeData = res;

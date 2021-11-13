@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-13 15:44:28
+ * @LastEditTime: 2021-11-13 18:04:32
  */
 /*
  * 应用
@@ -25,4 +25,8 @@ export default {
   COPY_COMPONENT: `${baseUrl}/components/copy`,
   //删除组件
   DELETE_COMPONENT: `${baseUrl}/components`,
+  //上传代码包
+  UPLOAD_COMPONENT: `${baseUrl}/components/import-source-code`,
+  //下载代码包
+  DOWNLOAD_COMPONENT: `${baseUrl}/components/export-source-code`,
 };
