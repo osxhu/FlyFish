@@ -13,7 +13,7 @@ class BaseController extends Controller {
     ctx.status = 200;
   }
 
-  async fail(msg, data, code = CODE.INTERNAL_ERR) {
+  async fail(msg, data = null, code = CODE.INTERNAL_ERR) {
     const { ctx } = this;
     ctx.body = {
       code,

@@ -49,4 +49,7 @@ module.exports = app => {
   // tag
   router.get('/tags/get-all', controller.tag.getAll);
   router.post('/tags/add', controller.tag.add);
+
+  // trade
+  router.post('/trades', controller.trade.create);
 };

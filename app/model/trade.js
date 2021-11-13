@@ -26,11 +26,23 @@ module.exports = app => {
     },
   });
 
+  TradeSchema.statics._create = async function(params) {
+    const doc = _toDoc(params);
+    const res = await this.create(doc);
+    return { id: res._id.toString() };
+  };
+
 
   TradeSchema.statics._find = async function(query, projection, options) {
     const filter = _toDoc(query);
     const res = await this.find(filter, projection, options).lean(true);
     return res.map(_toObj);
+  };
+
+  TradeSchema.statics._findOne = async function(params) {
+    const doc = _toDoc(params);
+    const res = await this.findOne(doc).lean(true);
+    return _toObj(res);
   };
 
 
