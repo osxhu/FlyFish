@@ -42,6 +42,8 @@ module.exports = app => {
   router.put('/components/:id', controller.component.updateInfo);
   router.delete('/components/:id', controller.component.delete);
   router.post('/components/copy/:id', controller.component.copy);
+  router.post('/components/compile/:id', controller.component.compile);
+  router.post('/components/install/:id', controller.component.installDepend);
 
   // menu
   router.get('/menus/list', controller.menu.list);

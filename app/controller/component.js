@@ -35,6 +35,7 @@ class ComponentsController extends BaseController {
     const getListSchema = app.Joi.object().keys({
       key: app.Joi.string(),
       name: app.Joi.string(),
+      projectId: app.Joi.string().length(24),
       developStatus: app.Joi.string(),
       type: app.Joi.string(),
       category: app.Joi.string(),
@@ -93,13 +94,49 @@ class ComponentsController extends BaseController {
     const componentInfo = await service.component.copyComponent(id, requestData);
 
     if (componentInfo.msg === 'Exists Already') {
-      this.fail('创建失败, 组件名称已存在', null, CODE.FAIL);
+      this.fail('复制失败, 组件名称已存在', null, CODE.FAIL);
     } else if (componentInfo.msg === 'Fail') {
-      this.fail('创建失败, 初始化开发空间失败', null, CODE.FAIL);
+      this.fail('复制失败, 初始化开发空间失败', null, CODE.FAIL);
     } else if (componentInfo.msg === 'No Exists') {
-      this.fail('创建失败, 复制组件不存在', null, CODE.FAIL);
+      this.fail('复制失败, 复制组件不存在', null, CODE.FAIL);
     } else {
-      this.success('创建成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
+      this.success('复制成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
+    }
+  }
+
+  async compile() {
+    const { ctx, app, service } = this;
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+
+    const componentInfo = await service.component.compileComponent(id);
+
+    const errInfo = componentInfo.data.error || null;
+    if (componentInfo.msg === 'No Exists Db') {
+      this.fail('编译失败, db中不存在此组件', errInfo, CODE.FAIL);
+    } else if (componentInfo.msg === 'No Exists Dir') {
+      this.fail('编译失败, 组件文件不存在', errInfo, CODE.FAIL);
+    } else if (componentInfo.msg === 'Install Fail') {
+      this.fail('编译失败', errInfo, CODE.FAIL);
+    } else {
+      this.success('编译成功', null);
+    }
+  }
+
+  async installDepend() {
+    const { ctx, app, service } = this;
+    const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+
+    const componentInfo = await service.component.installComponentDepend(id);
+
+    const errInfo = componentInfo.data.error || null;
+    if (componentInfo.msg === 'No Exists Db') {
+      this.fail('安装失败, db中不存在此组件', errInfo, CODE.FAIL);
+    } else if (componentInfo.msg === 'No Exists Dir') {
+      this.fail('安装失败, 组件文件不存在', errInfo, CODE.FAIL);
+    } else if (componentInfo.msg === 'Install Fail') {
+      this.fail('依赖安装失败', errInfo, CODE.FAIL);
+    } else {
+      this.success('依赖安装成功', null);
     }
   }
 
