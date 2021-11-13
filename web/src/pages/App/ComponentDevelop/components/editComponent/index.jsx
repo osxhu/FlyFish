@@ -1,20 +1,39 @@
 import React from 'react';
 import styles from './style.less';
-import { observer,toJS } from "@chaoswise/cw-mobx";
+import { observer } from "@chaoswise/cw-mobx";
 import store from "../../model/index";
 import { Form,Input,Select,Button,Row,Col,Icon,Popover,TreeSelect,message } from 'antd';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { getProjectsService,getTagsService,addComponentService, getListDataService } from '../../services';
+import { getProjectsService,getTagsService,editComponentService } from '../../services';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
-const AddComponent = observer((props)=>{
+const EditComponent = observer((props)=>{
   const { getFieldDecorator,validateFields } = props.form;
 
-  const { setAddModalvisible,treeData,projectsData,tagsData,getListData } = store;
+  const { setEditModalvisible,treeData,editData,getListData } = store;
 
+  const [projectsData, setProjectsData] = useState([]);
+  const [tags, setTags] = useState([]);
+
+  useEffect(() => {
+    getProjects();
+    getTags();
+  }, []);
+  const getProjects = async ()=>{
+    const res = await getProjectsService();
+    if (res && res.data) {
+      setProjectsData(res.data.list)
+    }
+  }
+  const getTags = async ()=>{
+    const res = await getTagsService();
+    if (res && res.data) {
+      setTags(res.data)
+    }
+  } 
   const formItemLayout = {
     labelCol: { span:4 },
     wrapperCol: { span:18 }
@@ -23,15 +42,21 @@ const AddComponent = observer((props)=>{
     e.preventDefault();
     validateFields(async (err, values) => {
       if (!err) {
-        const cateData = JSON.parse(values.category);
-        values.category = cateData.one;
-        values.subCategory = cateData.two;
-        values.desc=values.desc?values.desc:undefined
-        const res = await addComponentService(values);
+        if (typeof(values.category)==='string') {
+          values.category = editData.category;
+          values.subCategory = editData.subCategory;
+        }else{
+          const cateData = JSON.parse(values.category);
+          values.category = cateData.one;
+          values.subCategory = cateData.two;
+        }
+        values.desc=values.desc?values.desc:undefined;
+        values.name=undefined;
+        const res = await editComponentService(editData.id,values);
         if (res && res.code==0) {
-          message.success('添加成功！');
-          setAddModalvisible(false);
-          getListData();
+          message.success('修改成功！');
+          setEditModalvisible(false);
+          getListData()
         }
       }
     });
@@ -42,13 +67,14 @@ const AddComponent = observer((props)=>{
   >
     <Form.Item label="组件名称">
       {getFieldDecorator('name', {
+        initialValue:editData.name,
         rules: [
           {
             required: true,
             message: '组件名称不能为空！'
           }
         ]
-      })(<Input />)}
+      })(<Input disabled/>)}
     </Form.Item>
     {/* <Form.Item label="组件标识">
       {getFieldDecorator('logo', {
@@ -78,7 +104,7 @@ const AddComponent = observer((props)=>{
       <span>组件类别</span>
     </>}>
       {getFieldDecorator('type', {
-        initialValue:'project',
+        initialValue:editData.type,
         rules: [
           {
             required: true,
@@ -92,6 +118,7 @@ const AddComponent = observer((props)=>{
     </Form.Item>
     <Form.Item label="所属项目">
       {getFieldDecorator('projects', {
+        initialValue:editData.projects.map(item=>item.id),
         rules: [
           {
             required: true,
@@ -110,6 +137,7 @@ const AddComponent = observer((props)=>{
     </Form.Item>
     <Form.Item label="组件分类">
       {getFieldDecorator('category', {
+        initialValue:editData.subCategory,
         rules: [
           {
             required: true,
@@ -142,12 +170,13 @@ const AddComponent = observer((props)=>{
     </Form.Item>
     <Form.Item label="标签">
       {getFieldDecorator('tags', {
+        initialValue:editData.tags.map(item=>item.id),
         rules: []
       })(<Select
         mode="multiple"
       >
         {
-          tagsData.map((v,k)=>{
+          tags.map((v,k)=>{
           return <Option value={v.id} key={v.id}>{v.name}</Option>
           })
         }
@@ -165,6 +194,7 @@ const AddComponent = observer((props)=>{
     </Form.Item> */}
     <Form.Item label="描述">
       {getFieldDecorator('desc', {
+        initialValue:editData.desc,
         initialValue:'',
         rules: []
       })(<TextArea rows={4}/>)}
@@ -182,4 +212,4 @@ const AddComponent = observer((props)=>{
   </Form>
 })
 
-export default Form.create({name:'addComponent'})(AddComponent);
+export default Form.create({name:'editComponent'})(EditComponent);
