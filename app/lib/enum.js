@@ -29,3 +29,9 @@ exports.ROLE = {
   ADMIN: '管理员',
   MEMBER: '成员',
 };
+
+// 应用类型
+exports.APP_TYPE = {
+  '2D': '2D',
+  '3D': '3D',
+};

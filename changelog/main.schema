@@ -16,7 +16,7 @@ applications: {
 	update_time: Time,
 
 	name: String,
-	project: String,						// 项目
+	project_id: String,					// 项目
 	tags: [String],							// 标签	
 	develop_status: String, 	 // 应用开发状态 enum#APP_DEVELOP_STATUS
 	type: String,						    // 应用类型

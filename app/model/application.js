@@ -21,7 +21,10 @@ module.exports = app => {
     name: String,
     project_id: String,
     tags: [ String ],
-    develop_status: String,
+    develop_status: {
+      type: String,
+      default: Enum.APP_DEVELOP_STATUS.DOING,
+    },
     type: String,
     cover: String,
     creator: String,

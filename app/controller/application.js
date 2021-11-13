@@ -12,11 +12,11 @@ class ApplicationController extends BaseController {
     const createSchema = Joi.object().keys({
       name: Joi.string().required(),
       projectId: Joi.string().length(24).required(),
-      trades: Joi.array().items(Joi.string().length(24)).required(),
-      desc: Joi.string(),
+      type: Joi.string().valid(...Object.values(Enum.APP_TYPE)).required(),
+      tags: Joi.array().items(Joi.string().length(24)),
     });
-    const body = await addSchema.validateAsync(ctx.request.body);
-    const res = await service.project.create(body);
+    const body = await createSchema.validateAsync(ctx.request.body);
+    const res = await service.application.create(body);
     this.success('新建成功', res);
   }
 }
