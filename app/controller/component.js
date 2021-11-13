@@ -36,8 +36,10 @@ class ComponentsController extends BaseController {
     const getListSchema = app.Joi.object().keys({
       key: app.Joi.string(),
       name: app.Joi.string(),
+      tags: app.Joi.array().items(app.Joi.string().length(24)),
+      trades: app.Joi.array().items(app.Joi.string().length(24)),
       projectId: app.Joi.string().length(24),
-      isLib: app.Joi.boolean().default(false),
+      isLib: app.Joi.boolean(),
       developStatus: app.Joi.string(),
       type: app.Joi.string(),
       category: app.Joi.string(),
