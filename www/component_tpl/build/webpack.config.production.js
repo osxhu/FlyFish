@@ -6,7 +6,7 @@ module.exports = component_mark => `
 /**
  * @description webpack开发配置
  */
-const baseConf = require('../../../webpack.config.base');
+const baseConf = require('../../../../common/webpack.config.base');
 const path = require('path');
 const _ = require('lodash');
 const webpack = require('webpack');

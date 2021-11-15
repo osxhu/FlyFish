@@ -82,8 +82,8 @@ module.exports = appInfo => {
 
   config.pathConfig = {
     appPath: path.resolve(__dirname, '../'),
-    componentsPath: path.resolve(__dirname, '../components'),
-    componentsTplPath: path.resolve(__dirname, '../component_tpl'),
+    componentsPath: path.resolve(__dirname, '../www/components'),
+    componentsTplPath: path.resolve(__dirname, '../www/component_tpl'),
   };
 
   config.multipart = {
@@ -92,12 +92,12 @@ module.exports = appInfo => {
 
   config.static = {
     // 静态化访问前缀,如：`http://127.0.0.1:7001/static/images/logo.png`
-    prefix: '/components',
-    dir: path.join(appInfo.baseDir, 'components'),
-    dynamic: true,
-    preload: false,
-    maxAge: 31536000,
-    buffer: true,
+    prefix: '/',
+    dir: path.join(appInfo.baseDir, 'www'),
+    // dynamic: true,
+    // preload: false,
+    // maxAge: 31536000,
+    // buffer: true,
   };
 
   // add your user config here
