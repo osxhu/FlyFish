@@ -22,10 +22,11 @@ class ProjectService extends Service {
   async getList(query, options) {
     const { ctx } = this;
     // TODO: 行业搜索
+
     const filter = {};
 
     if (!_.isEmpty(query.key)) {
-      Object.assign(filter, {
+      const keyFilter = {
         $or: [
           {
             name: {
@@ -38,8 +39,21 @@ class ProjectService extends Service {
             },
           },
         ],
-      });
+      };
+
+      const trades = await ctx.model.Trade._find({ name: { $regex: query.key } });
+      const filterTradeIds = trades.map(item => item.id);
+      if (!_.isEmpty(filterTradeIds)) {
+        keyFilter.$or.push({
+          trades: {
+            $in: filterTradeIds,
+          },
+        });
+      }
+
+      Object.assign(filter, keyFilter);
     }
+
     const total = await ctx.model.Project._count(filter);
     const list = await ctx.model.Project._find(filter, null, options);
     const tradeIds = [];
