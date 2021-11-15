@@ -96,8 +96,19 @@ class ProjectService extends Service {
 
   async getInfo(id) {
     const { ctx } = this;
-    // TODO: 拼接trades name信息
+
     const info = await ctx.model.Project._findOne({ id });
+
+    const tradeInfos = await ctx.model.Trade._find({ id: { $in: info.trades } });
+    const tradeMap = _.keyBy(tradeInfos, 'id');
+
+    const creator = await ctx.model.User._findOne({ id: info.creator });
+    info.trades = info.trades.map(id => ({
+      id,
+      name: tradeMap[id] && tradeMap[id].name || '',
+    }));
+    info.creatorName = creator.username;
+
     return info;
   }
 }
