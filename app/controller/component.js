@@ -50,12 +50,12 @@ class ComponentsController extends BaseController {
     });
     const { value: requestData } = ctx.validate(getListSchema, ctx.request.body);
 
-    const roleList = await service.component.getList(requestData);
+    const componentList = await service.component.getList(requestData);
     const returnInfo = {
-      total: roleList.total,
+      total: componentList.total,
       curPage: requestData.curPage,
       pageSize: requestData.pageSize,
-      list: roleList.data,
+      list: componentList.data,
     };
 
     this.success('获取成功', returnInfo);
@@ -179,7 +179,7 @@ class ComponentsController extends BaseController {
 
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
     await service.component.delete(id);
-    this.success('更新成功', { id });
+    this.success('删除成功', { id });
   }
 
   async release() {
@@ -220,7 +220,7 @@ class ComponentsController extends BaseController {
   }
 
   async uploadComponentSource() {
-    const { ctx, app, service, config: { pathConfig: { componentsPath } } } = this;
+    const { ctx, config: { pathConfig: { componentsPath } } } = this;
     const componentId = ctx.params.componentId;
 
     const file = ctx.request.files[0];
@@ -238,7 +238,7 @@ class ComponentsController extends BaseController {
   }
 
   async exportComponentSource() {
-    const { ctx, app, service, config: { pathConfig: { componentsPath } } } = this;
+    const { ctx, config: { pathConfig: { componentsPath } } } = this;
     const componentId = ctx.params.componentId;
 
     const componentInfo = await ctx.model.Component._findOne({ id: componentId });

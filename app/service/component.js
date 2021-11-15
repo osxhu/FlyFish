@@ -177,7 +177,7 @@ class ComponentService extends Service {
 
     const result = await ctx.model.Component._create(createInfo);
 
-    const componentId = result._id.toString();
+    const componentId = result.id;
     returnData.data.id = componentId;
 
     const createResult = await this.initDevWorkspace(componentId);
@@ -249,7 +249,7 @@ class ComponentService extends Service {
 
     const result = await ctx.model.Component._create(createInfo);
 
-    const componentId = result._id.toString();
+    const componentId = result.id;
     returnData.data.id = componentId;
 
     const createResult = await this.initDevWorkspace(componentId);

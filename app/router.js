@@ -46,7 +46,6 @@ module.exports = app => {
   router.post('/components/up-to-lib/:id', controller.component.upToLib);
   router.post('/components/import-source-code/:componentId', controller.component.uploadComponentSource);
   router.post('/components/export-source-code/:componentId', controller.component.exportComponentSource);
-  // 置于最后
   router.get('/components/:id', controller.component.getInfo);
 
   // menu
@@ -62,5 +61,10 @@ module.exports = app => {
 
   // application
   router.post('/applications', controller.application.create);
-
+  router.post('/applications/list', controller.application.getList);
+  router.put('/applications/:id/basic', controller.application.editBasicInfo);
+  router.put('/applications/:id/design', controller.application.editDesignInfo);
+  router.get('/applications/:id', controller.application.getInfo);
+  router.delete('/applications/:id', controller.application.delete);
+  router.post('/applications/copy/:id', controller.application.copy);
 };

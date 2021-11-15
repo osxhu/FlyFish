@@ -68,7 +68,6 @@ module.exports = app => {
     return await this.updateOne(filter, doc);
   };
 
-
   function _toDoc(obj) {
     if (_.isEmpty(obj)) return;
     obj = _.omitBy(obj, _.isNil);

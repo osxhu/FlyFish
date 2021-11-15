@@ -59,7 +59,8 @@ module.exports = app => {
 
   ComponentSchema.statics._create = async function(params) {
     const doc = _toDoc(params);
-    return await this.create(doc);
+    const res = await this.create(doc);
+    return { id: res._id.toString() };
   };
 
   ComponentSchema.statics._updateOne = async function(cond, params) {

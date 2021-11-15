@@ -20,6 +20,7 @@ module.exports = app => {
 
     name: String,
     project_id: String,
+    is_lib: Boolean,
     tags: [ String ],
     develop_status: {
       type: String,
@@ -33,16 +34,7 @@ module.exports = app => {
       type: String,
       default: Enum.COMMON_STATUS.VALID,
     },
-    screens: [{
-      _id: false,
-      uid: String,
-      name: String,
-      components: [{
-        _id: false,
-        id: String,
-        version: String,
-      }],
-    }],
+    pages: [ Object ],
   });
 
   ApplicationSchema.statics._create = async function(params) {
@@ -75,19 +67,15 @@ module.exports = app => {
 
   ApplicationSchema.statics._updateOne = async function(query, params) {
     const filter = _toDoc(query);
-    const doc = _toDoc(params);
+    const doc = _toDoc(params, true);
     return await this.updateOne(filter, doc);
   };
 
-
-  function _toDoc(obj) {
+  function _toDoc(obj, update = false) {
     if (_.isEmpty(obj)) return;
-    obj = _.omitBy(obj, _.isNil);
 
-    if (!_.isNil(obj.id)) {
-      obj._id = obj.id;
-      delete obj.id;
-    }
+    if (obj.id) obj._id = obj.id; delete (obj.id);
+    if (update) obj.updateTime = Date.now();
     return decamelizeKeys(obj);
   }
 

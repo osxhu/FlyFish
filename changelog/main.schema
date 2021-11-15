@@ -25,17 +25,9 @@ applications: {
 	cover: String, 							// 封面
 	creator: String,
 	updater: String,
-	status: String,    // 可用状态 enum#COMMON_STATUS
+	status: String,    			// 可用状态 enum#COMMON_STATUS
 
-	screens: [{
-		uid: String
-		name: String,
-		components: [{
-			id: String, // components._id
-			version: String
-		}]
-	}]
-
+	pages: [ Object ]			// 页面
 }
 
 // 组件
