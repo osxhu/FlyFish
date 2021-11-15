@@ -406,26 +406,28 @@ class ComponentService extends Service {
 
       const srcPath = `${componentDevPath}/src`;
       const srcTplPath = `${componentsTplPath}/src`;
+
+      const replaceId = 'Component_' + componentId;
       fs.mkdirSync(srcPath);
-      fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId));
-      fs.writeFileSync(`${srcPath}/Component.js`, require(`${srcTplPath}/ComponentJs.js`)(componentId));
-      fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(componentId));
+      fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(replaceId));
+      fs.writeFileSync(`${srcPath}/Component.js`, require(`${srcTplPath}/ComponentJs.js`)(replaceId));
+      fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(replaceId));
 
       const settingPath = `${srcPath}/settings`;
       fs.mkdirSync(settingPath);
-      fs.writeFileSync(`${settingPath}/options.js`, require(`${srcTplPath}/options.js`)(componentId));
-      fs.writeFileSync(`${settingPath}/data.js`, require(`${srcTplPath}/data.js`)(componentId));
+      fs.writeFileSync(`${settingPath}/options.js`, require(`${srcTplPath}/options.js`)(replaceId));
+      fs.writeFileSync(`${settingPath}/data.js`, require(`${srcTplPath}/data.js`)(replaceId));
 
       const buildPath = `${componentDevPath}/build`;
       const buildTplPath = `${componentsTplPath}/build`;
       fs.mkdirSync(buildPath);
-      fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(componentId));
-      fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
+      fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(replaceId));
+      fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(replaceId));
 
-      fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(componentId));
-      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentsPath, componentId, version));
-      fs.writeFileSync(`${componentDevPath}/options.js`, require(`${componentsTplPath}/options.json.js`)(componentId));
-      fs.writeFileSync(`${componentDevPath}/package.json`, require(`${componentsTplPath}/package.json.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(replaceId));
+      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentsPath, replaceId, version));
+      fs.writeFileSync(`${componentDevPath}/options.js`, require(`${componentsTplPath}/options.json.js`)(replaceId));
+      fs.writeFileSync(`${componentDevPath}/package.json`, require(`${componentsTplPath}/package.json.js`)(replaceId));
     } catch (error) {
       returnInfo.msg = 'Fail';
       logger.error('createDevWorkspace error: ', error || error.stack);
