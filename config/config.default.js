@@ -90,6 +90,16 @@ module.exports = appInfo => {
     mode: 'file',
   };
 
+  config.static = {
+    // 静态化访问前缀,如：`http://127.0.0.1:7001/static/images/logo.png`
+    prefix: '/components',
+    dir: path.join(appInfo.baseDir, 'components'),
+    dynamic: true,
+    preload: false,
+    maxAge: 31536000,
+    buffer: true,
+  };
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
