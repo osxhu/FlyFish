@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-13 17:24:18
+ * @LastEditTime: 2021-11-15 11:39:30
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -36,7 +36,9 @@ const model = {
     viewId:'',
     editData:{},
     projectsData:[],
-    tagsData:[]
+    tagsData:[],
+    developing:false,
+    developingData:null
   },
   effects: {
     *getUserInfo() {
@@ -139,6 +141,12 @@ const model = {
     },
     setTagsData(res){
       this.tagsData = res;
+    },
+    setDeveloping(res){
+      this.developing = res;
+    },
+    setDevelopingData(res){
+      this.developingData = res;
     }
   }
 };

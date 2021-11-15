@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-13 18:04:32
+ * @LastEditTime: 2021-11-15 17:02:38
  */
 /*
  * 应用
@@ -31,4 +31,6 @@ export default {
   UPLOAD_COMPONENT: `${baseUrl}/components/import-source-code`,
   //下载代码包
   DOWNLOAD_COMPONENT: `${baseUrl}/components/export-source-code`,
+  //安装依赖
+  INSTALL_PACKAGE: `${baseUrl}/components/install`
 };

@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-13 19:00:36
+ * @LastEditTime: 2021-11-15 14:06:51
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -24,6 +24,7 @@ import { updateTreeDataService,copyComponentService,deleteComponentService,downl
 import moment from 'moment';
 import * as CONSTANT from './constant';
 import API from '../../../services/api/component';
+import CodeDevelop from "./components/codeDevelop";
 
 const {Option} = Select;
 
@@ -118,7 +119,12 @@ const ComponentDevelop = observer(() => {
         <Popover 
           content={
             <div className={styles.btnWraper}>
-              <div>开发组件</div>
+              <div
+                onClick={()=>{
+                  setDevelopingData(record);
+                  setDeveloping(true);
+                }}
+              >开发组件</div>
               <div
                 onClick={()=>{
                   setCopyId(record.id);
@@ -187,9 +193,11 @@ const ComponentDevelop = observer(() => {
     setViewId,
     setEditData,
     getProjectsData,
-    getTagsData
+    getTagsData,
+    setDeveloping,
+    setDevelopingData
   } = store;
-  const { addModalvisible,editModalvisible,importModalvisible,treeData,listData,selectedData,searchName,searchKey,searchStatus,userInfo } = store;
+  const { addModalvisible,editModalvisible,importModalvisible,treeData,listData,selectedData,searchName,searchKey,searchStatus,userInfo,developing } = store;
   // const { list,curPage,pageSize,total } = listData;
 
   const [addCateName, setAddCateName] = useState('');
@@ -242,6 +250,7 @@ const ComponentDevelop = observer(() => {
     window.URL.revokeObjectURL($link.href); // 释放掉blob对象
   };
   return <>
+    {developing?<CodeDevelop/>:
     <AbreastLayout
         type='leftOperationArea'
         showCollapsedBtn
@@ -451,7 +460,7 @@ const ComponentDevelop = observer(() => {
           </div>
         </Modal>
         <Detail/>
-      </AbreastLayout>
+      </AbreastLayout>}
   </>;
 });
 export default ComponentDevelop;

@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-13 18:06:48
+ * @LastEditTime: 2021-11-15 17:03:10
  */
 import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api/component";
@@ -46,4 +46,8 @@ export const deleteComponentService = (id)=>{
 export const downloadComponentService = (id)=>{
   return fetchPost(API.DOWNLOAD_COMPONENT+'/'+id);
 };
+export const installPackagesService = (id)=>{
+  return fetchPost(API.INSTALL_PACKAGE+'/'+id);
+};
+
 
