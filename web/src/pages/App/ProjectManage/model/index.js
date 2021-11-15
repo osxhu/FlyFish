@@ -80,6 +80,7 @@ const model = {
     },
     openProjectPage(project) {
       this.activeProject = _.clone(project);
+      sessionStorage.setItem('activeProject',JSON.stringify(project));
     },
     closeEditProjectModal() {
       this.activeProject = null;

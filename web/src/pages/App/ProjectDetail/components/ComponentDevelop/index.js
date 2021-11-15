@@ -20,6 +20,7 @@ import AddComponent from "./components/addComponent";
 import Detail from "./components/detail";
 import _ from "lodash";
 import TsetCard from '@/components/TestCard';
+import Drawer from '@/components/Drawer';
 
 import { updateTreeDataService } from './services';
 import moment from 'moment';
@@ -28,10 +29,7 @@ const { Option } = Select;
 
 const ComponentDevelop = observer(({ ProgressId }) => {
   const intl = useIntl();
-  const testCardArr = [{ id: 1, status: 0, title: '测试大屏11', development: '泡泡', create: '分为丰富' }, { id: 2, status: 1, title: '测试大屏22', development: '虾饺', create: '11324de' }, { id: 3, status: 1, title: '测试大屏33', development: '春卷', create: 'ewfefe' }, { id: 3, status: 2, title: '测试大屏44', development: 'jifwfeferf', create: '321321' }, { id: 4, status: 2, title: '测试大屏55', development: 'eweqweq', create: 'vrevevr' }];
-
   const {
-    setDetailShow,
     getLibraryListData,
     addModalvisible,
     setAddModalvisible,
@@ -39,19 +37,20 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     deleteAssembly,
     getTreeData,
     changeOneAssemly,
-    getListData,
+    getListData, setDrawerVisible,
+    getAssemlyDetail,
     setSelectedData
   } = store;
-  const { treeData, industryList, libraryListData, listData, selectedData } = store;
-  const [addCateName, setAddCateName] = useState('');
+  const { industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
   const [changeFlga, setchangeFlga] = useState(false); //编辑完成
   // 表格列表数据
   let basicTableListData = toJS(listData);
+  const [activeProject, setActiveProject] = useState(''); //编辑完成
   const searchContent = [
     {
       components: (
         <Select mode="tags"
-        allowClear={true}
+          allowClear={true}
           id="trades"
           key="trades"
           name='行业'
@@ -107,18 +106,18 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   const addCateRef = useRef();
   const changeColumns = (values) => {
     for (let i in values) {
-      if (!values[i]||values[i].length===0) {
+      if (!values[i] || values[i].length === 0) {
         delete values[i];
       }
     }
-    getLibraryListData( values);
+    getLibraryListData(values);
   };
   // 请求列表数据
   useEffect(() => {
-   getTreeData();
-   getLibraryListData();
+    getTreeData();
+    getLibraryListData();
     getIndustrysList();
-
+    setActiveProject(JSON.parse(sessionStorage.getItem('activeProject')).name);
   }, []);
   useEffect(() => {
     getListData(ProgressId);
@@ -151,10 +150,10 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     >
       {/* 右侧面板 */}
       <div className={styles.container}>
-        <Collapse defaultActiveKey={['1','2']} ghost={true} bordered={false} >
+        <Collapse defaultActiveKey={['1', '2']} ghost={true} bordered={false} >
           <Panel header={
             <>
-              <span>项目 9001</span>
+              <span>{activeProject}</span>
               <span className={styles.title}>共</span>
               <span>{basicTableListData.total}个应用</span>
             </>
@@ -165,6 +164,9 @@ const ComponentDevelop = observer(({ ProgressId }) => {
             }} type="primary" >编辑</Button>
             }>
             <TsetCard
+              checkCard={(id) => {
+                getAssemlyDetail(id);
+              }}
               onDelete={(params) => {
                 deleteAssembly(params, (res) => {
                   if (res.code === successCode) {
@@ -196,36 +198,39 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               onSearch={changeColumns}
               searchContent={searchContent} showSearchCount={6}
             />
-            <TsetCard 
-            value={libraryListData} 
-            state={1} 
-            canAdd={true}
-            addOwn={(id,item)=>{
-              let result=item.filter(item=>item===ProgressId);
-              if(result.length>0){
-                message.error('该组件已归属该项目');
-                return;
-              }
-              changeOneAssemly(id,{projects:[ProgressId,...item]},(res)=>{
-                if (res.code === successCode) {
-                  getListData(ProgressId);
-                  message.success(
-                    intl.formatMessage({
-                      id: "common.addSuccess",
-                      defaultValue: "新增成功！",
-                    })
-                  );
-                  getLibraryListData();
-                } else {
-                  message.error(
-                    res.msg || intl.formatMessage({
-                      id: "common.addError",
-                      defaultValue: "新增失败，请稍后重试！",
-                    })
-                  );
+            <TsetCard
+              checkCard={(id) => {
+                getAssemlyDetail(id);
+              }}
+              value={libraryListData}
+              state={1}
+              canAdd={true}
+              addOwn={(id, item) => {
+                let result = item.filter(item => item === ProgressId);
+                if (result.length > 0) {
+                  message.error('该组件已归属该项目');
+                  return;
                 }
-              });
-            }}
+                changeOneAssemly(id, { projects: [ProgressId, ...item] }, (res) => {
+                  if (res.code === successCode) {
+                    getListData(ProgressId);
+                    message.success(
+                      intl.formatMessage({
+                        id: "common.addSuccess",
+                        defaultValue: "新增成功！",
+                      })
+                    );
+                    getLibraryListData();
+                  } else {
+                    message.error(
+                      res.msg || intl.formatMessage({
+                        id: "common.addError",
+                        defaultValue: "新增失败，请稍后重试！",
+                      })
+                    );
+                  }
+                });
+              }}
             >
             </TsetCard>
           </Panel>
@@ -242,6 +247,9 @@ const ComponentDevelop = observer(({ ProgressId }) => {
       </Modal>
       <Detail />
     </AbreastLayout>
+    {
+      isDrawerVisible ? <Drawer assemly={assemlyDetail} setDrawerVisible={setDrawerVisible} /> : null
+    }
   </>;
 });
 export default ComponentDevelop;

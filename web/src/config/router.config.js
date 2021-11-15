@@ -112,6 +112,24 @@ module.exports = {
         // },
         {
           icon: "pie-chart",
+          name: "模板库",
+          path: "/template",
+          component: "@/pages/Template",
+          routes: [
+            {
+              name: "应用模板库",
+              path: "/template/apply-template",
+              component: "@/pages/Template/TemplateApp",
+            },
+            {
+              name: "组件库",
+              path: "/template/library-Template",
+              component: "@/pages/Template/TemplateComponent",
+            },
+          ],
+        },
+        {
+          icon: "pie-chart",
           name: "用户管理",
           path: "/user",
           component: "@/pages/User",

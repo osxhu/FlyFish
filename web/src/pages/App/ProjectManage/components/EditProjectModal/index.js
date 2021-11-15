@@ -9,13 +9,9 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
     let selectArr = toJS(list);//下拉框总数据
     let newarr = toJS(project).trades;
     const { getFieldDecorator } = form;
-    const onSelect = async (item) => {
-      if (item.length !== 24) {
-        await addIndusty({ name: item });
-        // if (selectArr[selectArr.length - 1].name === item) {
-        //   newarr.push(selectArr[selectArr.length - 1].id);
-        // }
-
+    const onSelect = (item) => {
+      if (item.keyCode === 13) {
+        addIndusty({ name: item.target.value });
       }
     };
     return (
@@ -35,7 +31,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                 flag ? onSave &&
                   onSave({
                     ...sendParams
-                  }) :null;
+                  }) : null;
                 //  onChange &&
                 // onChange(project.id, {
                 //   ...sendParams
@@ -69,7 +65,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           }}
           initialvalues={project || {}}
         >
-          <Form.Item label="项目名称" name={"name"}>
+          <Form.Item label="项目名称" >
             {getFieldDecorator("name", {
               initialValue: project.name,
               rules: [
@@ -93,7 +89,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               />
             )}
           </Form.Item>
-          {flag ? <Form.Item label="行业" name={"trades"}>
+          {flag ? <Form.Item label="行业" >
             {getFieldDecorator("trades", {
               initialValue: project.trades,
               rules: [
@@ -108,7 +104,9 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Select
-                onSelect={onSelect}
+                showSearch={true}
+                onInputKeyDown={onSelect}
+                optionFilterProp="label"
                 mode='tags'
                 placeholder={
                   intl.formatMessage({
@@ -118,14 +116,14 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                 }
               >
                 {
-                  selectArr.map(item => {
-                    return <Select.Option key='item.id' value={item.id}>{item.name}</Select.Option>;
-                  })
+                  selectArr ? selectArr.map(item => {
+                    return <Select.Option key={item.id} value={item.id} label={item.name}>{item.name}</Select.Option>;
+                  }) : null
                 }
 
               </Select>
             )}
-          </Form.Item> : <Form.Item label="行业" name={"trades"}>
+          </Form.Item> : <Form.Item label="行业" >
             {getFieldDecorator("trades", {
               initialValue: newarr,
               rules: [
@@ -140,7 +138,9 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Select
-                onSelect={onSelect}
+                optionFilterProp="label"
+                showSearch={true}
+                onInputKeyDown={onSelect}
                 mode='tags'
                 placeholder={
                   intl.formatMessage({
@@ -151,14 +151,14 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               >
                 {
                   selectArr.map(item => {
-                    return <Select.Option key='item.id' value={item.id}>{item.name}</Select.Option>;
+                    return <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>;
                   })
                 }
 
               </Select>
             )}
           </Form.Item>}
-          <Form.Item label="描述" name={"desc"}>
+          <Form.Item label="描述" >
             {getFieldDecorator("desc", {
               initialValue: project.desc,
             })(

@@ -38,14 +38,19 @@ const AppProjectManage = observer((props) => {
       dataIndex: "trades",
       key: "trades",
       render(trades) {
-        return trades.map(item => item.name);
+        return trades.map((item,index) =>{
+          if(index!==trades.length-1){
+            return item.name+',';
+          }else{
+            return item.name;
+          }
+        } );
       },
     },
     {
       title: "描述",
       dataIndex: "desc",
       key: "desc",
-
     },
     {
       title: "创建时间",
@@ -58,8 +63,8 @@ const AppProjectManage = observer((props) => {
     },
     {
       title: "创建人",
-      dataIndex: "createUser",
-      key: "createUser",
+      dataIndex: "creatorName",
+      key: "creatorName",
     },
     {
       title: intl.formatMessage({

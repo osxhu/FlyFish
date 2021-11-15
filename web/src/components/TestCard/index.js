@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Popconfirm } from "@chaoswise/ui";
-import { Card, Tag, Col, Row, Icon, Avatar } from 'antd';
+import { Card, Tag, Col, Row, Icon, Avatar, Empty } from 'antd';
 const { Meta } = Card;
 import styles from './index.less';
 import { EnumScreenStatus } from '@/config/global';
@@ -17,7 +17,7 @@ const computedTagWordByStatus = (status) => {
     return statusItem ? statusItem[1].label : EnumScreenStatus.developing.label;
 };
 export default Form.create({ name: "BASIC_CARD" })(
-    function BasicCard({ onDelete,addOwn, value, state, show, children,deleteFlagMethod, canDelete,canAdd }) {
+    function BasicCard({ onDelete, addOwn, checkCard, value, state, show, children, deleteFlagMethod, canDelete, canAdd }) {
         let childrenArr;
         let childrenArrOther;
         if (children) {
@@ -31,7 +31,7 @@ export default Form.create({ name: "BASIC_CARD" })(
         return (
             <Row justify="space-around" gutter={['16', '16']} style={{ margin: '10px' }} className={styles.cardList}>
                 {
-                    value.list && value.list.map((item, index) => <Col span={8} key={index}>
+                    value.list&&value.list.length>0 ? value.list.map((item, index) => <Col span={8} key={index}>
                         <Card
                             cover={
                                 <>
@@ -44,15 +44,16 @@ export default Form.create({ name: "BASIC_CARD" })(
                                         </Popconfirm> : null
                                     }
                                     {
-                                       canAdd? <Tag className={styles.deleteTag} color="#2db7f5" onClick={()=>{
-                                        let projects=item.projects.map(item=>item.id);
-                                        addOwn&&addOwn(item.id,projects);
-                                       }}>+</Tag>:null
+                                        canAdd ? <Tag className={styles.deleteTag} color="#2db7f5" onClick={() => {
+                                            let projects = item.projects.map(item => item.id);
+                                            addOwn && addOwn(item.id, projects);
+                                        }}>+</Tag> : null
                                     }
                                     {
                                         !Array.isArray(children) && !show ? null : <Tag className={styles.tag} color={TagColorMap[item.status]}>{computedTagWordByStatus(item.status)}</Tag>
                                     }
                                     <img
+                                        onClick={() => { checkCard && checkCard(item.id); }}
                                         alt="example"
                                         src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                                     />
@@ -72,6 +73,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                             })()}
                         >
                             <Meta
+                                onClick={() => { checkCard && checkCard(item.id); }}
                                 title={(() => {
                                     if (!children) return `组件名称:${item.name || '暂无'}`;
                                     if (state) {
@@ -111,7 +113,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                             />
 
                         </Card>
-                    </Col>)
+                    </Col>) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }
             </Row>
         );

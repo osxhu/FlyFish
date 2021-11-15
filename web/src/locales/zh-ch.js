@@ -56,6 +56,9 @@ export default flattenMessages({
       selectTags:'输入组件标签进行查询',
       search:'搜索'
     },
+    applyTemplate:{ 
+      trade:''
+    },
     userManage: {
       create: "添加用户",
       edit: "编辑用户",

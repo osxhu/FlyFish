@@ -6,7 +6,7 @@
  * @LastEditTime: 2021-11-12 16:31:23
  */
 import { toMobx, toJS } from '@chaoswise/cw-mobx';
-import { getTreeDataService, industryList,changeAssembly, getListDataService, deleteOneAssembly } from '../services';
+import { getTreeDataService, industryList,assemblyDetail,changeAssembly, getListDataService, deleteOneAssembly } from '../services';
 import { message } from 'antd';
 import { successCode } from "@/config/global";
 
@@ -24,7 +24,9 @@ const model = {
       category: '全部组件',
       subCategory: ''
     },
-    industryList: []//行业列表
+    industryList: [],//行业列表
+    assemlyDetail:[],//组件详情
+    isDrawerVisible:false
   },
   effects: {
     *getTreeData() {
@@ -78,8 +80,19 @@ const model = {
       const res = yield changeAssembly(id,params);
       callback && callback(res);
     },
+    *getAssemlyDetail(id,callback) {
+      const res = yield assemblyDetail(id);
+      this.isDrawerVisible=true;
+     this.setAssemlyDetail(res);
+    },
   },
   reducers: {
+    setDrawerVisible(res){
+      this.isDrawerVisible=res;
+    },
+    setAssemlyDetail(res) {
+      this.assemlyDetail = res.data;
+    },
     setIndustryList(res) {
       this.industryList = res.data.list;
     },

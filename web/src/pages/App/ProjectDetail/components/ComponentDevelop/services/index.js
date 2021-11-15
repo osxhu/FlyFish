@@ -39,3 +39,8 @@ export const industryList = () => {
 export const changeAssembly = (id,param) => {
   return fetchPut(APIAPP.CHANGE_ASSEMBLY+id,{body: param });
 };
+// 组件详情
+export const assemblyDetail=(id)=>{
+  return fetchGet(API.DELETE_ASSEMBLY+id);
+
+};
