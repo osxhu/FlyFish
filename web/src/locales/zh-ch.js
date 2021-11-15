@@ -16,6 +16,7 @@ export default flattenMessages({
     import: "导入",
     actions: "操作",
     pleaseInput: "请输入",
+    pleaseUpload: "请上传",
     pleaseSelect: "请选择",
     saveError: "保存失败，请稍后重试！",
     saveSuccess: "保存成功！",
@@ -57,7 +58,12 @@ export default flattenMessages({
       search:'搜索'
     },
     applyTemplate:{ 
-      trade:''
+      trade:'选择行业进行查询',
+      applyName:'选择应用名称进行查询',
+      name:'输入组件名称/组件编号/描述/标签/查找组件',
+      searchInputApplyLabel:'选择应用标签进行查询',
+      searchtype:'选择组件类别进行查询'
+
     },
     userManage: {
       create: "添加用户",

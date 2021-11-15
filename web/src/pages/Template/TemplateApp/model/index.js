@@ -11,7 +11,7 @@ const model = {
     projectList: [],
     total: 0,
     activeProject: null,
-    isEditProjectModalVisible: false,
+    isCopyApplyModalVisible: false,
   },
   effects: {
     // 获取项目列表数据
@@ -43,13 +43,13 @@ const model = {
     setSearchParams(searchParams) {
       this.searchParams = searchParams || {};
     },
-    openEditProjectModal(project) {
+    openCopyApplyModal(project) {
       this.activeProject = _.clone(project);
-      this.isEditProjectModalVisible = true;
+      this.isCopyApplyModalVisible = true;
     },
-    closeEditProjectModal() {
+    closeCopyApplyModal() {
       this.activeProject = null;
-      this.isEditProjectModalVisible = false;
+      this.isCopyApplyModalVisible = false;
     },
   },
 };

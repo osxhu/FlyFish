@@ -1,9 +1,12 @@
 import React from "react";
-import { Modal, Input, Select, Form } from "@chaoswise/ui";
+import { Modal, message, Icon, Button, Input, Select, Form } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 const { Option } = Select;
-export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
-  function EditProjectModal({ form, project = {}, onSave, onCancel }) {
+// import API from '../../../services/api/component';
+import { Upload } from 'antd';
+
+export default Form.create({ name: "FORM_IN_COPY_APPLY_MODAL" })(
+  function CopyApplyModal({ form, project = {}, onSave, onCancel }) {
     const intl = useIntl();
     const { getFieldDecorator } = form;
     return (
@@ -24,17 +27,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           }
         }}
         size="middle"
-        title={
-          project && project.id > 0
-            ? intl.formatMessage({
-              id: "pages.applyDevelop.edit",
-              defaultValue: "编辑应用",
-            })
-            : intl.formatMessage({
-              id: "pages.applyDevelop.create",
-              defaultValue: "添加应用",
-            })
-        }
+        title='复制应用'
         visible={true}
       >
         <Form
@@ -48,7 +41,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           }}
           initialvalues={project || {}}
         >
-          <Form.Item label="应用名称" name={"title"}>
+          <Form.Item label="应用名称" >
             {getFieldDecorator("title", {
               initialValue: project.title,
               rules: [
@@ -59,11 +52,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                       id: "common.pleaseInput",
                       defaultValue: "请输入",
                     }) + "应用名称",
-                },
-                {
-                  pattern: /^[a-zA-Z]{6,20}$/,
-                  message: "请输入a~z的6~20位的字符，不限制大小写",
-                },
+                }
               ],
             })(
               <Input
@@ -77,7 +66,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               />
             )}
           </Form.Item>
-          <Form.Item label="所属项目" name={"industry"}>
+          <Form.Item label="所属项目" >
             {getFieldDecorator("industry", {
               initialValue: project.industry,
               rules: [
@@ -103,14 +92,14 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               </Select>
             )}
           </Form.Item>
-          <Form.Item label="标签" name={"tag"} >
-            {getFieldDecorator("tag", {
-              initialValue: project.tag,
+          <Form.Item label="行业" >
+            {getFieldDecorator("trade", {
+              initialValue: project.trade,
               rules: [
                 {
                   message:
                     intl.formatMessage({
-                      id: "common.pleaseInput",
+                      id: "common.pleaseSelect",
                       defaultValue: "请选择",
                     }) + "标签",
                 },
@@ -130,10 +119,77 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               </Select>
             )}
           </Form.Item>
+          <Form.Item label="应用logo" >
+            {getFieldDecorator("logo", {
+              initialValue: project.logo,
+              rules: [
+                {
+                  message:
+                    intl.formatMessage({
+                      id: "common.pleaseUpload",
+                      defaultValue: "请上传",
+                    }) + "应用logo",
+                },
+              ],
+            })(
+              // <Upload
+              //   accept=".zip"
+              //   // fileList={[]}
+              //   // action={API.UPLOAD_COMPONENT+'/'+uploadId}
+              //   headers={{ authorization: 'authorization-text' }}
+              //   method="post"
+              //   name="file"
+              //   onChange={({ file, fileList, event }) => {
+              //     if (event && event.percent == 100) {
+              //       message.success('上传成功！');
+              //     }
+              //   }}
+              // >
+              //     <Button style={{ marginRight: '10px' }} type="primary">上传文件</Button>
+              //     (支持拓展名：png，jpg，peg，gif)
 
-          <Form.Item label="开发状态" name={"state"}>
+              // </Upload>
+              <Upload action='https://www.mocky.io/v2/5cc8019d300000980a055e76'
+                headers={
+                  { authorization: 'authorization-text' }
+                }
+                isImageUrl={true}
+                accept="image/gif, image/jpeg,image/jpeg/png,image/jpg,image/peg"
+              >
+                <Button style={{ marginRight: '10px' }} type="primary">上传文件</Button>
+                (支持拓展名：png，jpg，peg，gif)
+              </Upload>,
+
+            )}
+          </Form.Item>
+          <Form.Item label="标签" >
+            {getFieldDecorator("tag", {
+              initialValue: project.tag,
+              rules: [
+                {
+                  message:
+                    intl.formatMessage({
+                      id: "common.pleaseInput",
+                      defaultValue: "请输入",
+                    }) + "标签",
+                },
+              ],
+            })(
+              <Input
+                placeholder={
+                  intl.formatMessage({
+                    id: "common.pleaseInput",
+                    defaultValue: "请输入",
+                  }) + "标签"
+                }
+              >
+              </Input>
+            )}
+          </Form.Item>
+
+          <Form.Item label="开发状态" >
             {getFieldDecorator("state", {
-              initialValue: project.state,
+              initialValue: 'demo',
             })(
               <Select
                 placeholder={
@@ -143,7 +199,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   }) + "开发状态"
                 }
               >
-                <Option value="jack">Jack</Option>
+                <Option value="demo">demo</Option>
                 <Option value="lucy">Lucy</Option>
                 <Option value="disabled" disabled>
                   Disabled
@@ -153,7 +209,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
             )}
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal >
     );
   }
 );

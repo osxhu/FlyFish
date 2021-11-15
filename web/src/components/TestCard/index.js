@@ -28,6 +28,15 @@ export default Form.create({ name: "BASIC_CARD" })(
                 Array.isArray(children.props.children) ? childrenArr = children.props.children.map(item => item) : childrenArr = children.props.children.props.children.map(item => item);
             }
         }
+        const tradesArr=(trades)=>{
+          return trades.map((item,index)=>{
+                if(index!==trades.length-1){
+                    return item.name+',';
+                }else{
+                    return item.name;
+                }
+            });
+        };
         return (
             <Row justify="space-around" gutter={['16', '16']} style={{ margin: '10px' }} className={styles.cardList}>
                 {
@@ -59,18 +68,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                                     />
                                 </>
                             }
-                            actions={(() => {
-                                // if (!children) {
-                                //     return '';
-                                // } else {
-                                //     if (Array.isArray(children)) {
-                                //         return item.status === 2 ? childrenArrOther : childrenArr;
-                                //     } else {
-                                //         return childrenArr;
-                                //     }
-                                // }
-
-                            })()}
+                            actions={childrenArr}
                         >
                             <Meta
                                 onClick={() => { checkCard && checkCard(item.id); }}
@@ -92,9 +90,8 @@ export default Form.create({ name: "BASIC_CARD" })(
                                     ];
                                     const actionsOk = [
                                         <div key='template'>
-                                            <p title={item.development}>模板名称：{item.name || '暂无'}</p>
                                             <p title={item.create}>模板编号：{item.id || '暂无'}</p>
-                                            <p title={item.create}>行业：{item.create || '暂无'}</p>
+                                            <p title={item.create}>行业：{item.trades&&tradesArr(item.trades) || '暂无'}</p>
                                         </div>
                                     ];
                                     const applyList = [

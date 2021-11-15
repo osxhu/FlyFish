@@ -35,6 +35,7 @@ const AppProjectManage = observer((props) => {
     },
     {
       title: "行业",
+      width: 150,
       dataIndex: "trades",
       key: "trades",
       render(trades) {
