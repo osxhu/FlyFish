@@ -6,6 +6,8 @@ projects: {
 	name: String,
 	trades: [String],   					// 行业
 	desc: String,
+	creator: String,
+	updater: String,
 
 	status: String, // 可用状态 enum#COMMON_STATUS
 }

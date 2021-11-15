@@ -26,6 +26,8 @@ module.exports = app => {
     desc: {
       type: String,
     },
+    creator: String,
+    updater: String,
     status: {
       type: String,
       default: Enum.COMMON_STATUS.VALID,

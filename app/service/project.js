@@ -6,6 +6,13 @@ const Enum = require('../lib/enum');
 class ProjectService extends Service {
   async create(params) {
     const { ctx } = this;
+    const userInfo = ctx.userInfo;
+
+    Object.assign(params, {
+      creator: userInfo.userId,
+      updater: userInfo.userId,
+    });
+
     const existProject = await ctx.model.Project._findOne({ name: params.name });
     if (!_.isEmpty(existProject)) return;
     return await ctx.model.Project._create(params);
@@ -18,12 +25,16 @@ class ProjectService extends Service {
 
   async edit(id, params) {
     const { ctx } = this;
+    const userInfo = ctx.userInfo;
+
+    Object.assign(params, {
+      updater: userInfo.userId,
+    });
     return await ctx.model.Project._updateOne({ id }, params);
   }
 
   async getList(query, options) {
     const { ctx } = this;
-    // TODO: 行业搜索
 
     const filter = {};
 
@@ -58,17 +69,23 @@ class ProjectService extends Service {
 
     const total = await ctx.model.Project._count(filter);
     const list = await ctx.model.Project._find(filter, null, options);
-    const tradeIds = [];
+    const tradeIds = [],
+      userIds = [];
     list.forEach(l => {
       tradeIds.push(...l.trades);
+      userIds.push(l.creator);
     });
     const tradeInfos = await ctx.model.Trade._find({ id: { $in: _.uniq(tradeIds) } }, null, options);
     const tradeMap = _.keyBy(tradeInfos, 'id');
+
+    const creators = await ctx.model.User._find({ id: { $in: _.uniq(userIds) } });
+    const creatorMap = _.keyBy(creators, 'id');
     list.forEach(l => {
       l.trades = l.trades.map(id => ({
         id,
         name: tradeMap[id] && tradeMap[id].name || '',
       }));
+      l.creatorName = creatorMap[l.creator] && creatorMap[l.creator].username || '';
     });
 
     return {
