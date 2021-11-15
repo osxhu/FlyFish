@@ -6,6 +6,8 @@ const Enum = require('../lib/enum');
 class ProjectService extends Service {
   async create(params) {
     const { ctx } = this;
+    const existProject = await ctx.model.Project._findOne({ name: params.name });
+    if (!_.isEmpty(existProject)) return;
     return await ctx.model.Project._create(params);
   }
 

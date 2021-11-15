@@ -1,7 +1,10 @@
 'use strict';
 
-const BaseController = require('./base');
 const _ = require('lodash');
+
+const BaseController = require('./base');
+const CODE = require('../lib/error');
+
 class ProjectController extends BaseController {
   async create() {
     const { ctx, app: { Joi }, service } = this;
@@ -13,6 +16,7 @@ class ProjectController extends BaseController {
     });
     const body = await addSchema.validateAsync(ctx.request.body);
     const res = await service.project.create(body);
+    if (!res) return this.fail('该项目名已存在', null, CODE.ALREADY_EXISTS);
     this.success('新建成功', res);
   }
 
