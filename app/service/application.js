@@ -174,7 +174,7 @@ class ApplicationService extends Service {
     const data = (applicationList || []).slice(curPage, curPage + pageSize).map(application => {
       const curCreatorUser = (users || []).find(user => user.id === application.creator) || {};
       const curUpdaterUser = (users || []).find(user => user.id === application.updater) || {};
-      const curProjectInfo = (projectList || []).find(project => project.id === projectId);
+      const curProjectInfo = (projectList || []).find(project => project.id === application.projectId) || {};
       const curTags = (tagList || []).filter(tag => (application.tags || []).includes(tag.id));
 
       return {
