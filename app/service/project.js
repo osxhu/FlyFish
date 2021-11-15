@@ -1,6 +1,7 @@
 'use strict';
 const Service = require('egg').Service;
 const _ = require('lodash');
+const Enum = require('../lib/enum');
 
 class ProjectService extends Service {
   async create(params) {

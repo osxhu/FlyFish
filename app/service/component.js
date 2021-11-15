@@ -98,7 +98,7 @@ class ComponentService extends Service {
             name: project.name,
           };
         }),
-        version: _.get(component, [ 'version', (component.version || []).length - 1, 'no' ], 'v1.0'),
+        version: _.get(component, [ 'version', (component.version || []).length - 1, 'no' ], '暂未上线'),
         creator: curUser.username,
         updateTime: component.updateTime,
         createTime: component.createTime,
