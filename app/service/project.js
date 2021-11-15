@@ -75,7 +75,7 @@ class ProjectService extends Service {
       tradeIds.push(...l.trades);
       userIds.push(l.creator);
     });
-    const tradeInfos = await ctx.model.Trade._find({ id: { $in: _.uniq(tradeIds) } }, null, options);
+    const tradeInfos = await ctx.model.Trade._find({ id: { $in: _.uniq(tradeIds) } });
     const tradeMap = _.keyBy(tradeInfos, 'id');
 
     const creators = await ctx.model.User._find({ id: { $in: _.uniq(userIds) } });
