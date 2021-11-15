@@ -117,6 +117,14 @@ class ComponentService extends Service {
     const projectIds = componentInfo.projects || [];
     const projectsInfo = await ctx.model.Project._find({ id: { $in: projectIds } });
 
+    const tradeIds = [];
+    let tradesInfo = [];
+
+    for (const projectInfo of projectsInfo) {
+      if (!_.isEmpty(projectInfo.trades)) tradeIds.push(...projectInfo.trades);
+    }
+    if (!_.isEmpty(tradeIds)) tradesInfo = await ctx.model.Trade._find({ id: { $in: tradeIds } });
+
     const tagIds = componentInfo.tags || [];
     const tagsInfo = await ctx.model.Tag._find({ id: { $in: tagIds } });
 
@@ -129,6 +137,12 @@ class ComponentService extends Service {
         return {
           id: curProject.id || '',
           name: curProject.name || '',
+        };
+      }),
+      trades: (tradesInfo || []).map(trade => {
+        return {
+          id: trade.id || '',
+          name: trade.name || '',
         };
       }),
       tags: (componentInfo.tags || []).map(tag => {
