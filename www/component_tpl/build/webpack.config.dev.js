@@ -2,14 +2,14 @@
  * @description webpack开发配置
  */
 'use strict';
-module.exports = () => `
+module.exports = component_mark => `
 'use strict';
 
 /**
  * @description webpack开发配置
  */
 
-const baseConf = require('../../../../common/webpack.config.base');
+const baseConf = require('../../../webpack.config.base');
 const path = require('path');
 const _ = require('lodash');
 
@@ -18,8 +18,8 @@ module.exports = _.defaultsDeep({
     devtool: '#source-map',
     mode: 'development',
     entry:{
-        "./main":"./src/main.js",
-        "./setting":"./src/setting.js",
+        "${component_mark}/main":"./src/main.js",
+        "${component_mark}/setting":"./src/setting.js",
     },
     output: {
         // 编译的目录

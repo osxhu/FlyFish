@@ -9,10 +9,10 @@ module.exports = component_mark => `
 /**
  * @description webpack开发配置
  */
-const baseConf = require('../../../../common/webpack.config.base');
+
+const baseConf = require('../../../webpack.config.base');
 const path = require('path');
 const _ = require('lodash');
-const webpack = require('webpack');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = _.defaultsDeep({
@@ -46,8 +46,8 @@ module.exports = _.defaultsDeep({
         ]
     },
     entry:{
-        "./main":"./src/main.js",
-        "./setting":"./src/setting.js",
+        "${component_mark}/main":"./src/main.js",
+        "${component_mark}/setting":"./src/setting.js",
     },
     output: {
         // 编译的目录

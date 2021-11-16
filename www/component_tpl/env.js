@@ -1,22 +1,20 @@
 'use strict';
 
-module.exports = (webDevWorkspacePath, component_mark, version) => `
+module.exports = (component_mark, component_replace_mark, version) => `
 /**
  * @description 大屏配置
  */
  'use strict';
 
 window.DATAVI_ENV = (function() {
-    var appPath = '${webDevWorkspacePath}/${component_mark}/${version}';
-
     function formatEditorThumbSrc(imgName){
-        return 'asserts/img/components/' + imgName;
+        return 'application_tpl/asserts/img/components/' + imgName;
     }
 
     return {
         debug: true,
         apiDomain: 'http://127.0.0.1:9090',
-        componentsDir: appPath.replace(/^\\//, '') + '/components',
+        componentsDir: 'components/${component_mark}/${version}/components',
 
         // 大屏编辑器组件菜单枚举
         componentsMenuForEditor: [
@@ -25,7 +23,7 @@ window.DATAVI_ENV = (function() {
                 icon: 'changyongzujian',
                 components: [
                     {
-                        type: '${component_mark}',
+                        type: '${component_replace_mark}',
                         name: '组件开发',
                         author: 'Cloudwise',
                         description: '',

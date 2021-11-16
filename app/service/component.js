@@ -101,6 +101,8 @@ class ComponentService extends Service {
         }),
         version: _.get(component, [ 'version', (component.version || []).length - 1, 'no' ], '暂未上线'),
         creator: curUser.username,
+        isLib: component.isLib || false,
+
         updateTime: component.updateTime,
         createTime: component.createTime,
       };
@@ -432,7 +434,7 @@ class ComponentService extends Service {
       fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(replaceId));
 
       fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(componentId));
-      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentsPath, replaceId, version));
+      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentId, replaceId, version));
       fs.writeFileSync(`${componentDevPath}/options.json`, require(`${componentsTplPath}/options.json.js`)(replaceId));
       fs.writeFileSync(`${componentDevPath}/package.json`, require(`${componentsTplPath}/package.json.js`)(replaceId));
     } catch (error) {
