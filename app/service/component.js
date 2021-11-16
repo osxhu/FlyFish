@@ -31,6 +31,7 @@ class ComponentService extends Service {
 
     queryCond.$or = [];
     if (key) {
+      queryCond.$or.push({ _id: key });
       queryCond.$or.push({ name: { $regex: key } });
       queryCond.$or.push({ desc: { $regex: key } });
     }
@@ -273,7 +274,7 @@ class ComponentService extends Service {
   }
 
   async compileComponent(id) {
-    const { ctx, app, config } = this;
+    const { ctx, config } = this;
     const { pathConfig: { componentsPath } } = config;
 
     const version = 'current';
