@@ -1,7 +1,11 @@
 'use strict';
 
-const BaseController = require('./base');
 const _ = require('lodash');
+const fs = require('fs-extra');
+const AdmZip = require('adm-zip');
+const path = require('path');
+
+const BaseController = require('./base');
 const CODE = require('../lib/error');
 const Enum = require('../lib/enum');
 
@@ -127,6 +131,70 @@ class ApplicationController extends BaseController {
     };
 
     this.success('获取成功', returnInfo);
+  }
+
+  async export() {
+    const { ctx, config: { pathConfig: { componentsPath, appTplPath, appBuildPath, uploadPath } } } = this;
+    const id = ctx.params.id;
+
+    const buildPath = path.resolve(appBuildPath, id);
+    const appUploadPath = path.resolve(uploadPath, 'application');
+    const configPath = path.resolve(buildPath, 'config');
+
+    const appInfo = await ctx.model.Application._findOne({ id });
+
+    await fs.writeJson(path.resolve(configPath, 'env.conf.json'), appInfo.pages);
+
+    const mergedGlobalOptions = {};
+    const targetComponentPath = path.resolve(buildPath, 'components');
+    (appInfo.pages || []).forEach(async page => {
+      Object.assign(mergedGlobalOptions, page.options.ENVGlobalOptions || {});
+      (page.components || []).forEach(async component => {
+        await fs.copy(
+          path.resolve(componentsPath, component.id, component.version, 'release'),
+          path.resolve(targetComponentPath, component.id)
+        );
+      });
+    });
+
+    await fs.writeFile(
+      path.resolve(configPath, 'env.production.js'),
+      require(path.resolve(appTplPath, 'config/env.js')({ globalOptions: mergedGlobalOptions }))
+    );
+
+    const sourceIndexPath = path.resolve(appTplPath, 'index.html');
+    const targetIndexPath = path.resolve(buildPath, 'index.html');
+    await fs.copy(sourceIndexPath, targetIndexPath);
+
+    const sourcePublicPath = path.resolve(appTplPath, 'public');
+    const targetPublicPath = path.resolve(buildPath, 'public');
+    await fs.copy(sourcePublicPath, targetPublicPath);
+
+    const sourceAssertPath = path.resolve(appTplPath, 'asserts');
+    const targetAssertPath = path.resolve(buildPath, 'asserts');
+    await fs.copy(sourceAssertPath, targetAssertPath);
+
+    const sourceFragmentPath = path.resolve(appUploadPath, `fragment/${id}`);
+    const targetFragmentPath = path.resolve(buildPath, `upload/screen/fragment/${id}`);
+    const fragmentExist = await fs.pathExists(sourceFragmentPath);
+    if (fragmentExist) {
+      await fs.copy(sourceFragmentPath, targetFragmentPath);
+    }
+
+    const zipName = `screen_${id}.zip`;
+    const destZip = `${appBuildPath}/${zipName}`;
+    try {
+      const zip = new AdmZip();
+
+      zip.addLocalFolder(buildPath);
+      zip.writeZip(destZip);
+
+      ctx.set('Content-Disposition', `attachment;filename=${zipName}`);
+      ctx.set('Content-Type', 'application/octet-stream');
+      ctx.body = fs.createReadStream(destZip);
+    } finally {
+      await fs.remove(destZip);
+    }
   }
 }
 

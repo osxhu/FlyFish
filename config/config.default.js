@@ -80,10 +80,14 @@ module.exports = appInfo => {
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
   };
 
+  const staticDir = path.join(appInfo.baseDir, 'www');
+
   config.pathConfig = {
-    appPath: path.resolve(__dirname, '../'),
-    componentsPath: path.resolve(__dirname, '../www/components'),
-    componentsTplPath: path.resolve(__dirname, '../www/component_tpl'),
+    componentsPath: path.resolve(staticDir, 'components'),
+    componentsTplPath: path.resolve(staticDir, 'component_tpl'),
+    appTplPath: path.resolve(staticDir, 'application_tpl'),
+    appBuildPath: path.resolve(staticDir, 'application_build'),
+    uploadPath: path.resolve(staticDir, 'upload'),
   };
 
   config.multipart = {
@@ -91,9 +95,8 @@ module.exports = appInfo => {
   };
 
   config.static = {
-    // 静态化访问前缀,如：`http://127.0.0.1:7001/static/images/logo.png`
     prefix: '/',
-    dir: path.join(appInfo.baseDir, 'www'),
+    dir: staticDir,
     // dynamic: true,
     // preload: false,
     // maxAge: 31536000,
