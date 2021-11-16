@@ -7,6 +7,7 @@
  */
 import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api/component";
+import APIAPP from '@/services/api/app';
 
 export const getTreeDataService = () => {
 
@@ -49,5 +50,8 @@ export const downloadComponentService = (id)=>{
 // 组件详情
 export const assemblyDetail=(id)=>{
   return fetchGet(API.DELETE_ASSEMBLY+id);
-
+};
+// 行业列表
+export const industryList=()=>{
+  return fetchGet(APIAPP.INDUSTRY_LIST);
 };

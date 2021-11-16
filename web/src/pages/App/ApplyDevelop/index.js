@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { CWTable, Input, Button, message, SearchBar, Pagination } from "@chaoswise/ui";
+import { CWTable, Input, Button, message, SearchBar,Icon, Pagination } from "@chaoswise/ui";
 import {
   observer, loadingStore, toJS, Form, Row,
   Col
@@ -11,9 +11,9 @@ import TsetCard from '@/components/TestCard';
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Icon, Select } from 'antd';
+import { Select } from 'antd';
 const { Option } = Select;
-
+import DeleteApplyListModal from './components/DeleteApplyListModal';
 const ApplyDevelop = observer(() => {
   let [checkFlag, setCheckFlag] = useState(false);
   const intl = useIntl();
@@ -22,10 +22,10 @@ const ApplyDevelop = observer(() => {
     getProjectList,
     setSearchParams,
     saveProject,
-    openEditProjectModal,
-    closeEditProjectModal,
+    openEditProjectModal,closeDeleteApplyListModal,
+    closeEditProjectModal, openDeleteApplyListModal,
   } = store;
-  const { total, projectList, isEditProjectModalVisible, activeProject } =
+  const { total, isDeleteApplyListModalVisible, projectList, isEditProjectModalVisible, activeProject } =
     store;
   const onDelete = (id) => {
     console.log('应用开发子组件删除', id);
@@ -41,6 +41,8 @@ const ApplyDevelop = observer(() => {
           id="name"
           key="name"
           name='项目名称'
+          suffix	={<Icon type="search" />
+        }
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.applyDevelop.searchInputProgressName",
@@ -70,6 +72,8 @@ const ApplyDevelop = observer(() => {
           id="AppName"
           key="AppName"
           name='应用名称'
+          suffix	={<Icon type="search" />
+        }
           style={{ width: "150px" }}
           placeholder={intl.formatMessage({
             id: "pages.applyDevelop.searchInputAppName",
@@ -95,6 +99,22 @@ const ApplyDevelop = observer(() => {
       ),
     },
   ];
+  const searchTypeContent = [
+    {
+      components: (
+        <Input
+          id="name"
+          key="name"
+          name='应用类型选择'
+          style={{ width: "200px" }}
+          placeholder={intl.formatMessage({
+            id: "pages.applyDevelop.searchInputPlaceholder",
+            defaultValue: "选择应用类型进行查询",
+          })}
+        />
+      ),
+    }
+  ];
   // 请求列表数据
   useEffect(() => {
     getProjectList();
@@ -106,7 +126,7 @@ const ApplyDevelop = observer(() => {
   const onSearch = (params) => {
     setSearchParams(params);
     getProjectList({
-      curPage:0,
+      curPage: 0,
     });
   };
   const extra = () => {
@@ -123,30 +143,27 @@ const ApplyDevelop = observer(() => {
           defaultValue="添加应用"
         />
       </Button>,
+      <Button
+        key="reset_project"
+        onClick={() => {
+          openDeleteApplyListModal();
+        }}
+      >
+        <FormattedMessage
+          id="pages.applyDevelop.reset"
+          defaultValue="还原应用"
+        />
+      </Button>,
     ];
   };
   return (
     <React.Fragment>
-      <div className={styles.searchCotainer1}>
-        应用类型选择：<Select
-          id="name"
-          key="name"
-          style={{ width: "200px" }}
-          placeholder={intl.formatMessage({
-            id: "pages.applyDevelop.searchInputPlaceholder",
-            defaultValue: "选择应用类型进行查询",
-          })}
-        />
-      </div>
-      <span className={styles.searchCotainer}>
-        应用管理：
-        <Icon type="delete" className={styles.icon} onClick={() => {
-          setCheckFlag(!checkFlag);
-        }
-        } />
-      </span>
       <SearchBar
-        searchContent={searchContent} showSearchCount={6} extra={extra}
+        searchContent={searchTypeContent} showSearchCount={6} extra={extra}
+      />
+      <SearchBar
+        className={styles.search}
+        searchContent={searchContent} showSearchCount={6}
       />
       {/* 测试card */}
       {
@@ -158,10 +175,6 @@ const ApplyDevelop = observer(() => {
             <div key="export" className={styles.mybtn}>导出应用</div>
             <div key="change" className={styles.mybtn} >编辑信息</div>
             <div key="delete" className={styles.mybtn}>删除</div>
-          </>
-          <>
-          <div key="look" className={styles.mybtn}>预览应用</div>
-          <div key="export" className={styles.mybtn}>导出应用</div>
           </>
         </TsetCard>
       }
@@ -180,7 +193,7 @@ const ApplyDevelop = observer(() => {
                 );
                 closeEditProjectModal();
                 getProjectList({
-                  curPage:0,
+                  curPage: 0,
                 });
               } else {
                 message.error(
@@ -195,6 +208,14 @@ const ApplyDevelop = observer(() => {
           onCancel={closeEditProjectModal}
         />
       )}
+      {
+        isDeleteApplyListModalVisible && (
+          <DeleteApplyListModal 
+          onCancel={closeDeleteApplyListModal}
+          />
+        )
+      }
+
     </React.Fragment>
   );
 });

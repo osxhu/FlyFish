@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { CWTable, Input, Button, message, Popconfirm } from "@chaoswise/ui";
+import { CWTable, Input, Button, message, Popconfirm, Icon } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import { formatDate } from '@/config/global';
@@ -39,13 +39,13 @@ const AppProjectManage = observer((props) => {
       dataIndex: "trades",
       key: "trades",
       render(trades) {
-        return trades.map((item,index) =>{
-          if(index!==trades.length-1){
-            return item.name+',';
-          }else{
+        return trades.map((item, index) => {
+          if (index !== trades.length - 1) {
+            return item.name + ',';
+          } else {
             return item.name;
           }
-        } );
+        });
       },
     },
     {
@@ -138,6 +138,9 @@ const AppProjectManage = observer((props) => {
           id="key"
           key="key"
           style={{ width: "300px" }}
+          suffix	={<Icon type="search" />
+          }
+
           placeholder={intl.formatMessage({
             id: "pages.projectManage.searchInputPlaceholder",
             defaultValue: "输入项目名称/行业/描述进行查询",

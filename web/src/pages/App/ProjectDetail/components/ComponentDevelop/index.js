@@ -7,23 +7,21 @@
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from "react";
-import { AbreastLayout, SearchBar } from "@chaoswise/ui";
-import { Icon, Select, Input, Table, Popover, Button, Modal, Row, Col, message, Collapse } from 'antd';
+import { AbreastLayout, SearchBar, Icon } from "@chaoswise/ui";
+import { Select, Input, Button, Modal, message, Collapse } from 'antd';
 import { observer, toJS } from "@chaoswise/cw-mobx";
 const { Panel } = Collapse;
 import store from "./model/index";
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import HandleMenu from "./components/handleMenu";
 import AddComponent from "./components/addComponent";
 import Detail from "./components/detail";
 import _ from "lodash";
-import TsetCard from '@/components/TestCard';
+import Card from '@/components/TestCard';
 import Drawer from '@/components/Drawer';
-
-import { updateTreeDataService } from './services';
-import moment from 'moment';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const { Option } = Select;
 
@@ -41,8 +39,18 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     getAssemlyDetail,
     setSelectedData
   } = store;
-  const { industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
+  const { listLength,industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
   const [changeFlga, setchangeFlga] = useState(false); //编辑完成
+  let [infinitKey, setInfinitKey] = useState(0);
+  let [flagNum, setFlagNum] = useState(0);
+
+  const changePage = () => {
+    setFlagNum(flagNum += 1);
+    getListData({
+      projectId:ProgressId,
+      curPage: flagNum,
+    });
+  };
   // 表格列表数据
   let basicTableListData = toJS(listData);
   const [activeProject, setActiveProject] = useState(''); //编辑完成
@@ -74,6 +82,8 @@ const ComponentDevelop = observer(({ ProgressId }) => {
           id="key"
           key="key"
           style={{ width: "200px" }}
+          suffix={<Icon type="search" />
+          }
           placeholder={intl.formatMessage({
             id: "pages.projectDetailDevelop.searchInputKey",
             defaultValue: "输入组件名称/项目名称/描述/标签/创建人查找组件",
@@ -120,7 +130,8 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     setActiveProject(JSON.parse(sessionStorage.getItem('activeProject')).name);
   }, []);
   useEffect(() => {
-    getListData(ProgressId);
+    setFlagNum(0);
+    getListData({projectId:ProgressId},true);
   }, [selectedData]);
   return <>
     <AbreastLayout
@@ -163,42 +174,54 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               setchangeFlga(!changeFlga);
             }} type="primary" >编辑</Button>
             }>
-            <TsetCard
-              checkCard={(id) => {
-                getAssemlyDetail(id);
-              }}
-              onDelete={(params) => {
-                deleteAssembly(params, (res) => {
-                  if (res.code === successCode) {
-                    getListData(ProgressId);
-                    message.success(
-                      intl.formatMessage({
-                        id: "common.deleteSuccess",
-                        defaultValue: "删除成功！",
-                      })
-                    );
-                  } else {
-                    message.error(
-                      res.msg || intl.formatMessage({
-                        id: "common.deleteError",
-                        defaultValue: "删除失败，请稍后重试！",
-                      })
-                    );
-                  }
-                });
-              }}
-              value={basicTableListData}
-              state={1}
-              canDelete={changeFlga}
-              deleteFlagMethod={setchangeFlga}
-            ></TsetCard>
+            <div id="scrollableDiv" style={{ height: '490px', overflow: 'auto' }} >
+              <InfiniteScroll
+                dataLength={listLength}
+                next={changePage}
+                hasMore={true}
+                scrollableTarget="scrollableDiv"
+                key={infinitKey}
+              >
+                <Card
+                  checkCard={(id) => {
+                    getAssemlyDetail(id);
+                  }}
+                  onDelete={(params) => {
+                    deleteAssembly(params, (res) => {
+                      if (res.code === successCode) {
+                        getListData(ProgressId);
+                        message.success(
+                          intl.formatMessage({
+                            id: "common.deleteSuccess",
+                            defaultValue: "删除成功！",
+                          })
+                        );
+                      } else {
+                        message.error(
+                          res.msg || intl.formatMessage({
+                            id: "common.deleteError",
+                            defaultValue: "删除失败，请稍后重试！",
+                          })
+                        );
+                      }
+                    });
+                  }}
+                  value={basicTableListData}
+                  state={1}
+                  canDelete={changeFlga}
+                  deleteFlagMethod={setchangeFlga}
+                ></Card>
+              </InfiniteScroll>
+            </div>
+
+
           </Panel>
           <Panel header={<>  <span>从组件库中选择项目组件 </span> <span className={styles.rightTitle}>*下方列表中展示的是项目组件，不包括基础组件</span></>} key="2">
             <SearchBar
               onSearch={changeColumns}
               searchContent={searchContent} showSearchCount={6}
             />
-            <TsetCard
+            <Card
               checkCard={(id) => {
                 getAssemlyDetail(id);
               }}
@@ -232,7 +255,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                 });
               }}
             >
-            </TsetCard>
+            </Card>
           </Panel>
         </Collapse>
       </div>

@@ -37,11 +37,13 @@ export default Form.create({ name: "BASIC_CARD" })(
                 }
             });
         };
+        let [checkid,setCheckId]=React.useState('');
         return (
             <Row justify="space-around" gutter={['16', '16']} style={{ margin: '10px' }} className={styles.cardList}>
                 {
                     value.list&&value.list.length>0 ? value.list.map((item, index) => <Col span={8} key={index}>
                         <Card
+                        style={{boxShadow:checkid==item.id?'3px 3px 3px 3px #dedede':null }}
                             cover={
                                 <>
                                     {
@@ -62,7 +64,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                                         !Array.isArray(children) && !show ? null : <Tag className={styles.tag} color={TagColorMap[item.status]}>{computedTagWordByStatus(item.status)}</Tag>
                                     }
                                     <img
-                                        onClick={() => { checkCard && checkCard(item.id); }}
+                                        onClick={() => { checkCard && checkCard(item.id),setCheckId(item.id);}}
                                         alt="example"
                                         src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                                     />
@@ -71,7 +73,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                             actions={childrenArr}
                         >
                             <Meta
-                                onClick={() => { checkCard && checkCard(item.id); }}
+                                onClick={() => { checkCard && checkCard(item.id),setCheckId(item.id); }}
                                 title={(() => {
                                     if (!children) return `组件名称:${item.name || '暂无'}`;
                                     if (state) {

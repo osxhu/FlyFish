@@ -6,7 +6,7 @@
  * @LastEditTime: 2021-11-12 16:31:23
  */
 import { toMobx, toJS } from '@chaoswise/cw-mobx';
-import { getTreeDataService, industryList,assemblyDetail,changeAssembly, getListDataService, deleteOneAssembly } from '../services';
+import { getTreeDataService, industryList, assemblyDetail, changeAssembly, getListDataService, deleteOneAssembly } from '../services';
 import { message } from 'antd';
 import { successCode } from "@/config/global";
 
@@ -25,8 +25,9 @@ const model = {
       subCategory: ''
     },
     industryList: [],//行业列表
-    assemlyDetail:[],//组件详情
-    isDrawerVisible:false
+    assemlyDetail: [],//组件详情
+    isDrawerVisible: false,
+    listLength: 0
   },
   effects: {
     *getTreeData() {
@@ -34,35 +35,32 @@ const model = {
       const res = yield getTreeDataService();
       this.setTreeData(res.data[0].categories);
     },
-    *getListData(id) {
+    *getListData(obj, state) {
       const { category, subCategory } = toJS(this.selectedData);
       if (category === '全部组件') {
-        const params = {
-          projectId: id
-        };
-        const res = yield getListDataService(params);
-        this.setListData(res.data);
+        const res = yield getListDataService(obj);
+        this.setListData(res.data, state);
       } else {
         const params = {
           category: category,
-          projectId: id,
-          subCategory: subCategory
+          subCategory: subCategory,
+          ...obj
         };
         const res = yield getListDataService(params);
-        this.setListData(res.data);
+        this.setListData(res.data, state);
       }
     },
     // 组件库列表数据
-    *getLibraryListData( options) {
+    *getLibraryListData(options) {
       const params = {
         isLib: true,
         ...options
       };
       // 请求数据
       const res = yield getListDataService(params);
-      if (res.code ===successCode) {
+      if (res.code === successCode) {
         this.setLibraryListData(res.data);
-      } 
+      }
 
     },
     *deleteAssembly(params = {}, callback) {
@@ -76,19 +74,19 @@ const model = {
       this.setIndustryList(res);
     },
     // 修改组件归属
-    *changeOneAssemly(id,params,callback) {
-      const res = yield changeAssembly(id,params);
+    *changeOneAssemly(id, params, callback) {
+      const res = yield changeAssembly(id, params);
       callback && callback(res);
     },
-    *getAssemlyDetail(id,callback) {
+    *getAssemlyDetail(id, callback) {
       const res = yield assemblyDetail(id);
-      this.isDrawerVisible=true;
-     this.setAssemlyDetail(res);
+      this.isDrawerVisible = true;
+      this.setAssemlyDetail(res);
     },
   },
   reducers: {
-    setDrawerVisible(res){
-      this.isDrawerVisible=res;
+    setDrawerVisible(res) {
+      this.isDrawerVisible = res;
     },
     setAssemlyDetail(res) {
       this.assemlyDetail = res.data;
@@ -108,8 +106,17 @@ const model = {
     setTreeData(res) {
       this.treeData = res;
     },
-    setListData(res) {
-      this.listData = res;
+    setListData(res,state) {
+      if (state) {
+        console.log('新推');
+        this.listData = res;
+      } else {
+        console.log('里塞',res);
+        this.listData.list && this.listData.list.push(...res.list);
+      }
+
+      let tableData = toJS(this.listData.list);
+      this.listLength = tableData.length;
     },
     setSelectedData(res) {
       this.selectedData = res;

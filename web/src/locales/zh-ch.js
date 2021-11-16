@@ -44,6 +44,7 @@ export default flattenMessages({
     },
     applyDevelop: {
       create: "添加应用",
+      reset:'还原应用',
       edit: "编辑应用",
       goToProject: "进入应用",
       searchInputPlaceholder:'选择应用类型进行查询',

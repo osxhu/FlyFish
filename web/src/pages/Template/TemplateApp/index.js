@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { message, SearchBar, Pagination } from "@chaoswise/ui";
+import { message, SearchBar, Pagination ,Input,Icon} from "@chaoswise/ui";
 import {
   observer
 } from "@chaoswise/cw-mobx";
@@ -53,10 +53,12 @@ const ApplyDevelop = observer(() => {
     {
       components: (
 
-        <Select
+        <Input
           id="name"
           key="name"
           name='应用名称'
+          suffix	={<Icon type="search" />
+        }
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.applyTemplate.applyName",

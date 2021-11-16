@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { CWTable, Input, Button, message, Select } from "@chaoswise/ui";
+import { CWTable, Input, Button, message,Icon, Select } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import EditRoleModal from "./components/EditRoleModal";
@@ -101,33 +101,35 @@ const RoleList = observer(() => {
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
-            <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
-              deleteRole({ id: record.id, ...record }, (res) => {
-                if (res.code === successCode) {
-                  message.success(
-                    intl.formatMessage({
-                      id: "common.deleteSuccess",
-                      defaultValue: "删除成功！",
-                    })
-                  );
-                  closeEditRoleModal();
-                  getUserList({
-                    curPage: 0,
-                  });
-                } else {
-                  message.error(
-                    res.msg || intl.formatMessage({
-                      id: "common.deleteError",
-                      defaultValue: "删除失败，请稍后重试！",
-                    })
-                  );
-                }
-              });
-            }}>
-              <a className={styles.projectAction} href='#'>
-                <FormattedMessage id="common.delete" defaultValue="删除" />
-              </a>
-            </Popconfirm>
+           {
+              record.name!=='管理员'&&<Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+                deleteRole({ id: record.id, ...record }, (res) => {
+                  if (res.code === successCode) {
+                    message.success(
+                      intl.formatMessage({
+                        id: "common.deleteSuccess",
+                        defaultValue: "删除成功！",
+                      })
+                    );
+                    closeEditRoleModal();
+                    getUserList({
+                      curPage: 0,
+                    });
+                  } else {
+                    message.error(
+                      res.msg || intl.formatMessage({
+                        id: "common.deleteError",
+                        defaultValue: "删除失败，请稍后重试！",
+                      })
+                    );
+                  }
+                });
+              }}>
+                <a className={styles.projectAction} href='#'>
+                  <FormattedMessage id="common.delete" defaultValue="删除" />
+                </a>
+              </Popconfirm>
+           }
           </span>
         );
       },
@@ -140,6 +142,8 @@ const RoleList = observer(() => {
           id="name"
           key="name"
           name='角色名'
+          suffix	={<Icon type="search" />
+        }
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.roleManage.searchInputRoleName",

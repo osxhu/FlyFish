@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
-import { CWTable, Input, Button, message, Select } from "@chaoswise/ui";
+import { CWTable, Input, Button, message, Select ,Icon} from "@chaoswise/ui";
 const { Option } = Select;
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
@@ -130,7 +130,8 @@ const UserList = observer(() => {
           id="username"
           key="username"
           name='用户名'
-          style={{ width: "150px" }}
+          suffix	={<Icon type="search" />
+        }
           placeholder={intl.formatMessage({
             id: "pages.userManage.searchInputUsername",
             defaultValue: "输入用户名进行查询",
@@ -143,7 +144,8 @@ const UserList = observer(() => {
           id="email"
           key="email"
           name='邮箱'
-          style={{ width: "150px" }}
+          suffix	={<Icon type="search" />
+        }
           placeholder={intl.formatMessage({
             id: "pages.userManage.searchInputEmail",
             defaultValue: "输入邮箱进行查询",
@@ -157,7 +159,7 @@ const UserList = observer(() => {
           id="status"
           key="status"
           name='状态'
-          style={{ width: "150px" }}
+          style={{ width: "180px" }}
           placeholder={intl.formatMessage({
             id: "pages.userManage.searchInputstate",
             defaultValue: "输入状态进行查询",
@@ -179,7 +181,6 @@ const UserList = observer(() => {
   }, []);
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
-    console.log('dajg ',curPage,pageSize);
     getProjectList({ curPage:curPage-1, pageSize });
   };
   const onSearch = (params) => {

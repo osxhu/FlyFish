@@ -12,6 +12,7 @@ const model = {
     total: 0,
     activeProject: null,
     isEditProjectModalVisible: false,
+    isDeleteApplyListModalVisible: false,
   },
   effects: {
     // 获取项目列表数据
@@ -46,6 +47,12 @@ const model = {
     openEditProjectModal(project) {
       this.activeProject = _.clone(project);
       this.isEditProjectModalVisible = true;
+    },
+    openDeleteApplyListModal() {
+      this.isDeleteApplyListModalVisible = true;
+    },
+    closeDeleteApplyListModal() {
+      this.isDeleteApplyListModalVisible = false;
     },
     closeEditProjectModal() {
       this.activeProject = null;
