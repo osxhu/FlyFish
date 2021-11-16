@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-16 14:27:04
+ * @LastEditTime: 2021-11-16 18:55:43
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -19,6 +19,9 @@ import AddComponent from "./components/addComponent";
 import EditComponent from "./components/editComponent";
 import Detail from "./components/detail";
 import _ from "lodash";
+import axios from 'axios';
+
+
 import { 
   updateTreeDataService,
   copyComponentService,
@@ -253,15 +256,47 @@ const ComponentDevelop = observer(() => {
   };
   const exportCode = async (id)=>{
     const res = await downloadComponentService(id);
-    if (res) {
-      const $link = document.createElement("a");
-      $link.href = window.URL.createObjectURL(new Blob([res],{type:'application/octet-stream'}));
-      $link.download = `component.zip`;
-      $link.click();
-    }
+    // if (res) {
+    //   console.log(res);
+    //   const $link = document.createElement("a");
+    //   let blob = new Blob([res],{type:'application/zip'});
+    //   $link.href = window.URL.createObjectURL(blob);
+    //   $link.download = 'component.zip';
+    //   document.body.appendChild($link);
+    //   $link.click();
+    //   document.body.removeChild($link); // 下载完成移除元素
+    //   window.URL.revokeObjectURL($link.href); // 释放掉blob对象
+    // }
+
+    // window.open('/api/components/export-source-code/'+id);
+
+    // const $link = document.createElement("a");
+    // $link.href = '/api/components/export-source-code/'+id;
+    
     // document.body.appendChild($link);
+    // $link.click();
     // document.body.removeChild($link); // 下载完成移除元素
     // window.URL.revokeObjectURL($link.href); // 释放掉blob对象
+
+    axios.get(`/api/components/export-source-code/${id}`,{
+      responseType:'blob'
+    },
+    ).then((res)=>{
+      const $link = document.createElement("a");
+
+      // let blob = new Blob([res.data],{type:'application/octet-stream'});
+      // let blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(res.data);
+      $link.href = url;
+
+      const disposition = res.headers['content-disposition'];
+      $link.download = decodeURI(disposition.replace('attachment;filename=',''));
+      
+      document.body.appendChild($link);
+      $link.click();
+      document.body.removeChild($link); // 下载完成移除元素
+      window.URL.revokeObjectURL($link.href); // 释放掉blob对象
+    });
   };
   const uploadToLibrary = async (id)=>{
     const res = await uploadLibraryService(id);
