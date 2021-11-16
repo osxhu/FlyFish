@@ -446,7 +446,11 @@ class ComponentService extends Service {
       logger.error('createDevWorkspace error: ', error || error.stack);
     }
     if (config.env === 'prod') {
-      await this.initGit(componentId);
+      try {
+        await this.initGit(componentId);
+      } catch (e) {
+        logger.error('git init error: ', e.stack);
+      }
     }
 
     return returnInfo;
