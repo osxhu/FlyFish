@@ -151,7 +151,7 @@ class ApplicationController extends BaseController {
       Object.assign(mergedGlobalOptions, page.options.ENVGlobalOptions || {});
       (page.components || []).forEach(async component => {
         await fs.copy(
-          path.resolve(componentsPath, component.id, component.version, 'release'),
+          path.resolve(componentsPath, component.id, component.version, 'release', component.id),
           path.resolve(targetComponentPath, component.id)
         );
       });

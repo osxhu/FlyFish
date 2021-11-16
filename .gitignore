@@ -15,3 +15,4 @@ typings/
 .vscode/
 runtime/
 components/*
+.DS_Store

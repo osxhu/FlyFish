@@ -43,6 +43,15 @@ module.exports = app => {
       type: String,
       default: Enum.COMMON_STATUS.VALID,
     },
+    git_lab_project_id: {
+      type: Number,
+    },
+    need_push_git: {
+      type: Boolean,
+    },
+    last_change_time: {
+      type: Date,
+    },
   });
 
   ComponentSchema.statics._find = async function(params, projection, options) {

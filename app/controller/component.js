@@ -257,7 +257,6 @@ class ComponentsController extends BaseController {
       await fs.remove(destZip);
     }
   }
-
 }
 
 module.exports = ComponentsController;

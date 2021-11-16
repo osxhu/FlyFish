@@ -1,10 +1,14 @@
 'use strict';
 const Service = require('egg').Service;
-const Enum = require('../lib/enum');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
 const _ = require('lodash');
+const simpleGit = require('simple-git');
+const Diff2html = require('diff2html');
+const minify = require('html-minifier').minify;
+
+const Enum = require('../lib/enum');
 
 class ComponentService extends Service {
   async updateCategoryInfo(updateInfo) {
@@ -399,18 +403,18 @@ class ComponentService extends Service {
   }
 
   // 初始化开发组件空间
-  initDevWorkspace(componentId) {
+  async initDevWorkspace(componentId) {
     const { config, logger } = this;
     const { pathConfig: { componentsPath, componentsTplPath } } = config;
 
     const returnInfo = { msg: 'Success' };
 
     const version = 'current';
+    const componentPath = `${componentsPath}/${componentId}`;
+    const componentDevPath = `${componentPath}/${version}`;
     try {
-      const componentPath = `${componentsPath}/${componentId}`;
       fs.mkdirSync(`${componentPath}`);
 
-      const componentDevPath = `${componentPath}/${version}`;
       fs.mkdirSync(componentDevPath);
 
       const srcPath = `${componentDevPath}/src`;
@@ -441,8 +445,39 @@ class ComponentService extends Service {
       returnInfo.msg = 'Fail';
       logger.error('createDevWorkspace error: ', error || error.stack);
     }
+    if (config.env === 'prod') {
+      await this.initGit(componentId);
+    }
 
     return returnInfo;
+  }
+
+  async initGit(componentId) {
+    const { ctx, config: { pathConfig: { componentsPath }, componentGit }, logger } = this;
+    const componentDevPath = `${componentsPath}/${componentId}/current`;
+    const userInfo = ctx.userInfo;
+    try {
+      const git = simpleGit(componentDevPath);
+
+      const reqBody = {
+        name: componentId,
+        path: componentId,
+        namespace_id: componentGit.namespaceId,
+      };
+      const newRepo = await ctx.http.post(`https://git.cloudwise.com/api/v4/projects?private_token=${componentGit.privateToken}`, reqBody);
+      const { id: newRepoId, ssh_url_to_repo: newRepoUrl } = newRepo;
+
+      await git
+        .init()
+        .add('.')
+        .commit(`first commit by ${userInfo.username}`)
+        .addRemote('origin', newRepoUrl)
+        .push([ '-u', '--set-upstream', 'origin', 'master' ]);
+
+      await ctx.model.Component._updateOne({ id: componentId }, { gitLabProjectId: newRepoId, needPushGit: false, lastChangeTime: Date.now() });
+    } catch (e) {
+      logger.error(e.stack || e);
+    }
   }
 }
 
