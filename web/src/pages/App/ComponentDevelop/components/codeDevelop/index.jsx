@@ -45,10 +45,10 @@ const CodeDevelop = observer(()=>{
     </div>
     <div className={styles.main}>
       <div className={styles.CodeWrap}>
-        <iframe id= 'child' src={`http://10.2.3.56:8080/?folder=/data/app/flyfish-2.0/components/${developingData.id}/current`} width = "100%" height = "100%" frameBorder={0}/>
+        <iframe id= 'child' src={`http://10.2.3.56:8080/?folder=/data/app/flyfish-2.0/www/components/${developingData.id}/current`} width = "100%" height = "100%" frameBorder={0}/>
       </div>
       <div className={styles.previewWrap}>
-
+        <iframe src={`http://10.2.3.56:7001/components/${developingData.id}/current/editor.html`} width = "100%" height = "100%" frameBorder={0}></iframe>
       </div>
     </div>
   </div>

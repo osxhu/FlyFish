@@ -32,6 +32,8 @@ const AddComponent = observer((props)=>{
           message.success('添加成功！');
           setAddModalvisible(false);
           getListData();
+        }else{
+          message.error(res.msg)
         }
       }
     });
