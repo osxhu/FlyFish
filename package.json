@@ -24,11 +24,8 @@
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "mongoose": "^6.0.12",
-<<<<<<< HEAD
-    "puppeteer": "^11.0.0"
-=======
+    "puppeteer": "^11.0.0",
     "simple-git": "^2.47.0"
->>>>>>> 0857bbd (Feature: add initGit after creating component api)
   },
   "devDependencies": {
     "autod": "^3.0.1",
