@@ -5,6 +5,7 @@
  * @LastEditors: zhangzhiyong
  * @LastEditTime: 2021-07-27 11:39:20
  */
+'use strict';
 module.exports = componentId => `
 <!DOCTYPE html>
 <html lang="zh-CN">

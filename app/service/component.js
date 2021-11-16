@@ -273,9 +273,10 @@ class ComponentService extends Service {
   }
 
   async compileComponent(id) {
-    const { ctx, config } = this;
+    const { ctx, app, config } = this;
     const { pathConfig: { componentsPath } } = config;
 
+    const version = 'current';
     const returnData = { msg: 'ok', data: { error: '' } };
     const existsComponent = await ctx.model.Component._findOne({ id });
     if (_.isEmpty(existsComponent)) {
@@ -284,14 +285,14 @@ class ComponentService extends Service {
     }
 
     const componentPath = `${componentsPath}/${id}`;
-    const componentDevPath = `${componentPath}/current`;
+    const componentDevPath = `${componentPath}/${version}`;
     if (!fs.existsSync(componentDevPath)) {
       returnData.msg = 'No Exists Dir';
       return returnData;
     }
 
-    const componentDevPackageJsonPath = `${componentPath}/current/package.json`;
-    const componentDevNodeModulesPath = `${componentPath}/current/node_modules`;
+    const componentDevPackageJsonPath = `${componentPath}/${version}/package.json`;
+    const componentDevNodeModulesPath = `${componentPath}/${version}/node_modules`;
     const packageJson = JSON.parse(fs.readFileSync(componentDevPackageJsonPath).toString());
 
     if ((!_.isEmpty(packageJson.dependencies) || !_.isEmpty(packageJson.devDependencies)) && !fs.existsSync(componentDevNodeModulesPath)) {
@@ -301,6 +302,11 @@ class ComponentService extends Service {
 
     try {
       await exec(`cd ${componentDevPath} && npm run ${config.env === 'prod' ? 'build-production' : 'build-dev'}`);
+
+      // screenshot component cover
+      // const url = 'http://www.baidu.com';
+      // await ctx.helper.screenshot(url, `${componentDevPath}/cover.png`);
+      // await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/cover.png` });
     } catch (error) {
       returnData.msg = 'Compile Fail';
       returnData.data.error = error.message || error.stack;
@@ -426,7 +432,7 @@ class ComponentService extends Service {
 
       fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(componentId));
       fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentsPath, replaceId, version));
-      fs.writeFileSync(`${componentDevPath}/options.js`, require(`${componentsTplPath}/options.json.js`)(replaceId));
+      fs.writeFileSync(`${componentDevPath}/options.json`, require(`${componentsTplPath}/options.json.js`)(replaceId));
       fs.writeFileSync(`${componentDevPath}/package.json`, require(`${componentsTplPath}/package.json.js`)(replaceId));
     } catch (error) {
       returnInfo.msg = 'Fail';

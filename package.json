@@ -21,7 +21,8 @@
     "humps": "^2.0.1",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
-    "mongoose": "^6.0.12"
+    "mongoose": "^6.0.12",
+    "puppeteer": "^11.0.0"
   },
   "devDependencies": {
     "autod": "^3.0.1",

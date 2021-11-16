@@ -7,7 +7,7 @@ const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 const copyDir = require('copy-dir');
-
+const puppeteer = require('puppeteer');
 
 module.exports = {
   setCookie(cookieValue) {
@@ -100,6 +100,41 @@ module.exports = {
         });
       }
     }
+  },
+
+  async screenshot(url, savePath) {
+    const { ctx, config: { cookieConfig: { name: cookieName, domain: cookieDomain } } } = this;
+
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '–disable-gpu',
+        '–disable-dev-shm-usage',
+        '–disable-setuid-sandbox',
+        '–no-first-run',
+        '–no-zygote',
+        '–single-process',
+      ],
+    });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 720 });
+    await page.goto(url, { waitUntil: 'networkidle0', timeout: 10000 });
+
+    const cookieValue = ctx.cookies.get(cookieName);
+    const cookie = {
+      name: cookieName,
+      value: cookieValue,
+      domain: cookieDomain,
+      path: '/',
+      expires: Date.now() + 3600 * 1000,
+    };
+    await page.setCookie(cookie); // 设置cookie
+
+    const fullPagePng = await page.screenshot({ type: 'png', fullPage: true });
+    fs.writeFileSync(savePath, fullPagePng);
+    await page.close();
+    await browser.close();
   },
 };
 

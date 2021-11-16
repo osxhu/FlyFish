@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = component_mark => `
 {
   "name": "${component_mark}",

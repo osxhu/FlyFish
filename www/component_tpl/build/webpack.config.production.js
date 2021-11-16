@@ -2,7 +2,10 @@
  * @description webpack发布配置
  */
 
+'use strict';
 module.exports = component_mark => `
+'use strict';
+
 /**
  * @description webpack开发配置
  */
@@ -43,8 +46,8 @@ module.exports = _.defaultsDeep({
         ]
     },
     entry:{
-        "${component_mark}/main":"./src/main.js",
-        "${component_mark}/setting":"./src/setting.js",
+        "./main":"./src/main.js",
+        "./setting":"./src/setting.js",
     },
     output: {
         // 编译的目录

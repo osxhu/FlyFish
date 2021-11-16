@@ -1,7 +1,11 @@
+'use strict';
+
 module.exports = (webDevWorkspacePath, component_mark, version) => `
 /**
  * @description 大屏配置
  */
+ 'use strict';
+
 window.DATAVI_ENV = (function() {
     var appPath = '${webDevWorkspacePath}/${component_mark}/${version}';
 

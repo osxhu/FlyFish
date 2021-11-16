@@ -5,7 +5,10 @@
  * @LastEditors: zhangzhiyong
  * @LastEditTime: 2021-08-02 11:39:54
  */
+'use strict';
 module.exports = component_mark => `
+'use strict';
+
 import Component from "data-vi/Component";
 
 export default class ${component_mark} extends Component {

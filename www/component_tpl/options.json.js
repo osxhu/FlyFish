@@ -1,4 +1,7 @@
-module.exports = (component_mark) => `{
+
+'use strict';
+
+module.exports = component_mark => `{
     "options": {
         "width": 1920,
         "height": 1080,

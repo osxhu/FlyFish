@@ -1,11 +1,14 @@
 /*
- * @Descripttion: 
+ * @Descripttion:
  * @Author: zhangzhiyong
  * @Date: 2021-06-11 14:25:25
  * @LastEditors: zhangzhiyong
  * @LastEditTime: 2021-09-02 18:11:56
  */
-module.exports = (component_mark,sceneInfo) => `
+'use strict';
+module.exports = (component_mark, sceneInfo) => `
+'use strict';
+
 import Component from "data-vi/Component";
 
 export default class ${component_mark} extends Component {
@@ -43,10 +46,10 @@ export default class ${component_mark} extends Component {
      * 钩子方法 组件mount挂载时调用
      */
     _mount() {
-      ${(function(){
-        const {fileName,dirPath} = sceneInfo;
-        const jsonName = fileName.split('.')[0];
-        return `const container = this.getContainer()[0];
+      ${(function() {
+    const { fileName, dirPath } = sceneInfo;
+    const jsonName = fileName.split('.')[0];
+    return `const container = this.getContainer()[0];
       this.frame = document.createElement('iframe');
       this.frame.style.border='none';
       this.frame.width='100%';
@@ -113,8 +116,8 @@ export default class ${component_mark} extends Component {
         this.frame.contentDocument.onclick=()=>{
           container.click();
         }
-        `
-      })()}
+        `;
+  })()}
     }
 
     /**

@@ -1,4 +1,8 @@
-module.exports = (component_mark) => `
+'use strict';
+
+module.exports = () => `
+'use strict';
+
 import React from 'react';
 import {
     ComponentOptionsSetting,
