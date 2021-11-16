@@ -1,3 +1,10 @@
+/*
+ * @Descripttion: 
+ * @Author: zhangzhiyong
+ * @Date: 2021-11-16 15:15:58
+ * @LastEditors: zhangzhiyong
+ * @LastEditTime: 2021-11-16 18:29:40
+ */
 'use strict';
 
 /**
@@ -45,7 +52,7 @@ module.exports = app => {
   router.post('/components/install/:id', controller.component.installDepend);
   router.post('/components/up-to-lib/:id', controller.component.upToLib);
   router.post('/components/import-source-code/:componentId', controller.component.uploadComponentSource);
-  router.post('/components/export-source-code/:componentId', controller.component.exportComponentSource);
+  router.get('/components/export-source-code/:componentId', controller.component.exportComponentSource);
   router.get('/components/:id', controller.component.getInfo);
 
   // menu
