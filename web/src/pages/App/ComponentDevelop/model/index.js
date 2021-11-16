@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-15 11:39:30
+ * @LastEditTime: 2021-11-16 10:12:06
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -38,7 +38,10 @@ const model = {
     projectsData:[],
     tagsData:[],
     developing:false,
-    developingData:null
+    developingData:null,
+    total:0,
+    curPage:1,
+    pageSize:10
   },
   effects: {
     *getUserInfo() {
@@ -67,19 +70,25 @@ const model = {
     },
     *getListData(){
       const { category,subCategory } = toJS(this.selectedData);
+      let curPage = this.curPage-1;
+      const pageSize = this.pageSize;
       if (category==='全部组件') {
-        const res = yield getListDataService();
+        const res = yield getListDataService({ curPage,pageSize });
         this.setListData(res.data);
       }else{
         const params = {
           category:category,
-          subCategory:subCategory
+          subCategory:subCategory,
+          curPage:curPage-1,
+          pageSize
         };
         const res = yield getListDataService(params);
         this.setListData(res.data);
       }
     },
     *getListDataWithCate(){
+      let curPage = this.curPage;
+      const pageSize = this.pageSize;
       const { category,subCategory } = toJS(this.selectedData);
       const searchName = this.searchName;
       const searchKey = this.searchKey;
@@ -90,7 +99,9 @@ const model = {
         developStatus:searchStatus!=='all'?searchStatus:undefined,
 
         category:category==='全部组件'?undefined:category,
-        subCategory:category==='全部组件'?undefined:subCategory
+        subCategory:category==='全部组件'?undefined:subCategory,
+        curPage:curPage-1,
+        pageSize
       };
       const res = yield getListDataService(params);
       this.setListData(res.data);
@@ -147,6 +158,15 @@ const model = {
     },
     setDevelopingData(res){
       this.developingData = res;
+    },
+    setTotal(res){
+      this.total = res;
+    },
+    setPageSize(res){
+      this.pageSize = res;
+    },
+    setCurPage(res){
+      this.curPage = res;
     }
   }
 };

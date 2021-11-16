@@ -1,6 +1,22 @@
 .wraper{
   color: red;
 }
+.layoutWrap{
+  :global{
+    .ant-layout-sider{
+      background-color: #fff;
+    }
+  }
+}
+.collapsedClass{
+  :global{
+    .ant-layout-sider{
+      width: 0px !important;
+      flex: none !important;
+      min-width: 0 !important;
+    }
+  }
+}
 .leftWrap{
   height: 100%;
   background-color:#eee;
@@ -42,6 +58,7 @@
 .listWraper{
   background-color: #fff;
   height: calc(~"100% - 60px");
+  overflow-y: auto;
 }
 .btnWraper{
   color:#449CF2;
@@ -73,4 +90,12 @@
   &:hover{
     color:rgba(68, 156, 242,0.5);
   }
+}
+.collbar{
+  position: absolute;
+  right: -18px;
+  background: #fff;
+  border-radius: 3px;
+  bottom: 10px;
+  padding: 0 2px;
 }
