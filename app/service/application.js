@@ -171,7 +171,7 @@ class ApplicationService extends Service {
     const applicationList = await ctx.model.Application._find(queryCond);
 
     const total = applicationList.length || 0;
-    const data = (applicationList || []).slice(curPage, curPage + pageSize).map(application => {
+    const data = (applicationList || []).splice(curPage * pageSize, pageSize).map(application => {
       const curCreatorUser = (users || []).find(user => user.id === application.creator) || {};
       const curUpdaterUser = (users || []).find(user => user.id === application.updater) || {};
       const curProjectInfo = (projectList || []).find(project => project.id === application.projectId) || {};

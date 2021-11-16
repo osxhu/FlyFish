@@ -11,7 +11,7 @@ window.DATAVI_ENV = (function() {
 
     return {
         debug: true,
-        apiDomain: 'http://10.0.1.154:9090',
+        apiDomain: 'http://127.0.0.1:9090',
         componentsDir: appPath.replace(/^\\//, '') + '/components',
 
         // 大屏编辑器组件菜单枚举

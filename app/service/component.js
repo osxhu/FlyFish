@@ -73,7 +73,7 @@ class ComponentService extends Service {
     const componentList = await ctx.model.Component._find(queryCond);
 
     const total = componentList.length || 0;
-    const data = (componentList || []).slice(curPage, curPage + pageSize).map(component => {
+    const data = (componentList || []).splice(curPage * pageSize, pageSize).map(component => {
       const curUser = (users || []).find(user => user.id === component.creator) || {};
       const curProjects = (projectList || []).filter(project => (component.projects || []).includes(project.id));
       const curTags = (tagList || []).filter(tag => (component.tags || []).includes(tag.id));
