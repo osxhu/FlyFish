@@ -1,2 +1,5 @@
 *
 !.gitignore
+!package-lock.json
+!package.json
+!webpack.config.base.js
