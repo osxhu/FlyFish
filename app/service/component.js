@@ -304,9 +304,9 @@ class ComponentService extends Service {
       await exec(`cd ${componentDevPath} && npm run ${config.env === 'prod' ? 'build-production' : 'build-dev'}`);
 
       // screenshot component cover
-      // const url = 'http://www.baidu.com';
-      // await ctx.helper.screenshot(url, `${componentDevPath}/cover.png`);
-      // await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/cover.png` });
+      const url = 'http://www.baidu.com';
+      await ctx.helper.screenshot(url, `${componentDevPath}/cover.png`);
+      await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/cover.png` });
     } catch (error) {
       returnData.msg = 'Compile Fail';
       returnData.data.error = error.message || error.stack;
