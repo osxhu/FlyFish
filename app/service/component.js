@@ -14,7 +14,33 @@ const Enum = require('../lib/enum');
 class ComponentService extends Service {
   async updateCategoryInfo(updateInfo) {
     const { ctx } = this;
+
+    const existsCategory = await ctx.model.ComponentCategory._find({}, null, { sort: '-create_time', limit: 1 }) || [];
+
+    const existsCategoryIds = _.flatten(_.get(existsCategory, [ 0, 'categories' ], []).map(category => (category.children || []).map(children => children.id + '')));
+    const updateCategoryIds = _.flatten((updateInfo.categories || []).map(category => (category.children || []).filter(children => children.id).map(children => children.id + '')));
+    const deleteCategoryIds = _.difference(existsCategoryIds, updateCategoryIds);
+
+    const returnData = { msg: 'ok', data: {} };
+    if (!_.isEmpty(deleteCategoryIds)) {
+      const components = await ctx.model.Component._find({ subCategory: { $in: deleteCategoryIds } }, null, { limit: 1 }) || [];
+      if (!_.isEmpty(components)) {
+        returnData.msg = 'Exists Already';
+        return returnData;
+      }
+    }
+
+    for (let i = 0; i < (updateInfo.categories || []).length; i++) {
+      const category = updateInfo.categories[i];
+      if (!category.id) category.id = `${Date.now()}${i}`;
+      for (let j = 0; j < (category.children || []).length; j++) {
+        const subCategory = category.children[j];
+        if (!subCategory.id) subCategory.id = `${Date.now()}${i}${j}`;
+      }
+    }
     await ctx.model.ComponentCategory._create(updateInfo);
+
+    return returnData;
   }
 
   async getCategoryList() {
@@ -36,11 +62,10 @@ class ComponentService extends Service {
 
     queryCond.$or = [];
     if (key) {
-      queryCond.$or.push({ _id: key });
       queryCond.$or.push({ name: { $regex: key } });
       queryCond.$or.push({ desc: { $regex: key } });
     }
-    if (name) queryCond.name = name;
+    if (name) queryCond.name = { $regex: name };
     if (subCategory) {
       queryCond.category = category;
       queryCond.subCategory = subCategory;
@@ -232,11 +257,21 @@ class ComponentService extends Service {
   async delete(id) {
     const { ctx } = this;
 
+    const returnData = { msg: 'ok', data: {} };
+
+    const existsComponent = await ctx.model.Component._findOne({ id });
+    if (!_.isEmpty(existsComponent.applications)) {
+      returnData.msg = 'Exists Already';
+      returnData.data.error = existsComponent.applications;
+      return returnData;
+    }
+
     const updateData = {
       status: Enum.COMMON_STATUS.INVALID,
     };
-
     await ctx.model.Component._updateOne({ id }, updateData);
+
+    return returnData;
   }
 
   async copyComponent(id, componentInfo) {

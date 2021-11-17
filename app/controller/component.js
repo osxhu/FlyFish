@@ -12,16 +12,22 @@ class ComponentsController extends BaseController {
 
     const addRoleBasicInfoSchema = app.Joi.object().keys({
       categories: app.Joi.array().items({
+        id: app.Joi.number(),
         name: app.Joi.string().required(),
         children: app.Joi.array().items({
+          id: app.Joi.number(),
           name: app.Joi.string().required(),
         }),
       }).required(),
     });
     const { value: requestData } = ctx.validate(addRoleBasicInfoSchema, ctx.request.body);
 
-    await service.component.updateCategoryInfo(requestData);
-    this.success('更新成功', null);
+    const categoryInfo = await service.component.updateCategoryInfo(requestData);
+    if (categoryInfo.msg === 'Exists Already') {
+      this.fail('更新失败, 删除类别中存在组件', null, CODE.FAIL);
+    } else {
+      this.success('更新成功', null);
+    }
   }
 
   async getCategoryList() {
@@ -42,8 +48,8 @@ class ComponentsController extends BaseController {
       isLib: app.Joi.boolean(),
       developStatus: app.Joi.string(),
       type: app.Joi.string(),
-      category: app.Joi.string(),
-      subCategory: app.Joi.string(),
+      category: app.Joi.number(),
+      subCategory: app.Joi.number(),
 
       curPage: app.Joi.number().default(0),
       pageSize: app.Joi.number().default(10),
@@ -69,8 +75,8 @@ class ComponentsController extends BaseController {
       type: app.Joi.string(),
       projects: app.Joi.array().items(app.Joi.string()).min(1),
       tags: app.Joi.array().items(app.Joi.string()),
-      category: app.Joi.string().required(),
-      subCategory: app.Joi.string().required(),
+      category: app.Joi.number().required(),
+      subCategory: app.Joi.number().required(),
       desc: app.Joi.string(),
     });
     const { value: requestData } = ctx.validate(addComponentSchema, ctx.request.body);
@@ -153,8 +159,8 @@ class ComponentsController extends BaseController {
       type: app.Joi.string(),
       projects: app.Joi.array().items(app.Joi.string()),
       tags: app.Joi.array().items(app.Joi.string()),
-      category: app.Joi.string(),
-      subCategory: app.Joi.string(),
+      category: app.Joi.number(),
+      subCategory: app.Joi.number(),
       desc: app.Joi.string(),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
@@ -178,8 +184,14 @@ class ComponentsController extends BaseController {
     const { ctx, app, service } = this;
 
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
-    await service.component.delete(id);
-    this.success('删除成功', { id });
+    const componentInfo = await service.component.delete(id);
+
+    const errInfo = componentInfo.data.error || null;
+    if (componentInfo.msg === 'Exists Already') {
+      this.fail('删除失败, 该组件已经被项目应用使用', errInfo, CODE.FAIL);
+    } else {
+      this.success('删除成功', null);
+    }
   }
 
   async release() {

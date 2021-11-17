@@ -25,6 +25,7 @@ module.exports = app => {
     is_lib: Boolean,
     projects: [ String ],
     tags: [ String ],
+    applications: [ String ],
 
     versions: [{
       _id: false,
@@ -84,7 +85,9 @@ module.exports = app => {
 
     if (obj.id) obj._id = obj.id; delete (obj.id);
     if (update) obj.updateTime = Date.now();
-    return decamelizeKeys(obj);
+    return decamelizeKeys(obj, function(key, convert, options) {
+      return _.startsWith(key, '$') ? key : convert(key, options);
+    });
   }
 
   function _toObj(doc) {

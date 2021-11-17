@@ -8,7 +8,7 @@ module.exports = (component_mark, component_replace_mark, version) => `
 
 window.DATAVI_ENV = (function() {
     function formatEditorThumbSrc(imgName){
-        return 'application_tpl/asserts/img/components/' + imgName;
+        return '../../../application_tpl/asserts/img/components/' + imgName;
     }
 
     return {

@@ -18,14 +18,12 @@ module.exports = app => {
 
     categories: [{
       _id: false,
-      name: {
-        type: String,
-      },
+      id: String,
+      name: String,
       children: [{
         _id: false,
-        name: {
-          type: String,
-        },
+        id: String,
+        name: String,
       }],
     }],
   });

@@ -42,6 +42,7 @@ components: {
 	type: String, 					// 公共组件/项目组件 enum#COMPONENT_TYPE
 	projects: [String], 			// 所属项目
 	tags: [String],					// 标签
+	applications: [String],			// 使用此组件的大屏
 	desc: String,			
 	versions: [{
 		no: String,
@@ -64,8 +65,10 @@ component_categories: {
 	update_time: Time,
 
 	categories: [{					// 一级分类
+		id: String,
 		name: String,
 		children: [{		  		// 二级分类
+			id: String,
 			name: String,
 		}]
 	}]

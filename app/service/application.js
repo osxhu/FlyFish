@@ -48,9 +48,28 @@ class ApplicationService extends Service {
     const { ctx } = this;
     const { pages } = requestData;
 
+    const curApplicationInfo = await ctx.model.Application._findOne({ id });
+
     const updateData = {};
     if (!_.isEmpty(pages)) updateData.pages = pages;
     await ctx.model.Application._updateOne({ id }, updateData);
+
+    const curApplicationUseComponents = _.flatten((curApplicationInfo.pages || []).map(page => (page.components || []).map(component => component.id)));
+    const updateApplicationUseComponents = _.flatten((pages || []).map(page => (page.components || []).map(component => component.id)));
+    const deleteComponentIds = _.difference(curApplicationUseComponents, updateApplicationUseComponents);
+    const addComponentIds = _.difference(updateApplicationUseComponents, curApplicationUseComponents);
+
+    if (!_.isEmpty(deleteComponentIds)) {
+      for (const deleteComponentId of deleteComponentIds) {
+        await ctx.model.Component._updateOne({ id: deleteComponentId }, { $pull: { applications: id } });
+      }
+    }
+
+    if (!_.isEmpty(addComponentIds)) {
+      for (const addComponentId of addComponentIds) {
+        await ctx.model.Component._updateOne({ id: addComponentId }, { $addToSet: { applications: id } });
+      }
+    }
   }
 
   async copyApplication(id, applicationInfo) {
