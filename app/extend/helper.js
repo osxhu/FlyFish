@@ -119,7 +119,7 @@ module.exports = {
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 720 });
-    await page.goto(url, { waitUntil: 'networkidle0', timeout: 10000 });
+    await page.goto(url, { waitUntil: 'networkidle0', timeout: 20000 });
 
     const cookieValue = ctx.cookies.get(cookieName);
     const cookie = {

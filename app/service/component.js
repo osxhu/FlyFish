@@ -357,13 +357,19 @@ class ComponentService extends Service {
 
     try {
       await exec(`cd ${componentDevPath} && npm run ${config.env === 'prod' ? 'build-production' : 'build-dev'}`);
+    } catch (error) {
+      returnData.msg = 'Compile Fail';
+      returnData.data.error = error.message || error.stack;
+      return returnData;
+    }
 
-      // screenshot component cover
+    // screenshot component cover
+    try {
       const url = 'http://www.baidu.com';
       await ctx.helper.screenshot(url, `${componentDevPath}/cover.png`);
       await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/cover.png` });
     } catch (error) {
-      returnData.msg = 'Compile Fail';
+      returnData.msg = 'Gen Cover Fail';
       returnData.data.error = error.message || error.stack;
       return returnData;
     }

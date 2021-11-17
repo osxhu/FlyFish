@@ -129,6 +129,8 @@ class ComponentsController extends BaseController {
       this.fail('编译失败, 请先安装依赖', errInfo, CODE.FAIL);
     } else if (componentInfo.msg === 'Compile Fail') {
       this.fail('编译失败', errInfo, CODE.FAIL);
+    } else if (componentInfo.msg === 'Gen Cover Fail') {
+      this.fail('编译成功, 组件封面图片生成失败', errInfo, CODE.FAIL);
     } else {
       this.success('编译成功', null);
     }
