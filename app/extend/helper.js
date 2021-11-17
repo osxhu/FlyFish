@@ -105,36 +105,43 @@ module.exports = {
   async screenshot(url, savePath) {
     const { ctx, config: { cookieConfig: { name: cookieName, domain: cookieDomain } } } = this;
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '–disable-gpu',
-        '–disable-dev-shm-usage',
-        '–disable-setuid-sandbox',
-        '–no-first-run',
-        '–no-zygote',
-        '–single-process',
-      ],
-    });
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 720 });
-    await page.goto(url, { waitUntil: 'networkidle0', timeout: 20000 });
+    try {
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '–disable-gpu',
+          '–disable-dev-shm-usage',
+          '–disable-setuid-sandbox',
+          '–no-first-run',
+          '–no-zygote',
+          '–single-process',
+        ],
+      });
 
-    const cookieValue = ctx.cookies.get(cookieName);
-    const cookie = {
-      name: cookieName,
-      value: cookieValue,
-      domain: cookieDomain,
-      path: '/',
-      expires: Date.now() + 3600 * 1000,
-    };
-    await page.setCookie(cookie); // 设置cookie
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1280, height: 720 });
+      await page.goto(url, { waitUntil: 'networkidle0', timeout: 50000 });
 
-    const fullPagePng = await page.screenshot({ type: 'png', fullPage: true });
-    fs.writeFileSync(savePath, fullPagePng);
-    await page.close();
-    await browser.close();
+      const cookieValue = ctx.cookies.get(cookieName);
+      const cookie = {
+        name: cookieName,
+        value: cookieValue,
+        domain: cookieDomain,
+        path: '/',
+        expires: Date.now() + 3600 * 1000,
+      };
+      await page.setCookie(cookie); // 设置cookie
+
+      const fullPagePng = await page.screenshot({ type: 'png', fullPage: true });
+      fs.writeFileSync(savePath, fullPagePng);
+      await page.close();
+      await browser.close();
+
+      return 'success';
+    } catch (error) {
+      throw new Error(error);
+    }
   },
 };
 

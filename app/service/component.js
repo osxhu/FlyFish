@@ -328,7 +328,7 @@ class ComponentService extends Service {
   }
 
   async compileComponent(id) {
-    const { ctx, config } = this;
+    const { ctx, config, logger } = this;
     const { pathConfig: { componentsPath } } = config;
 
     const version = 'current';
@@ -363,16 +363,9 @@ class ComponentService extends Service {
       return returnData;
     }
 
-    // screenshot component cover
-    try {
-      const url = 'http://www.baidu.com';
-      await ctx.helper.screenshot(url, `${componentDevPath}/cover.png`);
-      await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/cover.png` });
-    } catch (error) {
-      returnData.msg = 'Gen Cover Fail';
-      returnData.data.error = error.message || error.stack;
-      return returnData;
-    }
+    // note: async screenshot component cover, no wait!!!!!
+    const savePath = `${componentDevPath}/cover.png`;
+    this.genCoverImage(id, savePath, version);
 
     // 用于git push
     if (config.env === 'prod') {
@@ -384,6 +377,21 @@ class ComponentService extends Service {
     }
 
     return returnData;
+  }
+
+  async genCoverImage(id, savePath, version) {
+    const { ctx, logger } = this;
+
+    try {
+      const url = 'http://www.baidu.com';
+      const result = await ctx.helper.screenshot(url, savePath);
+      if (result === 'success') {
+        await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/cover.png` });
+      }
+      logger.info(`${id} gen cover success!`);
+    } catch (error) {
+      logger.error(`${id} gen cover error: ${error || error.stack}`);
+    }
   }
 
   async installComponentDepend(id) {
