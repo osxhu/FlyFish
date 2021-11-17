@@ -34,6 +34,7 @@ module.exports = app => {
     }],
     cover: String,
     creator: String,
+    updater: String,
     develop_status: {
       type: String,
       default: Enum.COMPONENT_DEVELOP_STATUS.DOING,

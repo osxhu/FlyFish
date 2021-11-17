@@ -7,6 +7,7 @@ const _ = require('lodash');
 const simpleGit = require('simple-git');
 const Diff2html = require('diff2html');
 const minify = require('html-minifier').minify;
+const fsExtra = require('fs-extra');
 
 const Enum = require('../lib/enum');
 
@@ -238,10 +239,11 @@ class ComponentService extends Service {
   }
 
   async copyComponent(id, componentInfo) {
-    const { ctx } = this;
+    const { ctx, config, logger } = this;
 
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
+    // TODO: 复制组件文件时，不要复制.git文件夹！！！！
 
     const copyComponent = await ctx.model.Component._findOne({ id });
     if (_.isEmpty(copyComponent)) {
@@ -275,6 +277,15 @@ class ComponentService extends Service {
 
     const createResult = await this.initDevWorkspace(componentId);
     if (createResult.msg !== 'success') returnData.msg = createResult.msg;
+
+    // 初始化git仓库
+    if (config.env === 'prod') {
+      try {
+        await this.initGit(componentId);
+      } catch (e) {
+        logger.error('git init error: ', e.stack);
+      }
+    }
 
     return returnData;
   }
@@ -318,6 +329,15 @@ class ComponentService extends Service {
       returnData.msg = 'Compile Fail';
       returnData.data.error = error.message || error.stack;
       return returnData;
+    }
+
+    // 用于git push
+    if (config.env === 'prod') {
+      const git = simpleGit(componentDevPath);
+      const status = await git.status();
+      if (!status.isClean()) {
+        await ctx.model.Component._updateOne({ id }, { needPushGit: true, lastChangeTime: Date.now(), updater: ctx.userInfo.id });
+      }
     }
 
     return returnData;
@@ -441,6 +461,7 @@ class ComponentService extends Service {
       fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentId, replaceId, version));
       fs.writeFileSync(`${componentDevPath}/options.json`, require(`${componentsTplPath}/options.json.js`)(replaceId));
       fs.writeFileSync(`${componentDevPath}/package.json`, require(`${componentsTplPath}/package.json.js`)(replaceId));
+      await fsExtra.copy(`${componentsTplPath}/.gitignore`, `${componentDevPath}/.gitignore`);
     } catch (error) {
       returnInfo.msg = 'Fail';
       logger.error('createDevWorkspace error: ', error || error.stack);

@@ -50,6 +50,7 @@ components: {
 	}],
 	cover: String, 					// 封面，效果展示
 	creator: String,
+	updater: String,
 	develop_status: String, 	// 组件开发状态 enum#COMPONENT_DEVELOP_STATUS
 	status: String, 				// 可用状态 enum#COMMON_STATUS
 	git_lab_project_id: Integer,  // gitlab 项目id
