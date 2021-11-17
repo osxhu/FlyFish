@@ -9,11 +9,6 @@ class ApplicationService extends Service {
     const { ctx } = this;
     const userInfo = ctx.userInfo;
 
-    Object.assign(params, {
-      creator: userInfo.userId,
-      updater: userInfo.userId,
-    });
-
     const returnData = { msg: 'ok', data: {} };
 
     const existsApplications = await ctx.model.Application._findOne({ name: params.name });
@@ -21,27 +16,57 @@ class ApplicationService extends Service {
       returnData.msg = 'Exists Already';
       return returnData;
     }
-    const result = await ctx.model.Application._create(params);
+
+    const tagData = await this.getTagData(params);
+    const result = await ctx.model.Application._create(Object.assign(
+      params,
+      tagData,
+      {
+        creator: userInfo.userId,
+        updater: userInfo.userId,
+      }
+    ));
     returnData.data = result;
 
     return returnData;
+  }
+
+  async getTagData(params) {
+    const { ctx } = this;
+
+    const newTagNames = (params.tags || []).filter(item => !item.id);
+    const existTags = await ctx.model.Tag._find({ name: { $in: newTagNames.map(item => item.name) }, status: Enum.COMMON_STATUS.VALID, type: Enum.TAG_TYPE.APPLICATION });
+    const needInsertTags = newTagNames.filter(item => !existTags.some(tag => tag.name === item.name));
+
+    let insertedTags = [];
+    if (!_.isEmpty(needInsertTags)) {
+      const insertData = needInsertTags.map(item => ({ type: Enum.TAG_TYPE.APPLICATION, name: item.name }));
+      insertedTags = await ctx.model.Tag._create(insertData);
+    }
+
+    return {
+      tags: [
+        ...(params.tags || []).filter(item => item.id).map(item => item.id), // 前端传进来的带id的
+        ...existTags.map(item => item.id), // 前端传进来无id的，但库里已存在的
+        ...insertedTags.map(item => item.id) ], // 前端传进来无id的，新创建的
+    };
   }
 
   async updateBasicInfo(id, requestData) {
     const { ctx } = this;
 
     const userInfo = ctx.userInfo;
-    const { type, projectId, tags, isLib } = requestData;
+    const { type, projectId, isLib } = requestData;
 
     const updateData = {
       updater: userInfo.userId,
     };
     if (type) updateData.type = type;
     if (projectId) updateData.projectId = projectId;
-    if (tags) updateData.tags = tags;
     if (_.isBoolean(isLib)) updateData.isLib = isLib;
+    const tagData = await this.getTagData(requestData);
 
-    await ctx.model.Application._updateOne({ id }, updateData);
+    await ctx.model.Application._updateOne({ id }, Object.assign(updateData, tagData));
   }
 
   async updateDesignInfo(id, requestData) {

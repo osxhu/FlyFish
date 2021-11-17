@@ -20,6 +20,9 @@ module.exports = app => {
     name: {
       type: String,
     },
+    type: {
+      type: String,
+    },
     status: {
       type: String,
       default: Enum.COMMON_STATUS.VALID,

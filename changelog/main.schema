@@ -80,6 +80,7 @@ tags: {
 	update_time: Time,
 
 	name: String,
+	type: String, // 标签类型 enum#TAG_TYPE
 	status: String, // 可用状态 enum#COMMON_STATUS
 }
 

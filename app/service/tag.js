@@ -7,9 +7,9 @@ class TagService extends Service {
     return await ctx.model.Tag._create(params);
   }
 
-  async getAll() {
+  async getAll(params) {
     const { ctx } = this;
-    const list = await ctx.model.Tag._find();
+    const list = await ctx.model.Tag._find(params);
     return list;
   }
 }

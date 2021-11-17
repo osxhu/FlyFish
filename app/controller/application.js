@@ -17,7 +17,10 @@ class ApplicationController extends BaseController {
       name: Joi.string().required(),
       projectId: Joi.string().length(24).required(),
       type: Joi.string().valid(...Object.values(Enum.APP_TYPE)).required(),
-      tags: Joi.array().items(Joi.string().length(24)),
+      tags: Joi.array().items(Joi.object().keys({
+        id: Joi.string().length(24),
+        name: Joi.string().required(),
+      })),
     });
     const body = await createSchema.validateAsync(ctx.request.body);
     const applicationInfo = await service.application.create(body);
@@ -34,7 +37,10 @@ class ApplicationController extends BaseController {
 
     const editSchema = Joi.object().keys({
       type: Joi.string().valid(...Object.values(Enum.APP_TYPE)),
-      tags: Joi.array().items(Joi.string().length(24)),
+      tags: Joi.array().items(Joi.object().keys({
+        id: Joi.string().length(24),
+        name: Joi.string().required(),
+      })),
       projectId: Joi.string().length(24),
       developStatus: Joi.string().valid(...Object.values(Enum.APP_DEVELOP_STATUS)),
     });

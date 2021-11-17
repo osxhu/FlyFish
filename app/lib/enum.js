@@ -35,3 +35,9 @@ exports.APP_TYPE = {
   '2D': '2D',
   '3D': '3D',
 };
+
+// 标签类型
+exports.TAG_TYPE = {
+  APPLICATION: 'application',
+  COMPONENT: 'component',
+};
