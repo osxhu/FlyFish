@@ -1,5 +1,5 @@
 /*
- * @Descripttion: 
+ * @Descripttion:
  * @Author: zhangzhiyong
  * @Date: 2021-11-16 15:15:58
  * @LastEditors: zhangzhiyong
@@ -53,6 +53,9 @@ module.exports = app => {
   router.post('/components/up-to-lib/:id', controller.component.upToLib);
   router.post('/components/import-source-code/:componentId', controller.component.uploadComponentSource);
   router.get('/components/export-source-code/:componentId', controller.component.exportComponentSource);
+  router.get('/components/git-history/:id', controller.component.getComponentHistory);
+  router.get('/components/git-commit-info/:id', controller.component.getCommitInfo);
+  // 注意：放底部
   router.get('/components/:id', controller.component.getInfo);
 
   // menu

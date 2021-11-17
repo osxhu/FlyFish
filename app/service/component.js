@@ -506,6 +506,46 @@ class ComponentService extends Service {
       logger.error(e.stack || e);
     }
   }
+
+  async getComponentHistory(options) {
+    const { ctx, config: { pathConfig: { componentsPath } } } = this;
+    const { id, curPage, pageSize } = options;
+
+    const componentDevPath = `${componentsPath}/${id}/current`;
+    const git = simpleGit(componentDevPath);
+    const { all: totalLogs } = await git.log();
+    const total = totalLogs.length;
+    const selectedLogs = totalLogs.slice(curPage * pageSize, (curPage + 1) * pageSize);
+
+    return {
+      total,
+      list: selectedLogs.map(log => {
+        return {
+          hash: log.hash,
+          message: log.message,
+          time: new Date(log.date).getTime(),
+        };
+      }),
+    };
+  }
+
+  async getCommitInfo(options) {
+    const { config: { pathConfig: { componentsPath } } } = this;
+    const { id, hash } = options;
+
+    const componentDevPath = `${componentsPath}/${id}/current`;
+
+    const git = simpleGit(componentDevPath);
+    const diffStr = await git.show(hash);
+    const diffJson = Diff2html.parse(diffStr);
+    const diffHtml = Diff2html.html(diffJson, { drawFileList: true });
+    const compressHtml = minify(diffHtml, {
+      collapseWhitespace: true,
+      collapseInlineTagWhitespace: true,
+      conservativeCollapse: true,
+    });
+    return compressHtml;
+  }
 }
 
 module.exports = ComponentService;

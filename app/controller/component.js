@@ -257,6 +257,41 @@ class ComponentsController extends BaseController {
       await fs.remove(destZip);
     }
   }
+
+  async getComponentHistory() {
+    const { ctx, app: { Joi }, service } = this;
+
+    const idSchema = Joi.object().keys({
+      id: Joi.string().length(24).required(),
+    });
+    const { id } = await idSchema.validateAsync(ctx.params);
+
+    const historySchema = Joi.object().keys({
+      curPage: Joi.number().required(),
+      pageSize: Joi.number().required(),
+    });
+    const query = await historySchema.validateAsync(ctx.query);
+    const res = await service.component.getComponentHistory({ id, ...query });
+    this.success('成功', res);
+  }
+
+  async getCommitInfo() {
+    const { ctx, app: { Joi }, service } = this;
+
+    const idSchema = Joi.object().keys({
+      id: Joi.string().length(24).required(),
+    });
+    const { id } = await idSchema.validateAsync(ctx.params);
+
+    const historySchema = Joi.object().keys({
+      hash: Joi.string().required(),
+    });
+    const query = await historySchema.validateAsync(ctx.query);
+
+    const res = await service.component.getCommitInfo({ id, ...query });
+    ctx.set('content-type', 'text/html');
+    ctx.body = res;
+  }
 }
 
 module.exports = ComponentsController;
