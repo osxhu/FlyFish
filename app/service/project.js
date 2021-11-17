@@ -6,16 +6,41 @@ const Enum = require('../lib/enum');
 class ProjectService extends Service {
   async create(params) {
     const { ctx } = this;
-    const userInfo = ctx.userInfo;
 
-    Object.assign(params, {
-      creator: userInfo.userId,
-      updater: userInfo.userId,
+    const projectData = await this.assembleProjectData(params);
+    if (!projectData) return;
+
+    Object.assign(projectData, {
+      creator: ctx.userInfo.userId,
     });
+    return await ctx.model.Project._create(projectData);
+  }
 
-    const existProject = await ctx.model.Project._findOne({ name: params.name });
-    if (!_.isEmpty(existProject)) return;
-    return await ctx.model.Project._create(params);
+  async assembleProjectData(params, update = false) {
+    const { ctx } = this;
+
+    if (!update) {
+      const existProject = await ctx.model.Project._findOne({ name: params.name });
+      if (!_.isEmpty(existProject)) return;
+    }
+
+    const newTradeNames = params.trades.filter(item => !item.id);
+    const existTrades = await ctx.model.Trade._find({ name: { $in: newTradeNames.map(item => item.name) }, status: Enum.COMMON_STATUS.VALID });
+    const insertTrades = newTradeNames.filter(item => !existTrades.some(trade => trade.name === item.name));
+
+    let insertedTrades = [];
+    if (!_.isEmpty(insertTrades)) {
+      insertedTrades = await ctx.model.Trade._create(insertTrades);
+    }
+
+    return Object.assign({}, params, {
+      // creator: ctx.userInfo.userId,
+      updater: ctx.userInfo.userId,
+      trades: [
+        ...params.trades.filter(item => item.id).map(item => item.id), // 前端传进来的带id的
+        ...existTrades.map(item => item.id), // 前端传进来无id的，但库里已存在的
+        ...insertedTrades.map(item => item.id) ], // 前端传进来无id的，新创建的
+    });
   }
 
   async delete(id) {
@@ -25,12 +50,11 @@ class ProjectService extends Service {
 
   async edit(id, params) {
     const { ctx } = this;
-    const userInfo = ctx.userInfo;
 
-    Object.assign(params, {
-      updater: userInfo.userId,
-    });
-    return await ctx.model.Project._updateOne({ id }, params);
+    const projectData = await this.assembleProjectData(params, true);
+    if (!projectData) return;
+
+    return await ctx.model.Project._updateOne({ id }, projectData);
   }
 
   async getList(query, options) {

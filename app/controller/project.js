@@ -11,7 +11,10 @@ class ProjectController extends BaseController {
 
     const addSchema = Joi.object().keys({
       name: Joi.string().required(),
-      trades: Joi.array().items(Joi.string().length(24)).required(),
+      trades: Joi.array().items(Joi.object().keys({
+        id: Joi.string().length(24),
+        name: Joi.string().required(),
+      })).required(),
       desc: Joi.string(),
     });
     const body = await addSchema.validateAsync(ctx.request.body);
@@ -38,8 +41,11 @@ class ProjectController extends BaseController {
     });
 
     const editBodySchema = Joi.object().keys({
-      name: Joi.string(),
-      trades: Joi.array().items(Joi.string()),
+      name: Joi.string().required(),
+      trades: Joi.array().items(Joi.object().keys({
+        id: Joi.string().length(24),
+        name: Joi.string().required(),
+      })).required(),
       desc: Joi.string(),
     });
 
