@@ -209,13 +209,15 @@ class ComponentService extends Service {
       return returnData;
     }
 
+    const tagInfo = await this.getTagData(createComponentInfo);
+
     const createInfo = {
       name: createComponentInfo.name,
       category: createComponentInfo.category,
       subCategory: createComponentInfo.subCategory,
       type: createComponentInfo.type,
       projects: createComponentInfo.projects,
-      tags: createComponentInfo.tags || [],
+      tags: tagInfo.tags || [],
       desc: createComponentInfo.desc || '无',
       versions: [],
       cover: '',
@@ -234,11 +236,32 @@ class ComponentService extends Service {
     return returnData;
   }
 
+  async getTagData(params) {
+    const { ctx } = this;
+
+    const newTagNames = (params.tags || []).filter(item => !item.id);
+    const existTags = await ctx.model.Tag._find({ name: { $in: newTagNames.map(item => item.name) }, status: Enum.COMMON_STATUS.VALID, type: Enum.TAG_TYPE.COMPONENT });
+    const needInsertTags = newTagNames.filter(item => !existTags.some(tag => tag.name === item.name));
+
+    let insertedTags = [];
+    if (!_.isEmpty(needInsertTags)) {
+      const insertData = needInsertTags.map(item => ({ type: Enum.TAG_TYPE.COMPONENT, name: item.name }));
+      insertedTags = await ctx.model.Tag._create(insertData);
+    }
+
+    return {
+      tags: [
+        ...(params.tags || []).filter(item => item.id).map(item => item.id), // 前端传进来的带id的
+        ...existTags.map(item => item.id), // 前端传进来无id的，但库里已存在的
+        ...insertedTags.map(item => item.id) ], // 前端传进来无id的，新创建的
+    };
+  }
+
 
   async updateInfo(id, requestData) {
     const { ctx } = this;
 
-    const { status, type, projects, tags, category, subCategory, isLib, desc } = requestData;
+    const { status, type, projects, category, subCategory, isLib, desc } = requestData;
 
     const updateData = {};
     if (status) updateData.status = status;
@@ -246,10 +269,12 @@ class ComponentService extends Service {
     if (_.isBoolean(isLib)) updateData.isLib = isLib;
 
     if (projects) updateData.projects = projects;
-    if (tags) updateData.tags = tags;
     if (category) updateData.category = category;
     if (subCategory) updateData.subCategory = subCategory;
     if (desc) updateData.desc = desc;
+
+    const tagInfo = await this.getTagData(requestData);
+    Object.assign(updateData, tagInfo);
 
     await ctx.model.Component._updateOne({ id }, updateData);
   }

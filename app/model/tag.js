@@ -32,7 +32,8 @@ module.exports = app => {
   TagSchema.statics._create = async function(params) {
     const doc = _toDoc(params);
     const res = await this.create(doc);
-    return { id: res._id.toString() };
+    if (Array.isArray(res)) return res.map(item => _toObj(item._doc));
+    return _toObj(res._doc);
   };
 
   TagSchema.statics._findOne = async function(params) {
