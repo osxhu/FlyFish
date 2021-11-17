@@ -10,6 +10,8 @@ const CodeDevelop = observer(()=>{
     setDeveloping
   } = store;
   const { developingData } = store;
+
+  const [previewRandom, setPreviewRandom] = useState(0);
   
   useEffect(() => {
     window.addEventListener('message',function(event){
@@ -26,6 +28,7 @@ const CodeDevelop = observer(()=>{
     const res = await installPackagesService(id);
     if (res && res.code===0) {
       message.success('依赖安装成功!')
+      setPreviewRandom(Math.random());
     }else{
       message.error(res.msg)
     }
@@ -33,7 +36,7 @@ const CodeDevelop = observer(()=>{
   const compileComponent = async ()=>{
     const res  = await compileComponentService(developingData.id);
     if (res && res.code===0) {
-      message.success('编译成功!')
+      message.success('编译成功!');
     }else{
       message.error(res.msg);
     }
@@ -70,7 +73,12 @@ const CodeDevelop = observer(()=>{
         />
       </div>
       <div className={styles.previewWrap}>
-        <iframe src={`http://${window.location.hostname}:7001/components/${developingData.id}/current/editor.html`} width = "100%" height = "100%" frameBorder={0}></iframe>
+        <iframe 
+          name='preview'
+          src={`http://${window.location.hostname}:7001/components/${developingData.id}/current/editor.html?random=${previewRandom}`} 
+          width = "100%" 
+          height = "100%" 
+          frameBorder={0}></iframe>
       </div>
     </div>
   </div>

@@ -14,7 +14,9 @@ const HandleMenu = observer((props)=>{
     getTreeData,
     setSelectedData,
     selectedData,
-    userInfo
+    userInfo,
+    setCurPage,
+    setPageSize
   } = store;
   const [data, setData] = useState([]);
   const addinput = useRef();
@@ -222,9 +224,10 @@ const HandleMenu = observer((props)=>{
                 })
               }}
               onClick={()=>{
+                setCurPage(1);
                 setSelectedData({
-                  category:v.name,
-                  subCategory:v2.name
+                  category:v.id,
+                  subCategory:v2.id
                 })
               }}
             >

@@ -125,13 +125,13 @@ const AddComponent = observer((props)=>{
           treeData.map((v,k)=>{
             return {
               title:v.name,
-              value:v.name,
+              value:v.id,
               key:k+'',
               disabled:true,
               children:v.children.map((v1,k1)=>{
                 return {
                   title:v1.name,
-                  value:JSON.stringify({one:v.name,two:v1.name}),
+                  value:JSON.stringify({one:v.id,two:v1.id}),
                   key:k+'-'+k,
                 }
               })
