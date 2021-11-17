@@ -13,6 +13,7 @@ const CodeDevelop = observer(()=>{
   
   useEffect(() => {
     window.addEventListener('message',function(event){
+      console.log(event);
       if (event && event.data) {
         if ("vscode_compile" ===event.data.event) {
           //编译
