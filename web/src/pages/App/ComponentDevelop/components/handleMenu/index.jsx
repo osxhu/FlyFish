@@ -329,6 +329,8 @@ const HandleMenu = observer((props)=>{
                     if (res && res.code==0) {
                       getTreeData();
                       message.success('删除成功!')
+                    }else{
+                      message.error(res.msg)
                     }
                   }}
                 />

@@ -28,7 +28,6 @@ const CodeDevelop = observer(()=>{
     const res = await installPackagesService(id);
     if (res && res.code===0) {
       message.success('依赖安装成功!')
-      setPreviewRandom(Math.random());
     }else{
       message.error(res.msg)
     }
@@ -37,6 +36,7 @@ const CodeDevelop = observer(()=>{
     const res  = await compileComponentService(developingData.id);
     if (res && res.code===0) {
       message.success('编译成功!');
+      setPreviewRandom(Math.random());
     }else{
       message.error(res.msg);
     }
