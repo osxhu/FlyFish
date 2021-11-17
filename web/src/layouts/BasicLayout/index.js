@@ -76,7 +76,9 @@ const Layout = ({
     }
     history.push(e.key);
   };
-
+const check=(a)=>{
+  console.log('惦记了',a);
+};
   /**
    * 获取高亮菜单
    */
@@ -91,11 +93,15 @@ const Layout = ({
   };
 
   // 获取当前路由下的配置，根据配置可进行一些定制化操作
-  const { showBack } = currentRoute;
-
+  const { showBack ,backTitle,name} = currentRoute;
   const goBack = () => {
     history.goBack();
   };
+  // 动态的返回文字
+  const routeBackName=()=>{
+    if(name==='项目详情'){
+      return `项目管理/${JSON.parse(sessionStorage.getItem('activeProject')).name}`;}
+    };
   const clearCookies = () => {
     loginout();
     history.replace('/login');
@@ -105,19 +111,13 @@ const Layout = ({
       logo={<img src={logo} />}
       headerTitle='LCAP'
       showTopNavigation={false}
-      showBack={showBack}
+      showBack={showBack} 
+      backNavigationTitle={backTitle||routeBackName()}
       showBreadcrumb={true}
       breadcrumbOptions={{
-        // 完全定制化面包屑(默认通过路由配置规则自动生成)
-        // data: [{
-        //   path: '/',
-        //   name: 'xxx'
-        // }, {
-        //   path: '/2',
-        //   name: 'xxx2'
-        // }],
         // 格式化面包屑数据
         formatData: data => {
+          data.shift();
           return data;
         },
       }}
@@ -125,6 +125,7 @@ const Layout = ({
         <div style={{ color: 'white' ,cursor:'pointer'}} onClick={clearCookies}>退出</div>
   
       }
+      onClickTopNavigation={check}
       onClickBack={goBack}
       menuOptions={{
         menuData: getMenuData(route.routes || [], []),

@@ -42,7 +42,6 @@ const UserList = observer(() => {
       dataIndex: "email",
       key: "email",
       disabled: true,
-      width: 200,
     },
     {
       title: "手机号",
@@ -64,7 +63,7 @@ const UserList = observer(() => {
       dataIndex: "status",
       key: "status",
       render(status) {
-        return <div style={status === 'valid' ? { color: 'green' } : { color: 'red' }}>{status === 'valid' ? '正常' : '禁用'}</div>;
+        return <div style={status === 'valid' ? { color: '#52C41A' } : { color: 'red' }}>{status === 'valid' ? '正常' : '禁用'}</div>;
       }
     },
     {

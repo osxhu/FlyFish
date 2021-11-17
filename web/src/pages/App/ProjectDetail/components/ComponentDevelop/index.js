@@ -39,18 +39,28 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     getAssemlyDetail,
     setSelectedData
   } = store;
-  const { listLength,industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
+  const {libraryListLength, listLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
   const [changeFlga, setchangeFlga] = useState(false); //编辑完成
   let [infinitKey, setInfinitKey] = useState(0);
   let [flagNum, setFlagNum] = useState(0);
-
+  let [libraryFlagNum, setLibraryFlagNum] = useState(0);
+  let [libraryParams,setLibraryParams]=useState({});
+  //项目组件下滑
   const changePage = () => {
     setFlagNum(flagNum += 1);
     getListData({
-      projectId:ProgressId,
+      projectId: ProgressId,
       curPage: flagNum,
     });
   };
+  // 公共组件下滑
+  const libraryChangePage = () => {
+    setLibraryFlagNum(libraryFlagNum += 1);
+    getLibraryListData({
+      curPage: libraryFlagNum,
+      ...libraryParams
+    });
+  }; 
   // 表格列表数据
   let basicTableListData = toJS(listData);
   const [activeProject, setActiveProject] = useState(''); //编辑完成
@@ -115,23 +125,25 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   ];
   const addCateRef = useRef();
   const changeColumns = (values) => {
+    setLibraryFlagNum(0);
     for (let i in values) {
       if (!values[i] || values[i].length === 0) {
         delete values[i];
       }
     }
-    getLibraryListData(values);
+    setLibraryParams(values);
+    getLibraryListData(values,true);
   };
   // 请求列表数据
   useEffect(() => {
     getTreeData();
-    getLibraryListData();
+    getLibraryListData({},true);
     getIndustrysList();
     setActiveProject(JSON.parse(sessionStorage.getItem('activeProject')).name);
   }, []);
   useEffect(() => {
     setFlagNum(0);
-    getListData({projectId:ProgressId},true);
+    getListData({ projectId: ProgressId }, true);
   }, [selectedData]);
   return <>
     <AbreastLayout
@@ -174,7 +186,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               setchangeFlga(!changeFlga);
             }} type="primary" >编辑</Button>
             }>
-            <div id="scrollableDiv" style={{ height: '490px', overflow: 'auto' }} >
+            <div id="scrollableDiv" style={{ height: '470px', overflow: 'auto' }} >
               <InfiniteScroll
                 dataLength={listLength}
                 next={changePage}
@@ -221,41 +233,53 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               onSearch={changeColumns}
               searchContent={searchContent} showSearchCount={6}
             />
-            <Card
-              checkCard={(id) => {
-                getAssemlyDetail(id);
-              }}
-              value={libraryListData}
-              state={1}
-              canAdd={true}
-              addOwn={(id, item) => {
-                let result = item.filter(item => item === ProgressId);
-                if (result.length > 0) {
-                  message.error('该组件已归属该项目');
-                  return;
-                }
-                changeOneAssemly(id, { projects: [ProgressId, ...item] }, (res) => {
-                  if (res.code === successCode) {
-                    getListData(ProgressId);
-                    message.success(
-                      intl.formatMessage({
-                        id: "common.addSuccess",
-                        defaultValue: "新增成功！",
-                      })
-                    );
-                    getLibraryListData();
-                  } else {
-                    message.error(
-                      res.msg || intl.formatMessage({
-                        id: "common.addError",
-                        defaultValue: "新增失败，请稍后重试！",
-                      })
-                    );
-                  }
-                });
-              }}
-            >
-            </Card>
+            <div id="scrollableDivTwo" style={{ height: '470px', overflow: 'auto' }} >
+              <InfiniteScroll
+                dataLength={libraryListLength}
+                next={libraryChangePage}
+                hasMore={true}
+                scrollableTarget="scrollableDivTwo"
+                key={infinitKey}
+              >
+                <Card
+                  checkCard={(id) => {
+                    getAssemlyDetail(id);
+                  }}
+                  value={libraryListData}
+                  state={1}
+                  canAdd={true}
+                  addOwn={(id, item) => {
+                    let result = item.filter(item => item === ProgressId);
+                    if (result.length > 0) {
+                      message.error('该组件已归属该项目');
+                      return;
+                    }
+                    changeOneAssemly(id, { projects: [ProgressId, ...item] }, (res) => {
+                      if (res.code === successCode) {
+                        getListData(ProgressId);
+                        message.success(
+                          intl.formatMessage({
+                            id: "common.addSuccess",
+                            defaultValue: "新增成功！",
+                          })
+                        );
+                        getLibraryListData();
+                      } else {
+                        message.error(
+                          res.msg || intl.formatMessage({
+                            id: "common.addError",
+                            defaultValue: "新增失败，请稍后重试！",
+                          })
+                        );
+                      }
+                    });
+                  }}
+                >
+                </Card>
+              </InfiniteScroll>
+            </div>
+
+
           </Panel>
         </Collapse>
       </div>

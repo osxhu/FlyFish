@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, saveProjectService } from "../services";
+import { reqApplicationList, reqTagsList, addApplication,reqProjectList } from "../services";
 import _ from "lodash";
 
 const model = {
@@ -8,45 +8,71 @@ const model = {
   // 状态
   state: {
     searchParams: {},
+    applicationList: [],
     projectList: [],
+    tagList: [],
+    key:'',
     total: 0,
+    curPage: 0,
+    pageSize: 10,
+    activeCard:{},
     activeProject: null,
-    isEditProjectModalVisible: false,
+    isAddModalVisible: false,
     isDeleteApplyListModalVisible: false,
   },
   effects: {
     // 获取项目列表数据
-    *getProjectList(params = {}) {
-      // 处理参数
+    *getApplicationList(params = {}) {
       let options = {
+        type: this.key||'2D',
         curPage: this.curPage,
         pageSize: this.pageSize,
         ...this.searchParams,
         ...params,
       };
-      // 请求数据
-      const res = yield getProjectManageListService(options);
+      const res = yield reqApplicationList(options);
+      this.setApplicationList(res);
+    },
+    *getProjectList() {
+      const res = yield reqProjectList();
       this.setProjectList(res);
     },
-    *saveProject(params = {}, callback) {
-      // 测试代码
-      const res = yield saveProjectService(params);
+    *getTagsList() {
+      const res = yield reqTagsList();
+      this.setTagList(res);
+    },
+    *addApplicationOne(params = {}, callback) {
+      const res = yield addApplication(params);
       callback && callback(res);
     },
   },
   reducers: {
-    setProjectList(res) {
-      this.projectList = res.data;
-      this.total = res.total;
-      this.curPage = res.curPage;
-      this.pageSize = res.pageSize;
+    setActiveCard(item){
+      this.activeCard={
+        ...item,
+        projects:item.projects.id,
+        tags:item.tags.map(item=>item.id)
+      };
+    },
+    setProjectList(res){
+      this.projectList=res.data.list;
+    },
+    setTagList(res) {
+      this.tagList = res.data;
+
+    },
+    setApplicationList(res) {
+      this.applicationList = res.data;
+      this.total = res.data.total;
+      this.curPage = res.data.curPage;
+      this.pageSize = res.data.pageSize;
     },
     setSearchParams(searchParams) {
       this.searchParams = searchParams || {};
     },
-    openEditProjectModal(project) {
+    openAddProjectModal(project) {
       this.activeProject = _.clone(project);
-      this.isEditProjectModalVisible = true;
+      this.isAddModalVisible = true;
     },
     openDeleteApplyListModal() {
       this.isDeleteApplyListModalVisible = true;
@@ -54,10 +80,16 @@ const model = {
     closeDeleteApplyListModal() {
       this.isDeleteApplyListModalVisible = false;
     },
-    closeEditProjectModal() {
-      this.activeProject = null;
-      this.isEditProjectModalVisible = false;
+    setType(str){
+      this.key=str;
     },
+    closeAppProjectModal() {
+      this.activeProject = null;
+      this.isAddModalVisible = false;
+    },
+    setCurPage(res) {
+      this.curPage = res;
+    }
   },
 };
 

@@ -1,32 +1,19 @@
-import { fetchGet, fetchPost } from "@/utils/request";
-import API from "@/services/api";
+import { fetchGet, fetchPost,fetchPut } from "@/utils/request";
+import API from "@/services/api/application";
+import APII from "@/services/api/component";
+import APIII from "@/services/api/app";
 
-export const getProjectManageListService = (options) => {
-  //return fetchGet(API.GET_PROJECT_MANAGELIST_API, { params: options });
 
-  return new Promise((res, rej) => {
-    res({
-      data: [
-        {
-          id: 1,
-          projectMark: "12212",
-          name: "test",
-        },
-      ],
-      total: 10,
-      curPage:0,
-      pageSize: 20,
-    });
-  });
+
+export const reqApplicationList = (options) => {
+  return fetchPost(API.GET_APPLICATION_LIST, { body: options });
 };
-
-export const saveProjectService = (options) => {
-  //return fetchPost(API.SAVE_PROJECT_API, { body: options });
-
-  return new Promise((res, rej) => {
-    res({
-      code: 200
-    });
-  });
+export const reqTagsList = () => {
+  return fetchGet(APII.GET_TAGS);
 };
-
+export const addApplication = (options) => {
+  return fetchPost(API.ADD_APPLICATION_LIST, { body: options });
+};
+export const reqProjectList = () => {
+  return fetchGet(APIII.GET_PROJECT_MANAGELIST_API );
+};

@@ -155,7 +155,7 @@ const AppProjectManage = observer((props) => {
     getIndustrysList();
   }, []);
   const goRoute = (id) => {
-    props.history.replace(`/app/${id}/project-detail`);
+    props.history.push(`/app/${id}/project-detail`);
   };
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {

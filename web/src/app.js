@@ -4,7 +4,6 @@ import {
   ThemeProvider 
 } from '@chaoswise/ui';
 import Router from '@/config/router.config';
-
 // 国际化
 import zh_antd from 'antd/es/locale/zh_CN';
 import en_antd from 'antd/es/locale/en_US';

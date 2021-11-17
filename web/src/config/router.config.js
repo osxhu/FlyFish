@@ -31,23 +31,26 @@ module.exports = {
               component: "@/pages/App/ProjectManage",
             },
             {
-              name: "布局",
+              name: "项目详情",
               path: "/app/:id/project-detail",
               component: "@/pages/App/ProjectDetail",
               hideInMenu: true,
-              activeMenuKey: "/app/project-manage"
+              activeMenuKey: "/app/project-manage",
+              showBack:true,
+              backTitle:'' //如果二级或三级路由有返回模式，返回显示的文字
             },
             {
               name: "应用开发",
               path: "/app/apply-develop",
               component: "@/pages/App/ApplyDevelop",
             },
-            // { from: "/app", to: "/app/project-manage" },
+            
             {
               name: "组件开发",
               path: "/app/component-develop",
               component: "@/pages/App/ComponentDevelop",
-            }
+            },
+            { from: "/app", to: "/app/project-manage" },
           ],
         },
         // {
@@ -126,6 +129,7 @@ module.exports = {
               path: "/template/library-Template",
               component: "@/pages/Template/TemplateComponent",
             },
+            { from: "/template", to: "/template/apply-template" },
           ],
         },
         {
@@ -144,6 +148,7 @@ module.exports = {
               path: "/user/role-manage",
               component: "@/pages/User/RoleManage",
             },
+            { from: "/user", to: "/user/user-manage" },
           ],
         },
         { from: "/", to: "/app/project-manage" },

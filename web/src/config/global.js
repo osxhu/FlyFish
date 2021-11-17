@@ -14,6 +14,44 @@ export const EnumScreenStatus = {
         value: 2
     }
 };
+// 组件类型
+export const COMPONENT_TYPE = {
+    COMMON: 'common', // 公共组件
+    PROJECT: 'project', // 项目组件
+  };
+  
+  // 组件开发状态
+  export const COMPONENT_DEVELOP_STATUS = {
+    DOING: 'doing', // 开发中
+    ONLINE: 'online', // 已上线
+  };
+  
+  // 可用状态
+  export const COMMON_STATUS = {
+    VALID: 'valid', // 可用的
+    INVALID: 'invalid', // 不可用的
+  };
+  
+  export const APP_DEVELOP_STATUS = [
+    {
+        id:'doing',
+        name:'开发中'
+      },{
+        id:'testing',
+        name:'测试中'
+      },{
+        id:'delivered',
+        name:'已交付'
+      },{
+        id:'demo',
+        name:'demo'
+      }
+  ];
+  
+  export const ROLE = {
+    ADMIN: '管理员',
+    MEMBER: '成员',
+  };
 export const formatDate = (datetime) => {
     var date = new Date(datetime);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var year = date.getFullYear(),
@@ -22,8 +60,6 @@ export const formatDate = (datetime) => {
         hour = ("0" + date.getHours()).slice(-2),
         minute = ("0" + date.getMinutes()).slice(-2),
         second = ("0" + date.getSeconds()).slice(-2);
-    // 拼接
     var result = year + "-" + month + "-" + sdate + " " + hour + ":" + minute + ":" + second;
-    // 返回
     return result;
 };

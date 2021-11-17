@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Root from './Root';
-
+import './assets/css/index.less';
 // 初始化应用
 function render(props) {
   const { container } = props;

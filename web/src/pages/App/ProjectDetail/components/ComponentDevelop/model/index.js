@@ -27,7 +27,8 @@ const model = {
     industryList: [],//行业列表
     assemlyDetail: [],//组件详情
     isDrawerVisible: false,
-    listLength: 0
+    listLength: 0,
+    libraryListLength:0
   },
   effects: {
     *getTreeData() {
@@ -51,7 +52,7 @@ const model = {
       }
     },
     // 组件库列表数据
-    *getLibraryListData(options) {
+    *getLibraryListData(options,state) {
       const params = {
         isLib: true,
         ...options
@@ -59,7 +60,7 @@ const model = {
       // 请求数据
       const res = yield getListDataService(params);
       if (res.code === successCode) {
-        this.setLibraryListData(res.data);
+        this.setLibraryListData(res.data,state);
       }
 
     },
@@ -94,8 +95,16 @@ const model = {
     setIndustryList(res) {
       this.industryList = res.data.list;
     },
-    setLibraryListData(res) {
-      this.libraryListData = res;
+    setLibraryListData(res,state) {
+      if (state) {
+        console.log('下面新推');
+        this.libraryListData = res;
+      } else {
+        console.log('下面里塞',res);
+        this.libraryListData.list && this.libraryListData.list.push(...res.list);
+      }
+      let libraryListData = toJS(this.libraryListData.list);
+      this.libraryListLength = libraryListData.length;
     },
     setDetailShow(res) {
       this.detailShow = res;
@@ -108,10 +117,8 @@ const model = {
     },
     setListData(res,state) {
       if (state) {
-        console.log('新推');
         this.listData = res;
       } else {
-        console.log('里塞',res);
         this.listData.list && this.listData.list.push(...res.list);
       }
 

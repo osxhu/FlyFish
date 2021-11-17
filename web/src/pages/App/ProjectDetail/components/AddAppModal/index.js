@@ -39,13 +39,13 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         visible={true}
       >
         <Form
-          labelCol={{
-            xs: { span: 6 },
-            sm: { span: 6 },
+           labelCol={{
+            xs: { span: 4 },
+            sm: { span: 4 },
           }}
           wrapperCol={{
-            xs: { span: 16 },
-            sm: { span: 16 },
+            xs: { span: 19 },
+            sm: { span: 19 },
           }}
           initialvalues={project || {}}
         >
