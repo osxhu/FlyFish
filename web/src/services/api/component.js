@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-16 10:27:37
+ * @LastEditTime: 2021-11-17 14:12:04
  */
 /*
  * 应用
@@ -35,4 +35,6 @@ export default {
   INSTALL_PACKAGE: `${baseUrl}/components/install`,
   //上传到组件库
   UPLOADTO_LIBRARY: `${baseUrl}/components/up-to-lib`,
+  //编译组件
+  COMPILE_COMPONENT: `${baseUrl}/components/compile`,
 };

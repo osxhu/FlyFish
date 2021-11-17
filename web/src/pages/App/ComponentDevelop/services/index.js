@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-16 10:28:09
+ * @LastEditTime: 2021-11-17 14:13:33
  */
 import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api/component";
@@ -44,13 +44,16 @@ export const deleteComponentService = (id)=>{
   return fetchDelete(API.DELETE_COMPONENT+'/'+id);
 };
 export const downloadComponentService = (id)=>{
-  return fetchPost(API.DOWNLOAD_COMPONENT+'/'+id);
+  return fetchGet(API.DOWNLOAD_COMPONENT+'/'+id,{headers:{responseType:'blob'}});
 };
 export const installPackagesService = (id)=>{
   return fetchPost(API.INSTALL_PACKAGE+'/'+id);
 };
 export const uploadLibraryService = (id)=>{
   return fetchPost(API.UPLOADTO_LIBRARY+'/'+id);
+};
+export const compileComponentService = (id)=>{
+  return fetchPost(API.COMPILE_COMPONENT+'/'+id);
 };
 
 
