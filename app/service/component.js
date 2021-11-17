@@ -195,6 +195,7 @@ class ComponentService extends Service {
       versions: [],
       cover: '',
       creator: userInfo.userId,
+      updater: userInfo.userId,
     };
 
     const result = await ctx.model.Component._create(createInfo);
@@ -267,6 +268,7 @@ class ComponentService extends Service {
       desc: copyComponent.desc || '无',
       cover: copyComponent.cover,
       creator: userInfo.userId,
+      updater: userInfo.userId,
       versions: [],
     };
 
@@ -336,7 +338,7 @@ class ComponentService extends Service {
       const git = simpleGit(componentDevPath);
       const status = await git.status();
       if (!status.isClean()) {
-        await ctx.model.Component._updateOne({ id }, { needPushGit: true, lastChangeTime: Date.now(), updater: ctx.userInfo.id });
+        await ctx.model.Component._updateOne({ id }, { needPushGit: true, lastChangeTime: Date.now(), updater: ctx.userInfo.userId });
       }
     }
 
