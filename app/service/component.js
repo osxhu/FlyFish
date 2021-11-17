@@ -220,7 +220,7 @@ class ComponentService extends Service {
       tags: tagInfo.tags || [],
       desc: createComponentInfo.desc || '无',
       versions: [],
-      cover: '',
+      cover: '/component_tpl/public/cover.png',
       creator: userInfo.userId,
       updater: userInfo.userId,
     };
@@ -229,7 +229,6 @@ class ComponentService extends Service {
 
     const componentId = result.id;
     returnData.data.id = componentId;
-    await ctx.model.Component._updateOne({ id: componentId }, { cover: `/components/${componentId}/current/cover.png` });
 
     const createResult = await this.initDevWorkspace(componentId);
     if (createResult.msg !== 'success') returnData.msg = createResult.msg;
@@ -516,7 +515,6 @@ class ComponentService extends Service {
 
       const srcPath = `${componentDevPath}/src`;
       const srcTplPath = `${componentsTplPath}/src`;
-      const publicTplPath = `${componentsTplPath}/public`;
 
       const replaceId = 'Component_' + componentId;
       fs.mkdirSync(srcPath);
@@ -535,7 +533,6 @@ class ComponentService extends Service {
       fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(replaceId));
       fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(replaceId));
 
-      fs.copyFileSync(`${publicTplPath}/cover.png`, `${componentDevPath}/cover.png`);
       fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(componentId));
       fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentId, replaceId, version));
       fs.writeFileSync(`${componentDevPath}/options.json`, require(`${componentsTplPath}/options.json.js`)(replaceId));
