@@ -61,7 +61,7 @@ const CodeDevelop = observer(()=>{
       <div className={styles.CodeWrap}>
         <iframe
           name='vscode'
-          src={`http://127.0.0.1:8080/?folder=/data/app/flyfish-2.0/www/components/${developingData.id}/current`} 
+          src={`http://${window.location.hostname}:8080/?folder=/data/app/flyfish-2.0/www/components/${developingData.id}/current`} 
           // src={`http://127.0.0.1:8080/?folder=/Users/jonny/Documents/test`}
           width = "100%" 
           height = "100%" 
@@ -69,7 +69,7 @@ const CodeDevelop = observer(()=>{
         />
       </div>
       <div className={styles.previewWrap}>
-        <iframe src={`${window.location.hostname}:7001/components/${developingData.id}/current/editor.html`} width = "100%" height = "100%" frameBorder={0}></iframe>
+        <iframe src={`http://${window.location.hostname}:7001/components/${developingData.id}/current/editor.html`} width = "100%" height = "100%" frameBorder={0}></iframe>
       </div>
     </div>
   </div>
