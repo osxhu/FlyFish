@@ -207,7 +207,7 @@ class ApplicationService extends Service {
       status: Enum.COMMON_STATUS.VALID,
     };
 
-    if (name) queryCond.name = name;
+    if (name) queryCond.name = { $regex: name };
     if (developStatus) queryCond.developStatus = developStatus;
     if (projectId) queryCond.projectId = projectId;
     if (type) queryCond.type = type;
