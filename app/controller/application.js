@@ -43,6 +43,7 @@ class ApplicationController extends BaseController {
       })),
       projectId: Joi.string().length(24),
       developStatus: Joi.string().valid(...Object.values(Enum.APP_DEVELOP_STATUS)),
+      status: Joi.string().valid(...Object.values(Enum.COMMON_STATUS)),
     });
 
     const { value: id } = ctx.validate(Joi.string().length(24).required(), ctx.params.id);
@@ -122,6 +123,7 @@ class ApplicationController extends BaseController {
       tags: Joi.array().items(Joi.string().length(24)),
       developStatus: Joi.string(),
       isLib: Joi.boolean(),
+      status: Joi.string().valid(...Object.values(Enum.COMMON_STATUS)),
 
       curPage: Joi.number().default(0),
       pageSize: Joi.number().default(10),

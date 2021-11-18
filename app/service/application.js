@@ -56,7 +56,7 @@ class ApplicationService extends Service {
     const { ctx } = this;
 
     const userInfo = ctx.userInfo;
-    const { type, developStatus, projectId, isLib } = requestData;
+    const { type, developStatus, projectId, isLib, status } = requestData;
 
     const updateData = {
       updater: userInfo.userId,
@@ -65,6 +65,7 @@ class ApplicationService extends Service {
     if (projectId) updateData.projectId = projectId;
     if (developStatus) updateData.developStatus = developStatus;
     if (_.isBoolean(isLib)) updateData.isLib = isLib;
+    if (status) updateData.status = status;
     const tagData = await this.getTagData(requestData);
 
     await ctx.model.Application._updateOne({ id }, Object.assign(updateData, tagData));
@@ -202,9 +203,9 @@ class ApplicationService extends Service {
   async getList(requestData) {
     const { ctx } = this;
 
-    const { name, type, isLib, tags, projectId, developStatus, curPage, pageSize } = requestData;
+    const { name, type, isLib, tags, projectId, developStatus, curPage, pageSize, status } = requestData;
     const queryCond = {
-      status: Enum.COMMON_STATUS.VALID,
+      status: status ? status : Enum.COMMON_STATUS.VALID,
     };
 
     if (name) queryCond.name = { $regex: name };
