@@ -9,11 +9,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
     let selectArr = toJS(list);//下拉框总数据
     let newarr = toJS(project).trades;
     const { getFieldDecorator } = form;
-    const onSelect = (item) => {
-      if (item.keyCode === 13) {
-        addIndusty({ name: item.target.value });
-      }
-    };
     return (
       <Modal
         draggable
@@ -22,20 +17,27 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           if (form) {
             form.validateFields((errors, values) => {
               if (errors == null) {
-                let sendParams = {};
                 for (let i in values) {
-                  if (values[i]) {
-                    sendParams[i] = values[i];
+                  if (!values[i]) {
+                    delete values[i];
                   }
                 }
-                flag ? onSave &&
+                flag ?
+                  onSave &&
                   onSave({
-                    ...sendParams
-                  }) : null;
-                //  onChange &&
-                // onChange(project.id, {
-                //   ...sendParams
-                // });
+                    ...values,
+                    trades: values.trades.map(item => {
+                      return { name: item };
+                    })
+                  })
+                  : null;
+                onChange &&
+                  onChange(project.id, {
+                    ...values,
+                    trades: values.trades.map(item => {
+                      return { name: item };
+                    })
+                  });
               }
             });
           }
@@ -105,8 +107,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
             })(
               <Select
                 showSearch={true}
-                onInputKeyDown={onSelect}
-                optionFilterProp="label"
+                // optionFilterProp="label"
                 mode='tags'
                 placeholder={
                   intl.formatMessage({
@@ -117,7 +118,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               >
                 {
                   selectArr ? selectArr.map(item => {
-                    return <Select.Option key={item.id} value={item.id} label={item.name}>{item.name}</Select.Option>;
+                    return <Select.Option key={item.id} value={item.name} label={item.name}>{item.name}</Select.Option>;
                   }) : null
                 }
 
@@ -138,9 +139,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Select
-                optionFilterProp="label"
                 showSearch={true}
-                onInputKeyDown={onSelect}
                 mode='tags'
                 placeholder={
                   intl.formatMessage({
@@ -151,7 +150,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               >
                 {
                   selectArr.map(item => {
-                    return <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>;
+                    return <Select.Option key={item.id} value={item.name}>{item.name}</Select.Option>;
                   })
                 }
 

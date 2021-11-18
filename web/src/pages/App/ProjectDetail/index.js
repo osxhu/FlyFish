@@ -3,7 +3,8 @@ import React, { useEffect } from "react";
 import { CWTable, Input, Button, message } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
-import AppList from "./components/AppList";
+import AssemblyList from "./components/ComponentDevelop";
+import ApplyList from './components/ApplyList';
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
 import AddAppModal from "./components/AddAppModal";
@@ -13,16 +14,16 @@ import { Menu } from 'antd';
 const ProjectDetail = observer((props) => {
   const intl = useIntl();
   const {
-    getProjectList,
+    getApplicationList,
     setSearchParams,
     saveProject,
     openEditProjectModal, openProjectPage,
-    closeEditProjectModal,setCheckPageFLag
+    closeEditProjectModal, setCheckPageFLag
   } = store;
-  const { total, projectList, isEditProjectModalVisible, activeProject,checkPageFLag } =
+  const { total, projectList, isEditProjectModalVisible, activeProject, checkPageFLag } =
     store;
   const nowProgressId = props.match.params.id;
-  const loading = loadingStore.loading["ProjectDetail/getProjectList"];
+  const loading = loadingStore.loading["ProjectDetail/getApplicationList"];
   return (
     <React.Fragment>
       <Menu onClick={setCheckPageFLag} mode="horizontal" selectedKeys={[checkPageFLag]} >
@@ -33,9 +34,13 @@ const ProjectDetail = observer((props) => {
           项目组件列表
         </Menu.Item>
       </Menu>
-      <AppList ProgressId={nowProgressId} checkPageFLag={checkPageFLag} onSave={() => {
-        openEditProjectModal(activeProject);
-      }} />
+      {/* 渲染应用或者组件 */}
+      {
+        checkPageFLag === 'applyList' ?
+          <ApplyList ProgressId={nowProgressId}/>
+          :
+          <AssemblyList ProgressId={nowProgressId} />
+      }
       {isEditProjectModalVisible && (
         <AddAppModal
           project={activeProject}
@@ -49,8 +54,8 @@ const ProjectDetail = observer((props) => {
                   })
                 );
                 closeEditProjectModal();
-                getProjectList({
-                  curPage:0,
+                getApplicationList({
+                  curPage: 0,
                 });
               } else {
                 message.error(

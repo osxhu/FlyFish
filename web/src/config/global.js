@@ -32,6 +32,21 @@ export const COMPONENT_TYPE = {
     INVALID: 'invalid', // 不可用的
   };
   
+  export const TAG_COLORS = [
+    {
+        id:'doing',
+        color:'#f50'
+      },{
+        id:'testing',
+        color:'#2db7f5'
+      },{
+        id:'delivered',
+        color:'#87d068'
+      },{
+        id:'demo',
+        color:'#BEBEBE'
+      }
+  ];
   export const APP_DEVELOP_STATUS = [
     {
         id:'doing',
@@ -60,6 +75,6 @@ export const formatDate = (datetime) => {
         hour = ("0" + date.getHours()).slice(-2),
         minute = ("0" + date.getMinutes()).slice(-2),
         second = ("0" + date.getSeconds()).slice(-2);
-    var result = year + "-" + month + "-" + sdate + " " + hour + ":" + minute + ":" + second;
+    var result = year + "." + month + "." + sdate + " " + hour + ":" + minute + ":" + second;
     return result;
 };

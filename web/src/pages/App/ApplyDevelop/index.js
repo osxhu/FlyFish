@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { CWTable, Input, Button, message, SearchBar, Icon, Pagination } from "@chaoswise/ui";
+import { Input, Button, message, SearchBar, Icon, Pagination, Popconfirm } from "@chaoswise/ui";
 import {
   observer, loadingStore, toJS, Form, Row,
   Col
@@ -17,36 +17,40 @@ import { APP_DEVELOP_STATUS } from '@/config/global';
 const { Option } = Select;
 import DeleteApplyListModal from './components/DeleteApplyListModal';
 const ApplyDevelop = observer(() => {
-  let [checkFlag, setCheckFlag] = useState(false);
+  let [checkFlag, setCheckFlag] = useState(null);
   const intl = useIntl(); const {
     getApplicationList,
-    setSearchParams,setActiveCard,
-    setCurPage, addApplicationOne,
-    saveProject, getTagsList, getProjectList,
-    openAddProjectModal, closeDeleteApplyListModal,
-    closeAppProjectModal, openDeleteApplyListModal,setType,
+    setSearchParams, setActiveCard,
+    setCurPage, addApplicationOne, deleteApplicationOne,
+    saveProject, getTagsList, getProjectList, changeApplicationOne,
+    openAddProjectModal, closeDeleteApplyListModal, copyApplicationOne,
+    closeAppProjectModal, openDeleteApplyListModal, setType, addNewTag
   } = store;
-  const { total, curPage, tagList, pageSize, activeCard,projectList, applicationList1, isDeleteApplyListModalVisible, applicationList, isAddModalVisible, activeProject } =
+  const { total, key, curPage, tagList, pageSize, activeCard, projectList, applicationList1, isDeleteApplyListModalVisible, applicationList, isAddModalVisible, activeProject } =
     store;
-  const [paramsObj, setParamsObj] = useState({});
   const onShowSizeChange = (row) => {
     console.log('凤凰网', row);
   };
   const searchContent = [
     {
       components: (
-        <Input
-          id="projectName"
-          key="projectName"
+        <Select
+          id="projectId"
+          key="projectId"
           allowClear={true}
+          style={{ width: "200px" }}
           name='项目名称'
-          suffix={<Icon type="search" />
-          }
           placeholder={intl.formatMessage({
-            id: "pages.applyDevelop.searchInputProgressName",
-            defaultValue: "输入项目名称进行查询",
+            id: "pages.applyDevelop.searchSelectProgressName",
+            defaultValue: "选择项目名称进行查询",
           })}
-        />
+        >
+          {
+            projectList.map(item => {
+              return <Option key={item.id} value={item.id}>{item.name}</Option>;
+            })
+          }
+        </Select>
       ),
     },
     {
@@ -140,7 +144,7 @@ const ApplyDevelop = observer(() => {
     getApplicationList({ curPage, pageSize });
   };
   const onSearchType = (params) => {
-    if(params['type']){
+    if (params['type']) {
       setType(params.type);
     }
     getApplicationList({
@@ -156,7 +160,6 @@ const ApplyDevelop = observer(() => {
     setSearchParams(params);
     getApplicationList({
       curPage: 0,
-      ...paramsObj
     });
   };
   const extra = () => {
@@ -165,8 +168,10 @@ const ApplyDevelop = observer(() => {
         type="primary"
         key="create_project"
         onClick={() => {
-          openAddProjectModal({});
-          setCheckFlag(true);
+          openAddProjectModal({ tags: [] });
+          setCheckFlag(0);
+          setActiveCard();
+
         }}
       >
         <FormattedMessage
@@ -199,54 +204,133 @@ const ApplyDevelop = observer(() => {
         searchContent={searchContent} showSearchCount={6}
       />
       {
-        <TsetCard value={applicationList} setActiveCard={setActiveCard} state={0} showStateTag={true}>
-          <>
-            <div key="development" className={styles.mybtn}>开发应用</div>
-            <div key="look" className={styles.mybtn}>预览应用</div>
-            <div key="copy" className={styles.mybtn}>复制应用</div>
-            <div key="export" className={styles.mybtn}>导出应用</div>
-            <div key="change" className={styles.mybtn} 
-            onClick={(e)=>{
-            setCheckFlag(false),openAddProjectModal();
-            }}>编辑信息</div>
-            <div key="delete" className={styles.mybtn}>删除</div>
-          </>
+        <TsetCard value={applicationList}
+          setActiveCard={setActiveCard}
+          state={0} showStateTag={true}
+          actions={(item) => {
+            return (
+              <>
+                <div key="development" className={styles.mybtn}>开发应用</div>
+                <div key="look" className={styles.mybtn}>预览应用</div>
+                <div key="copy" className={styles.mybtn}
+                  onClick={() => {
+                    setCheckFlag(2);
+                    openAddProjectModal();
+                  }}
+                >复制应用</div>
+                <div key="export" className={styles.mybtn}>导出应用</div>
+                <div key="change" className={styles.mybtn}
+                  onClick={() => {
+                    setCheckFlag(1), openAddProjectModal();
+                  }}>编辑信息</div>
+                <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+                  deleteApplicationOne(item.id, (res) => {
+                    if (res.code === successCode) {
+                      message.success(
+                        intl.formatMessage({
+                          id: "common.deleteSuccess",
+                          defaultValue: "删除成功！",
+                        })
+                      );
+                      getApplicationList();
+                    } else {
+                      message.error(
+                        res.msg || intl.formatMessage({
+                          id: "common.deleteError",
+                          defaultValue: "删除失败，请稍后重试！",
+                        })
+                      );
+                    }
+                  });
+                }}>
+                  <div key="delete" className={styles.mybtn}>删除</div>
+                </Popconfirm>
+
+              </>
+            );
+          }}
+        >
         </TsetCard>
       }
-      <Pagination total={total}
-        current={curPage}
-        showSizeChanger={true}
-        onChange={(current, size) => {
-          setCurPage(current);
-          console.log('当前ye', current);
-          // getApplicationList();
+      <Pagination
+        total={total}
+        current={curPage + 1}
+        pageSize={pageSize}
+        onChange={(current) => {
+          setCurPage(current - 1);
+          getApplicationList();
         }}
-        showQuickJumper={true}
         onShowSizeChange={onShowSizeChange} />
       {isAddModalVisible && (
         <AppProjectModal
           addOrChangeFlag={checkFlag}
           project={activeCard}
           tagList={tagList}
+          type={key}
+          addNewTag={addNewTag}
           projectList={projectList}
-          onSave={(project) => {
-            addApplicationOne(project, (res) => {
+          onCopy={(id,item) => {
+            copyApplicationOne(id,item, (res => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
-                    id: "common.saveSuccess",
-                    defaultValue: "保存成功！",
+                    id: "common.copySuccess",
+                    defaultValue: "复制成功！",
                   })
                 );
                 closeAppProjectModal();
+                getApplicationList();
+              } else {
+                message.error(
+                  res.msg || intl.formatMessage({
+                    id: "common.copyError",
+                    defaultValue: "复制失败，请稍后重试！",
+                  })
+                );
+              }
+            }));
+          }}
+          onChange={(id, application) => {
+            changeApplicationOne(id, application, (res) => {
+              if (res.code === successCode) {
+                message.success(
+                  intl.formatMessage({
+                    id: "common.changeSuccess",
+                    defaultValue: "编辑成功！",
+                  })
+                );
+                closeAppProjectModal();
+                getTagsList();
+                getApplicationList();
+              } else {
+                message.error(
+                  res.msg || intl.formatMessage({
+                    id: "common.changeError",
+                    defaultValue: "编辑失败，请稍后重试！",
+                  })
+                );
+              }
+            });
+          }}
+          onSave={(application) => {
+            addApplicationOne(application, (res) => {
+              if (res.code === successCode) {
+                message.success(
+                  intl.formatMessage({
+                    id: "common.addSuccess",
+                    defaultValue: "新增成功！",
+                  })
+                );
+                closeAppProjectModal();
+                getTagsList();
                 getApplicationList({
                   curPage: 0,
                 });
               } else {
                 message.error(
-                  intl.formatMessage({
-                    id: "common.saveError",
-                    defaultValue: "保存失败，请稍后重试！",
+                  res.msg || intl.formatMessage({
+                    id: "common.addError",
+                    defaultValue: "新增失败，请稍后重试！",
                   })
                 );
               }

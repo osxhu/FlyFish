@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Input, Select, Form } from "@chaoswise/ui";
+import { Modal, Input, Select, Form, Button } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 const { Option } = Select;
 import { observer, toJS } from '@chaoswise/cw-mobx';
@@ -7,8 +7,9 @@ import { observer, toJS } from '@chaoswise/cw-mobx';
 import { APP_DEVELOP_STATUS } from '@/config/global';
 
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
-  function EditProjectModal({ form, project = {}, projectList,tagList, addOrChangeFlag, onSave, onCancel }) {
+  function EditProjectModal({ form, project = {}, type, projectList, tagList, addOrChangeFlag, onChange, onSave, onCopy, onCancel }) {
     const intl = useIntl();
+    const projectData = toJS(project);
     const { getFieldDecorator } = form;
     return (
       <Modal
@@ -18,28 +19,56 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           if (form) {
             form.validateFields((errors, values) => {
               if (errors == null) {
-                addOrChangeFlag ?
-                  onSave &&
-                  onSave({
-                    ...project,
-                    ...values,
-                  }) : null;
+                if (addOrChangeFlag === 0) {
+                  onSave && delete values.developStatus &&
+                    onSave({
+                      type: type || '2D',
+                      ...project,
+                      ...values,
+                      tags: values.tags.map(item => {
+                        return { name: item };
+                      })
+                    });
+                }
+                if (addOrChangeFlag === 1) {
+                  onChange && delete values.name &&
+                    onChange(project.id, {
+                      type: type || '2D',
+                      ...values,
+                      tags: values.tags.map(item => {
+                        return { name: item };
+                      })
+                    });
+                }
+                if (addOrChangeFlag === 2) {
+                  onCopy && onCopy(project.id, {
+                    name: values.name
+                  });
+                }
               }
             });
           }
         }}
         size="middle"
-        title={
-          !addOrChangeFlag
-            ? intl.formatMessage({
-              id: "pages.applyDevelop.edit",
-              defaultValue: "编辑应用",
-            })
-            : intl.formatMessage({
+        title={(() => {
+          if (addOrChangeFlag === 0) {
+            return intl.formatMessage({
               id: "pages.applyDevelop.create",
               defaultValue: "添加应用",
-            })
-        }
+            });
+          }
+          if (addOrChangeFlag === 1) {
+            return intl.formatMessage({
+              id: "pages.applyDevelop.edit",
+              defaultValue: "编辑应用",
+            });
+          } else {
+            return intl.formatMessage({
+              id: "pages.applyDevelop.copy",
+              defaultValue: "复制应用",
+            });
+          }
+        })()}
         visible={true}
       >
         <Form
@@ -51,11 +80,12 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
             xs: { span: 19 },
             sm: { span: 19 },
           }}
-          initialvalues={project || {}}
+          initialvalues={projectData || {}}
         >
           <Form.Item label="应用名称" name={"name"}>
             {getFieldDecorator("name", {
-              initialValue: project.name,
+
+              initialValue: projectData.name,
               rules: [
                 {
                   required: true,
@@ -68,7 +98,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Input
-                disabled={project && project.id > 0}
+                disabled={addOrChangeFlag === 1}
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseInput",
@@ -80,7 +110,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
           </Form.Item>
           <Form.Item label="所属项目" name={"projectId"}>
             {getFieldDecorator("projectId", {
-              initialValue: addOrChangeFlag?project.projectId:project.projects,
+              initialValue: addOrChangeFlag === 0 ? projectData.projectId : projectData.projects,
               rules: [
                 {
                   required: true,
@@ -93,6 +123,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Select
+                disabled={addOrChangeFlag === 2}
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseSelect",
@@ -100,7 +131,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   }) + "所属项目"
                 }
               >
-               {
+                {
                   projectList.map(item => {
                     return <Option key={item.id} value={item.id}>{item.name}</Option>;
                   })
@@ -108,20 +139,14 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               </Select>
             )}
           </Form.Item>
-          <Form.Item label="标签" name={"tags"} >
+          <Form.Item label="标签" >
             {getFieldDecorator("tags", {
-              initialValue: addOrChangeFlag?project.tags:toJS(project.tags),
-              rules: [
-                {
-                  message:
-                    intl.formatMessage({
-                      id: "common.pleaseInput",
-                      defaultValue: "请选择",
-                    }) + "标签",
-                },
-              ],
+              initialValue: projectData.tags,
+
             })(
-              <Select mode="tags"
+              <Select
+                disabled={addOrChangeFlag === 2}
+                mode='tags'
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseSelect",
@@ -130,19 +155,22 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                 }
               >
                 {
-                  tagList.map(item => {
-                    return <Option key={item.id} value={item.id}>{item.name}</Option>;
-                  })
+                  tagList.length > 0 ? tagList.map(item => {
+                    return <Option key={item.name} value={item.name}>{item.name}</Option>;
+                  }) : null
                 }
               </Select>
             )}
           </Form.Item>
 
-          <Form.Item label="开发状态" name={"developstatus"}>
-            {getFieldDecorator("developstatus", {
-              initialValue: project.developstatus,
+          <Form.Item label="开发状态" name={"developStatus"}>
+            {getFieldDecorator("developStatus", {
+              initialValue: addOrChangeFlag === 0 ? 'doing' : projectData.developStatus,
             })(
               <Select
+                disabled={
+                  addOrChangeFlag === 0 || addOrChangeFlag === 2
+                }
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseSelect",

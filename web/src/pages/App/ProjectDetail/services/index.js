@@ -1,23 +1,8 @@
 import { fetchGet, fetchPost } from "@/utils/request";
-import API from "@/services/api";
+import API from "@/services/api/application";
 
-export const getProjectManageListService = (options) => {
-  //return fetchGet(API.GET_PROJECT_MANAGELIST_API, { params: options });
-
-  return new Promise((res, rej) => {
-    res({
-      data: [
-        {
-          id: 1,
-          projectMark: "12212",
-          name: "test",
-        },
-      ],
-      total: 10,
-      curPage:0,
-      pageSize: 20,
-    });
-  });
+export const reqApplicationList = (options) => {
+  return fetchPost(API.GET_APPLICATION_LIST, { body: options });
 };
 
 export const saveProjectService = (options) => {

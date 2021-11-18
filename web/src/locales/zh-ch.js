@@ -30,6 +30,8 @@ export default flattenMessages({
     deleteSuccess: "删除成功！",
     changeSuccess:'编辑成功！',
     changeError:"编辑失败，请稍后重试！",
+    copySuccess:'复制成功!',
+    copyError:"复制失败，请稍后重试！",
     loadDataError: "加载{name}失败，请稍后重试！",
   },
   business: {},
@@ -45,11 +47,12 @@ export default flattenMessages({
     applyDevelop: {
       create: "添加应用",
       reset:'还原应用',
+      copy:'复制应用',
       edit: "编辑应用",
       goToProject: "进入应用",
       searchInputPlaceholder:'选择应用类型进行查询',
       searchInputDevelopmentState: "选择开发状态进行查询",
-      searchInputProgressName:'输入项目名称进行查询',
+      searchSelectProgressName:'选择项目名称进行查询',
       searchInputAppName:'输入应用名称进行查询',
       searchInputApplyLabel:'选择应用标签进行查询'
     },

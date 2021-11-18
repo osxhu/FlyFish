@@ -1,5 +1,5 @@
-import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, saveProjectService } from "../services";
+import { toMobx ,toJS} from '@chaoswise/cw-mobx';
+import { reqApplicationList } from "../services";
 import _ from "lodash";
 
 const model = {
@@ -7,21 +7,19 @@ const model = {
   namespace: "ProjectDetail",
   // 状态
   state: {
-    checkPageFLag: 'assemblyList',
+    checkPageFLag: 'applyList',
     searchParams: {},
-    projectList: [],
+    applicationList: {}, //应用列表
+    applicationLength:0,
     total: 0,
-    activeProject: {
-      name:'测试11',
-      projectId:'北京项目a',
-      tags:['jack','lucy'],
-      state:0
-    },
+    curPage:0,
+    pageSize:10,
+    activeProject: {},
     isEditProjectModalVisible: false,
   },
   effects: {
     // 获取项目列表数据
-    *getProjectList(params = {}) {
+    *getApplicationList(params = {},flag) {
       // 处理参数
       let options = {
         curPage: this.curPage,
@@ -30,24 +28,31 @@ const model = {
         ...params,
       };
       // 请求数据
-      const res = yield getProjectManageListService(options);
-      this.setProjectList(res);
+      const res = yield reqApplicationList(options);
+      this.setApplicationList(res,flag);
     },
-    *saveProject(params = {}, callback) {
-      // 测试代码
-      const res = yield saveProjectService(params);
-      callback && callback(res);
-    },
+    // *saveProject(params = {}, callback) {
+    //   // 测试代码
+    //   const res = yield saveProjectService(params);
+    //   callback && callback(res);
+    // },
   },
   reducers: {
     setCheckPageFLag(a) {
       this.checkPageFLag=a.key;
     },
-    setProjectList(res) {
-      this.projectList = res.data;
-      this.total = res.total;
-      this.curPage = res.curPage;
-      this.pageSize = res.pageSize;
+    setApplicationList(res,flag) {
+      if(flag){
+        this.applicationList = res.data;
+      }else{
+        this.applicationList.list&& this.applicationList.list.push(...res.list);
+      }
+      // let tableData = toJS(this.applicationList.list);
+      console.log('飞机',res);
+      // this.applicationLength=tableData.length;
+      this.total = res.data.total;
+      this.curPage = res.data.curPage;
+      this.pageSize = res.data.pageSize;
     },
     setSearchParams(searchParams) {
       this.searchParams = searchParams || {};

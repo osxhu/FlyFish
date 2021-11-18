@@ -93,7 +93,7 @@ const AppProjectManage = observer((props) => {
               className={styles.projectAction}
               onClick={() => {
                 setCheckFlag(false);
-                record.trades = record.trades.map(item => item.id);
+                record.trades = record.trades.map(item => item.name);
                 openEditProjectModal(record);
               }}
             >

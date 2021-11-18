@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { reqApplicationList, reqTagsList, addApplication,reqProjectList } from "../services";
+import { reqApplicationList, deleteApplication, exportApplication, copyApplication, reqTagsList, addApplication, changeApplication, reqProjectList } from "../services";
 import _ from "lodash";
 
 const model = {
@@ -11,11 +11,11 @@ const model = {
     applicationList: [],
     projectList: [],
     tagList: [],
-    key:'',
+    key: '',
     total: 0,
     curPage: 0,
-    pageSize: 10,
-    activeCard:{},
+    pageSize: 9,
+    activeCard: {},
     activeProject: null,
     isAddModalVisible: false,
     isDeleteApplyListModalVisible: false,
@@ -24,7 +24,7 @@ const model = {
     // 获取项目列表数据
     *getApplicationList(params = {}) {
       let options = {
-        type: this.key||'2D',
+        type: this.key || '2D',
         curPage: this.curPage,
         pageSize: this.pageSize,
         ...this.searchParams,
@@ -38,24 +38,44 @@ const model = {
       this.setProjectList(res);
     },
     *getTagsList() {
-      const res = yield reqTagsList();
+      const res = yield reqTagsList({ type: 'application' });
       this.setTagList(res);
     },
     *addApplicationOne(params = {}, callback) {
       const res = yield addApplication(params);
       callback && callback(res);
     },
+    *changeApplicationOne(id, params = {}, callback) {
+      const res = yield changeApplication(id, params);
+      callback && callback(res);
+    },
+    *deleteApplicationOne(id, callback) {
+      const res = yield deleteApplication(id);
+      callback && callback(res);
+    },
+    *copyApplicationOne(id,option, callback) {
+      const res = yield copyApplication(id,option);
+      callback && callback(res);
+    },
+    *exportApplicationOne(id, callback) {
+      const res = yield exportApplication(id);
+      callback && callback(res);
+    },
   },
   reducers: {
-    setActiveCard(item){
-      this.activeCard={
-        ...item,
-        projects:item.projects.id,
-        tags:item.tags.map(item=>item.id)
-      };
+    setActiveCard(item) {
+      if (item) {
+        this.activeCard = {
+          ...item,
+          projects: item.projects.id,
+          tags: item.tags.map(item => item.name)
+        };
+      } else {
+        this.activeCard = {};
+      }
     },
-    setProjectList(res){
-      this.projectList=res.data.list;
+    setProjectList(res) {
+      this.projectList = res.data.list;
     },
     setTagList(res) {
       this.tagList = res.data;
@@ -80,8 +100,8 @@ const model = {
     closeDeleteApplyListModal() {
       this.isDeleteApplyListModalVisible = false;
     },
-    setType(str){
-      this.key=str;
+    setType(str) {
+      this.key = str;
     },
     closeAppProjectModal() {
       this.activeProject = null;

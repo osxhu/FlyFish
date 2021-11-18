@@ -39,12 +39,12 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     getAssemlyDetail,
     setSelectedData
   } = store;
-  const {libraryListLength, listLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
+  const { libraryListLength, listLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
   const [changeFlga, setchangeFlga] = useState(false); //编辑完成
   let [infinitKey, setInfinitKey] = useState(0);
   let [flagNum, setFlagNum] = useState(0);
   let [libraryFlagNum, setLibraryFlagNum] = useState(0);
-  let [libraryParams,setLibraryParams]=useState({});
+  let [libraryParams, setLibraryParams] = useState({});
   //项目组件下滑
   const changePage = () => {
     setFlagNum(flagNum += 1);
@@ -60,7 +60,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
       curPage: libraryFlagNum,
       ...libraryParams
     });
-  }; 
+  };
   // 表格列表数据
   let basicTableListData = toJS(listData);
   const [activeProject, setActiveProject] = useState(''); //编辑完成
@@ -132,12 +132,12 @@ const ComponentDevelop = observer(({ ProgressId }) => {
       }
     }
     setLibraryParams(values);
-    getLibraryListData(values,true);
+    getLibraryListData(values, true);
   };
   // 请求列表数据
   useEffect(() => {
     getTreeData();
-    getLibraryListData({},true);
+    getLibraryListData({}, true);
     getIndustrysList();
     setActiveProject(JSON.parse(sessionStorage.getItem('activeProject')).name);
   }, []);
@@ -184,7 +184,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
             extra={<Button onClick={(e) => {
               e.stopPropagation();
               setchangeFlga(!changeFlga);
-            }} type="primary" >编辑</Button>
+            }} type="primary" >{changeFlga?'完成':'编辑'}</Button>
             }>
             <div id="scrollableDiv" style={{ height: '470px', overflow: 'auto' }} >
               <InfiniteScroll
@@ -201,7 +201,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                   onDelete={(params) => {
                     deleteAssembly(params, (res) => {
                       if (res.code === successCode) {
-                        getListData(ProgressId);
+                        getListData({ projectId: ProgressId },true);
                         message.success(
                           intl.formatMessage({
                             id: "common.deleteSuccess",
@@ -221,7 +221,6 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                   value={basicTableListData}
                   state={1}
                   canDelete={changeFlga}
-                  deleteFlagMethod={setchangeFlga}
                 ></Card>
               </InfiniteScroll>
             </div>
