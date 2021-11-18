@@ -482,7 +482,7 @@ class ComponentService extends Service {
 
     const returnInfo = { msg: 'Success' };
     const componentId = componentInfo.id;
-    const version = compatible ? _.get(componentInfo, [ 'version', componentInfo.version || [], 'no' ], no || 'v1') : no;
+    const version = compatible ? _.get(componentInfo, [ 'versions', (componentInfo.versions || []).length - 1, 'no' ], no || 'v1') : no;
 
     try {
       const componentPath = `${componentsPath}/${componentId}`;
