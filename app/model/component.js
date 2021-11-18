@@ -32,6 +32,10 @@ module.exports = app => {
       no: String,
       desc: String,
       status: String,
+      time: {
+        type: Date,
+        default: Date.now,
+      },
     }],
     cover: String,
     creator: String,

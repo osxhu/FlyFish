@@ -466,7 +466,7 @@ class ComponentService extends Service {
     }
 
     const createResult = this.initReleaseWorkspace(componentInfo, no, compatible);
-    await ctx.model.Component._updateOne({ id: componentId }, { developStatus: Enum.COMPONENT_DEVELOP_STATUS.ONLINE, $push: { versions: { no, desc, status: Enum.COMMON_STATUS.VALID } } });
+    await ctx.model.Component._updateOne({ id: componentId }, { developStatus: Enum.COMPONENT_DEVELOP_STATUS.ONLINE, $push: { versions: { no, desc, status: Enum.COMMON_STATUS.VALID, time: Date.now() } } });
 
     if (createResult.msg !== 'Success') returnData.msg = createResult.msg;
 
