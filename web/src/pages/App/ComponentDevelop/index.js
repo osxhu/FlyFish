@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-16 18:55:43
+ * @LastEditTime: 2021-11-17 18:41:44
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -75,7 +75,13 @@ const ComponentDevelop = observer(() => {
       dataIndex: 'cover',
       key: 'cover',
       render:(text)=>{
-        return <img src={text}></img>;
+        return <img src={'/api'+text} width={100} height={40}
+          style={{cursor:'pointer',border:'1px solid #eee'}}
+          onClick={()=>{
+            setpreviewImgUrl('/api'+text);
+            setImgModalVisible(true);
+          }}
+        ></img>;
       }
     },
     {
@@ -107,6 +113,18 @@ const ComponentDevelop = observer(() => {
       title: '组件类别',
       dataIndex: 'subCategory',
       key: 'subCategory',
+      render:(text)=>{
+        let txt = '';
+        treeData.map(item=>{
+          item.children?item.children.map(v=>{
+            if (v.id===text) {
+              txt = v.name;
+            }
+          }):null;
+          return item;
+        });
+      return <span>{txt}</span>;
+      }
     },
     {
       title: '最近更新时间',
@@ -206,7 +224,8 @@ const ComponentDevelop = observer(() => {
     setDeveloping,
     setDevelopingData,
     setCurPage,
-    setPageSize
+    setPageSize,
+    setListData
   } = store;
   const { 
     addModalvisible,editModalvisible,importModalvisible,treeData,
@@ -223,6 +242,8 @@ const ComponentDevelop = observer(() => {
   const addCateRef = useRef();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [imgModalVisible, setImgModalVisible] = useState(false);
+  const [previewImgUrl, setpreviewImgUrl] = useState('');
 
   // 请求列表数据
   useEffect(() => {
@@ -522,6 +543,15 @@ const ComponentDevelop = observer(() => {
                 }}
               ></Input>
             </div>
+          </Modal>
+          <Modal
+            title="图片预览"
+            visible={imgModalVisible}
+            footer={null}
+            width='60%'
+            onCancel={()=>{setImgModalVisible(false);}}
+          >
+            <img src={previewImgUrl} width='100%'></img>
           </Modal>
           <Modal
             title="导入组件源码"
