@@ -66,10 +66,8 @@ class ComponentService extends Service {
       queryCond.$or.push({ desc: { $regex: key } });
     }
     if (name) queryCond.name = { $regex: name };
-    if (subCategory) {
-      queryCond.category = category;
-      queryCond.subCategory = subCategory;
-    }
+    if (category) queryCond.category = category;
+    if (subCategory) queryCond.subCategory = subCategory;
     if (developStatus) queryCond.developStatus = developStatus;
     if (type) queryCond.type = type;
     if (_.isBoolean(isLib)) queryCond.isLib = isLib;
