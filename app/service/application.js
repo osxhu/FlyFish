@@ -274,8 +274,10 @@ class ApplicationService extends Service {
 
     for (const category of _.get(componentCategories, [ 0, 'categories' ], [])) {
       const categoryInfo = { id: category.id, name: category.name, subCategories: [] };
+
       for (const children of category.children || []) {
         const subCategoryInfo = { id: children.id, name: children.name, components: [] };
+
         const curComponents = (components || []).filter(component => component.category === category.id && component.subCategory === children.id);
         subCategoryInfo.components = subCategoryInfo.components.concat(curComponents.map(component => {
           return {
