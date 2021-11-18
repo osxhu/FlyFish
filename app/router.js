@@ -75,5 +75,6 @@ module.exports = app => {
   router.get('/applications/:id', controller.application.getInfo);
   router.delete('/applications/:id', controller.application.delete);
   router.post('/applications/copy/:id', controller.application.copy);
+  router.post('/applications/:id/components/list', controller.application.getComponentList);
   // router.post('/applications/export/:id', controller.application.export);
 };

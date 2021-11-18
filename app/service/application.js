@@ -247,6 +247,53 @@ class ApplicationService extends Service {
 
     return { total, data };
   }
+
+  async getComponentList(id, requestData) {
+    const { ctx } = this;
+
+    const { name, type } = requestData;
+    const applicationInfo = await ctx.model.Application._findOne({ id });
+
+    const returnData = { msg: 'ok', data: {} };
+    if (!applicationInfo.projectId) {
+      returnData.msg = 'No Exists ProjectId';
+      return returnData;
+    }
+
+    const queryCond = {
+      status: Enum.COMMON_STATUS.VALID,
+      developStatus: Enum.COMPONENT_DEVELOP_STATUS.ONLINE,
+      projects: applicationInfo.projectId,
+    };
+    if (name) queryCond.name = name;
+    if (type) queryCond.type = type;
+
+    const returnList = [];
+    const componentCategories = await ctx.model.ComponentCategory._find({}, null, { sort: '-create_time', limit: 1 }) || [];
+    const components = await ctx.model.Component._find(queryCond) || [];
+
+    for (const category of _.get(componentCategories, [ 0, 'categories' ], [])) {
+      const categoryInfo = { id: category.id, name: category.name, subCategories: [] };
+      for (const children of category.children || []) {
+        const subCategoryInfo = { id: children.id, name: children.name, components: [] };
+        const curComponents = (components || []).filter(component => component.category === category.id && component.subCategory === children.id);
+        subCategoryInfo.components = subCategoryInfo.components.concat(curComponents.map(component => {
+          return {
+            id: component.id,
+            name: component.name,
+            cover: component.cover,
+            version: _.get(component, [ 'version', (component.version || []).length - 1, 'no' ], 'current'),
+          };
+        }));
+        categoryInfo.subCategories.push(subCategoryInfo);
+      }
+      returnList.push(categoryInfo);
+    }
+
+    returnData.data = returnList;
+    return returnData;
+  }
+
 }
 
 module.exports = ApplicationService;
