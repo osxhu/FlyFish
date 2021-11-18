@@ -56,13 +56,14 @@ class ApplicationService extends Service {
     const { ctx } = this;
 
     const userInfo = ctx.userInfo;
-    const { type, projectId, isLib } = requestData;
+    const { type, developStatus, projectId, isLib } = requestData;
 
     const updateData = {
       updater: userInfo.userId,
     };
     if (type) updateData.type = type;
     if (projectId) updateData.projectId = projectId;
+    if (developStatus) updateData.developStatus = developStatus;
     if (_.isBoolean(isLib)) updateData.isLib = isLib;
     const tagData = await this.getTagData(requestData);
 
