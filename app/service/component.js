@@ -129,7 +129,7 @@ class ComponentService extends Service {
             name: project.name,
           };
         }),
-        version: _.get(component, [ 'version', (component.version || []).length - 1, 'no' ], '暂未上线'),
+        version: _.get(component, [ 'versions', (component.versions || []).length - 1, 'no' ], '暂未上线'),
         creator: curUser.username,
         isLib: component.isLib || false,
 
@@ -467,8 +467,9 @@ class ComponentService extends Service {
       }
     }
 
-    const createResult = this.initReleaseWorkspace(componentInfo, no, compatible);
-    await ctx.model.Component._updateOne({ id: componentId }, { developStatus: Enum.COMPONENT_DEVELOP_STATUS.ONLINE, $push: { versions: { no, desc, status: Enum.COMMON_STATUS.VALID, time: Date.now() } } });
+    const newVersion = compatible ? _.get(componentInfo, [ 'versions', (componentInfo.versions || []).length - 1, 'no' ], no || 'v1') : no;
+    const createResult = this.initReleaseWorkspace(componentId, newVersion);
+    await ctx.model.Component._updateOne({ id: componentId }, { developStatus: Enum.COMPONENT_DEVELOP_STATUS.ONLINE, $push: { versions: { no: newVersion, desc, status: Enum.COMMON_STATUS.VALID, time: Date.now() } } });
 
     if (createResult.msg !== 'Success') returnData.msg = createResult.msg;
 
@@ -476,13 +477,11 @@ class ComponentService extends Service {
   }
 
   // 初始化上线组件空间  compatible: 是否兼容旧版本组件
-  initReleaseWorkspace(componentInfo, no, compatible) {
+  initReleaseWorkspace(componentId, version) {
     const { ctx, config, logger } = this;
     const { pathConfig: { componentsPath } } = config;
 
     const returnInfo = { msg: 'Success' };
-    const componentId = componentInfo.id;
-    const version = compatible ? _.get(componentInfo, [ 'versions', (componentInfo.versions || []).length - 1, 'no' ], no || 'v1') : no;
 
     try {
       const componentPath = `${componentsPath}/${componentId}`;
