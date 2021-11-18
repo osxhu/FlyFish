@@ -301,6 +301,7 @@ class ComponentService extends Service {
 
   async copyComponent(id, componentInfo) {
     const { ctx, config, logger } = this;
+    const { pathConfig: { componentsPath } } = config;
 
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
@@ -337,8 +338,9 @@ class ComponentService extends Service {
     const componentId = result.id;
     returnData.data.id = componentId;
 
-    const createResult = await this.initDevWorkspace(componentId);
-    if (createResult.msg !== 'success') returnData.msg = createResult.msg;
+    const src = `${componentsPath}/${id}/current`;
+    const dest = `${componentsPath}/${componentId}/current`;
+    await ctx.helper.copyAndReplace(src, dest, [ 'node_modules', '.git', 'components', 'release', 'package-lock.json', 'cover.png' ], { from: id, to: componentId });
 
     // 初始化git仓库
     if (config.env === 'prod') {

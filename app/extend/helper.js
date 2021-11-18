@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
+const fsExtra = require('fs-extra');
 const copyDir = require('copy-dir');
 const puppeteer = require('puppeteer');
 
@@ -143,7 +144,43 @@ module.exports = {
       throw new Error(error);
     }
   },
+
+  /**
+   * 复制文件夹并全局替换字符串
+   * @param {String} src 原始文件夹
+   * @param {String} dest 目标文件夹
+   * @param {Array} ignores 需要忽略的文件或文件夹
+   * @param {Object} options 替换内容
+   * @param {String} options.from 匹配字符串
+   * @param {String} options.to 替换字符串
+   */
+  async copyAndReplace(src, dest, ignores, options) {
+    await fsExtra.copy(src, dest, { filter: src => {
+      const basename = path.basename(src);
+      return !ignores.some(item => basename === item);
+    } });
+
+    await replaceFiles(dest, options);
+  },
 };
+
+async function replaceFiles(dir, options) {
+  const files = await fsExtra.readdir(dir);
+
+  files.forEach(async filename => {
+    const thisPath = path.join(dir, filename);
+    const thisStat = await fsExtra.stat(thisPath);
+    const isFile = thisStat.isFile();
+    if (isFile) {
+      const thisStr = await fsExtra.readFile(thisPath, { encoding: 'utf8' });
+      const reg = new RegExp(options.from, 'g');
+      const newStr = thisStr.replace(reg, options.to);
+      await fsExtra.writeFile(thisPath, newStr, { encoding: 'utf8' });
+    } else {
+      await replaceFiles(thisPath, options);
+    }
+  });
+}
 
 /**
  * 加密cookie
