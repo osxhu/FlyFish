@@ -87,6 +87,7 @@ module.exports = appInfo => {
     componentsTplPath: path.resolve(staticDir, 'component_tpl'),
     appTplPath: path.resolve(staticDir, 'application_tpl'),
     appBuildPath: path.resolve(staticDir, 'application_build'),
+    applicationPath: path.resolve(staticDir, 'applications'),
     uploadPath: path.resolve(staticDir, 'upload'),
   };
 

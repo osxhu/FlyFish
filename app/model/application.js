@@ -27,7 +27,10 @@ module.exports = app => {
       default: Enum.APP_DEVELOP_STATUS.DOING,
     },
     type: String,
-    cover: String,
+    cover: {
+      type: String,
+      default: '/application_tpl/public/cover.png',
+    },
     creator: String,
     updater: String,
     status: {

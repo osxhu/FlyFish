@@ -70,8 +70,9 @@ class ApplicationService extends Service {
   }
 
   async updateDesignInfo(id, requestData) {
-    const { ctx } = this;
+    const { ctx, config } = this;
     const { pages } = requestData;
+    const { pathConfig: { applicationPath } } = config;
 
     const curApplicationInfo = await ctx.model.Application._findOne({ id });
 
@@ -95,6 +96,10 @@ class ApplicationService extends Service {
         await ctx.model.Component._updateOne({ id: addComponentId }, { $addToSet: { applications: id } });
       }
     }
+
+    // note: async screenshot component cover, no wait!!!!!
+    const savePath = `${applicationPath}/cover/${id}.png`;
+    this.genCoverImage(id, savePath);
   }
 
   async copyApplication(id, applicationInfo) {
@@ -296,6 +301,20 @@ class ApplicationService extends Service {
     return returnData;
   }
 
+  async genCoverImage(id, savePath) {
+    const { ctx, logger } = this;
+
+    try {
+      const url = 'http://www.baidu.com';
+      const result = await ctx.helper.screenshot(url, savePath);
+      if (result === 'success') {
+        await ctx.model.Application._updateOne({ id }, { cover: `/applications/cover/${id}.png` });
+      }
+      logger.info(`${id} gen cover success!`);
+    } catch (error) {
+      logger.error(`${id} gen cover error: ${error || error.stack}`);
+    }
+  }
 }
 
 module.exports = ApplicationService;

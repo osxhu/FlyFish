@@ -37,7 +37,10 @@ module.exports = app => {
         default: Date.now,
       },
     }],
-    cover: String,
+    cover: {
+      type: String,
+      default: '/component_tpl/public/cover.png',
+    },
     creator: String,
     updater: String,
     develop_status: {
