@@ -463,11 +463,10 @@ class ComponentService extends Service {
         returnData.msg = 'Exists Already';
         return returnData;
       }
-      await ctx.model.Component._updateOne({ id: componentId }, { $push: { versions: { no, desc, status: Enum.COMMON_STATUS.VALID } } });
     }
 
     const createResult = this.initReleaseWorkspace(componentInfo, no, compatible);
-    await ctx.model.Component._updateOne({ id: componentId }, { status: Enum.COMPONENT_DEVELOP_STATUS.ONLINE });
+    await ctx.model.Component._updateOne({ id: componentId }, { status: Enum.COMPONENT_DEVELOP_STATUS.ONLINE, $push: { versions: { no, desc, status: Enum.COMMON_STATUS.VALID } } });
 
     if (createResult.msg !== 'Success') returnData.msg = createResult.msg;
 
