@@ -1,13 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './style.less';
-import { Button,message } from 'antd';
+import { Button,message,Modal } from 'antd';
 import store from "../../model/index";
 import { observer } from "@chaoswise/cw-mobx";
 import { installPackagesService,compileComponentService } from '../../services';
+import ReleaseComponent from './releaseComponent';
 
-const CodeDevelop = observer(()=>{
+const CodeDevelop = observer((props)=>{
   const {
-    setDeveloping
+    setDeveloping,
+    releaseModalVisible,
+    setReleaseModalVisible,
+    getListData
   } = store;
   const { developingData } = store;
 
@@ -46,11 +50,12 @@ const CodeDevelop = observer(()=>{
       <div>
         <label style={{fontWeight:800}}>组件名称：</label>
         {developingData.name}
-        <Button style={{marginLeft:20}}
+        {/* <Button style={{marginLeft:20}}
           onClick={()=>{
             setDeveloping(false)
+            getListData()
           }}
-        >返回</Button>
+        >返回</Button> */}
       </div>
       <div>
         <Button type="primary" style={{marginRight:20}}
@@ -58,7 +63,17 @@ const CodeDevelop = observer(()=>{
             installPackages(developingData.id)
           }}
         >安装依赖</Button>
-        <Button>更新上线</Button>
+        <Button
+          type='primary'
+          onClick={()=>{setReleaseModalVisible(true)}}
+          style={{marginRight:20}}
+        >更新上线</Button>
+        <Button
+          type="primary"
+          onClick={()=>{
+            props.history.push({pathname:`/app/${developingData.id}/component-record`,state:{name:developingData.name}});
+          }}
+        >查看组件记录</Button>
       </div>
     </div>
     <div className={styles.main}>
@@ -66,11 +81,12 @@ const CodeDevelop = observer(()=>{
         <iframe
           name='vscode'
           src={`http://${window.location.hostname}:8080/?folder=/data/app/flyfish-2.0/www/components/${developingData.id}/current`} 
-          // src={`http://127.0.0.1:8080/?folder=/Users/jonny/Documents/test`}
+          
           width = "100%" 
           height = "100%" 
           frameBorder={0}
-        />
+        >
+        </iframe>
       </div>
       <div className={styles.previewWrap}>
         <iframe 
@@ -78,9 +94,20 @@ const CodeDevelop = observer(()=>{
           src={`http://${window.location.hostname}:7001/components/${developingData.id}/current/editor.html?random=${previewRandom}`} 
           width = "100%" 
           height = "100%" 
-          frameBorder={0}></iframe>
+          frameBorder={0}>
+
+          </iframe>
       </div>
     </div>
+    <Modal
+      visible={releaseModalVisible}
+      footer={null}
+      title='更新上线'
+      width='40%'
+      onCancel={()=>{setReleaseModalVisible(false)}}
+    >
+      <ReleaseComponent/>
+    </Modal>
   </div>
 })
 

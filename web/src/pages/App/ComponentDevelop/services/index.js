@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-17 14:13:33
+ * @LastEditTime: 2021-11-18 16:21:53
  */
 import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api/component";
@@ -54,6 +54,13 @@ export const uploadLibraryService = (id)=>{
 };
 export const compileComponentService = (id)=>{
   return fetchPost(API.COMPILE_COMPONENT+'/'+id);
+};
+export const publishComponentService = (id,options)=>{
+  return fetchPost(API.PUBLISH_COMPONENT+'/'+id,{body:options});
+};
+export const getRecordService = (options)=>{
+  const { id,curPage,pageSize } = options;
+  return fetchGet(API.GET_RECORD+`/${id}?curPage=${curPage}&pageSize=${pageSize}`);
 };
 
 

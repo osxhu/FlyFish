@@ -21,9 +21,11 @@ const HandleMenu = observer((props)=>{
   const [data, setData] = useState([]);
   const addinput = useRef();
   const editInput = useRef();
+  const addCateRef = useRef();
 
   const [addCateName, setAddCateName] = useState('');
   const [editName, setEditName] = useState('');
+  const [addingCate, setAddingCate] = useState(false);
   useEffect(() => {
     if (treeData) {
       const data = _.cloneDeep(toJS(treeData));
@@ -44,13 +46,13 @@ const HandleMenu = observer((props)=>{
       )
     }
   }, [treeData]);
-  return <div style={{position:'relative'}}>
+  return <>
+  <div style={{position:'relative'}}>
     {
       data.map((v,k)=>{
-        console.log();
         return <div key={k+''}>
           <div 
-            className={styles.firstLine}
+            className={styles.firstLine+ ((selectedData.category===v.id && selectedData.subCategory==='')?(' '+styles.selected):'')}
             onMouseOver={()=>{
               setData(olddata=>{
                 return olddata.map((v1,k1)=>{
@@ -65,6 +67,13 @@ const HandleMenu = observer((props)=>{
                   v1.showBtn=false;
                   return v1;
                 })
+              })
+            }}
+            onClick={()=>{
+              setCurPage(1);
+              setSelectedData({
+                category:v.id,
+                subCategory:''
               })
             }}
           >
@@ -131,7 +140,24 @@ const HandleMenu = observer((props)=>{
               }
             </div>
             <div className={styles.firstBtnWrap}>
-              <Icon type="form" style={{display:v.showBtn?'inline':'none'}}
+              <Icon 
+                type="plus-circle" 
+                className={styles.addBtn}
+                onClick={()=>{
+                  setData(olddata=>{
+                    return olddata.map((v1,k1)=>{
+                      if (k1===k) {
+                        v1.adding=true;
+                      }
+                      return v1;
+                    })
+                  })
+                  setTimeout(() => {
+                    addinput.current.input.focus();
+                  }, 0);
+                }}
+              />
+              <Icon type="edit" style={{display:v.showBtn?'inline':'none'}}
                 onClick={()=>{
                   setEditName(v.name)
                   setData(olddata=>{
@@ -147,7 +173,8 @@ const HandleMenu = observer((props)=>{
                   }, 0);
                 }}
               />
-              <Icon type="delete" style={{display:userInfo.isAdmin?(v.showBtn?'inline':'none'):'none'}}
+              <Icon type="delete"
+                style={{display:userInfo.isAdmin?(v.showBtn?'inline':'none'):'none'}}
                 onClick={async ()=>{
                   let has = false;
                   data.map((v3,k3)=>{
@@ -169,25 +196,10 @@ const HandleMenu = observer((props)=>{
                     if (res && res.code==0) {
                       getTreeData();
                       message.success('删除成功！')
+                    }else{
+                      message.error(res.msg)
                     }
                   }
-                }}
-              />
-              <Icon 
-                type="plus-square" 
-                className={styles.addBtn}
-                onClick={()=>{
-                  setData(olddata=>{
-                    return olddata.map((v1,k1)=>{
-                      if (k1===k) {
-                        v1.adding=true;
-                      }
-                      return v1;
-                    })
-                  })
-                  setTimeout(() => {
-                    addinput.current.input.focus();
-                  }, 0);
                 }}
               />
             </div>
@@ -195,7 +207,7 @@ const HandleMenu = observer((props)=>{
           {v.children?v.children.map((v2,k2)=>{
             return <div
               key={k+'-'+k2}
-              className={styles.secondLine + ((selectedData.category===v.name && selectedData.subCategory===v2.name)?(' '+styles.selected):'')}
+              className={styles.secondLine + ((selectedData.category===v.id && selectedData.subCategory===v2.id)?(' '+styles.selected):'')}
               style={{display:v.expand?'flex':'none'}}
               onMouseOver={()=>{
                 setData(olddata=>{
@@ -382,7 +394,51 @@ const HandleMenu = observer((props)=>{
         </div>
       })
     }
+    <Input 
+      ref={addCateRef}
+      style={{display:addingCate?'block':'none'}}
+      value={addCateName}
+      onChange={(e)=>{
+        setAddCateName(e.target.value);
+      }}
+      onBlur={()=>{
+        setAddingCate(false);
+      }}
+      onPressEnter={async ()=>{
+        const datas = _.cloneDeep(toJS(treeData));
+        let has = false;
+        datas.map(item=>{
+          if (item.name===addCateName) {
+            has = true;
+          }
+          return item;
+        });
+        if (has) {
+          message.error('组件分类名称已存在，请修改！');
+        }else{
+          datas.push({name:addCateName,children:[]});
+          const res = await updateTreeDataService({categories:datas});
+          if (res && res.code==0) {
+            setAddingCate(false);
+            getTreeData();
+            setAddCateName('');
+          }
+        }
+        
+      }}
+    ></Input>
   </div>
+  <div className={styles.leftBigTitle}
+      onClick={()=>{
+        setAddingCate(true);
+        setTimeout(() => {
+          addCateRef.current.input.focus();
+        }, 0);
+      }}
+    >
+      <span style={{marginLeft:10}}>新增类别</span>
+    </div>
+  </>
 })
 
 export default HandleMenu;

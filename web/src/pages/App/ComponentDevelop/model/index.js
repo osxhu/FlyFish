@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-16 10:12:06
+ * @LastEditTime: 2021-11-18 18:03:53
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -24,10 +24,11 @@ const model = {
     addModalvisible:false,
     editModalvisible:false,
     importModalvisible:false,
+    releaseModalVisible:false,
     treeData:[],
     listData:{},
     selectedData:{
-      category:'全部组件',
+      category:'',
       subCategory:''
     },
     searchName:'',
@@ -51,6 +52,21 @@ const model = {
         this.setUserInfo(res.data);
       }
     },
+    *getTreeDataFirst() {
+      // 请求数据
+      const res = yield getTreeDataService();
+      if (res && res.data) {
+        const data = res.data[0].categories;
+        this.setTreeData(data);
+        const first = toJS(data)[0];
+        if (first) {
+          this.setSelectedData({
+            category:first.id,
+            subCategory:''
+          });
+        }
+      }
+    },
     *getTreeData() {
       // 请求数据
       const res = yield getTreeDataService();
@@ -69,25 +85,18 @@ const model = {
       }
     },
     *getListData(){
-      const { category,subCategory } = toJS(this.selectedData);
+      // const { category,subCategory } = toJS(this.selectedData);
+      // let curPage = this.curPage-1;
+      // const pageSize = this.pageSize;
+      // const params = {
+      //   category:category,
+      //   subCategory:subCategory===''?undefined:subCategory,
+      //   curPage:curPage,
+      //   pageSize
+      // };
+      // const res = yield getListDataService(params);
+      // this.setListData(res.data);
       let curPage = this.curPage-1;
-      const pageSize = this.pageSize;
-      if (category==='全部组件') {
-        const res = yield getListDataService({ curPage,pageSize });
-        this.setListData(res.data);
-      }else{
-        const params = {
-          category:category,
-          subCategory:subCategory,
-          curPage:curPage-1,
-          pageSize
-        };
-        const res = yield getListDataService(params);
-        this.setListData(res.data);
-      }
-    },
-    *getListDataWithCate(){
-      let curPage = this.curPage;
       const pageSize = this.pageSize;
       const { category,subCategory } = toJS(this.selectedData);
       const searchName = this.searchName;
@@ -98,9 +107,29 @@ const model = {
         key:searchKey?searchKey:undefined,
         developStatus:searchStatus!=='all'?searchStatus:undefined,
 
-        category:category==='全部组件'?undefined:category,
-        subCategory:category==='全部组件'?undefined:subCategory,
-        curPage:curPage-1,
+        category:category,
+        subCategory:subCategory===''?undefined:subCategory,
+        curPage:curPage,
+        pageSize
+      };
+      const res = yield getListDataService(params);
+      this.setListData(res.data);
+    },
+    *getListDataWithCate(){
+      let curPage = this.curPage-1;
+      const pageSize = this.pageSize;
+      const { category,subCategory } = toJS(this.selectedData);
+      const searchName = this.searchName;
+      const searchKey = this.searchKey;
+      const searchStatus = this.searchStatus;
+      const params = {
+        name:searchName?searchName:undefined,
+        key:searchKey?searchKey:undefined,
+        developStatus:searchStatus!=='all'?searchStatus:undefined,
+
+        category:category,
+        subCategory:subCategory===''?undefined:subCategory,
+        curPage:curPage,
         pageSize
       };
       const res = yield getListDataService(params);
@@ -167,6 +196,9 @@ const model = {
     },
     setCurPage(res){
       this.curPage = res;
+    },
+    setReleaseModalVisible(res){
+      this.releaseModalVisible = res;
     }
   }
 };

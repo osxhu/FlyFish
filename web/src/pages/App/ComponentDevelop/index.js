@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-17 18:41:44
+ * @LastEditTime: 2021-11-18 18:05:48
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -37,7 +37,7 @@ import CodeDevelop from "./components/codeDevelop";
 const { Header, Sider, Content } = Layout;
 const {Option} = Select;
 
-const ComponentDevelop = observer(() => {
+const ComponentDevelop = observer((props) => {
   const columns = [
     {
       title: '组件类型',
@@ -149,7 +149,8 @@ const ComponentDevelop = observer(() => {
               <div
                 onClick={()=>{
                   setDevelopingData(record);
-                  setDeveloping(true);
+                  // setDeveloping(true);
+                  props.history.push({pathname:`/app/${record.id}/code-develop`,state:{name:record.name}});
                 }}
               >开发组件</div>
               <div
@@ -225,7 +226,7 @@ const ComponentDevelop = observer(() => {
     setDevelopingData,
     setCurPage,
     setPageSize,
-    setListData
+    getTreeDataFirst
   } = store;
   const { 
     addModalvisible,editModalvisible,importModalvisible,treeData,
@@ -234,12 +235,10 @@ const ComponentDevelop = observer(() => {
   } = store;
 
   const [addCateName, setAddCateName] = useState('');
-  const [addingCate, setAddingCate] = useState(false);
   const [copyModalvisible, setCopyModalvisible] = useState(false);
   const [copyId, setCopyId] = useState('');
   const [copyName, setCopyName] = useState('');
   const [uploadId, setUploadId] = useState('');
-  const addCateRef = useRef();
 
   const [collapsed, setCollapsed] = useState(false);
   const [imgModalVisible, setImgModalVisible] = useState(false);
@@ -250,8 +249,7 @@ const ComponentDevelop = observer(() => {
     getUserInfo();
     getProjectsData();
     getTagsData();
-    getTreeData();
-    getListData();
+    getTreeDataFirst();
   }, []);
   useEffect(() => {
     getListData();
@@ -341,66 +339,7 @@ const ComponentDevelop = observer(() => {
             onClick={()=>{setCollapsed(!collapsed);}}
           />
         </div>
-        <div className={styles.leftWrap} style={{display:collapsed?'none':'block'}}>
-          <div className={styles.leftBigTitle}>
-            <span style={{marginLeft:10}}>组件列表</span>
-            <Icon 
-              type="plus-square" 
-              style={{float:'right',marginRight:20,cursor:'pointer'}} 
-              onClick={()=>{
-                setAddingCate(true);
-                setTimeout(() => {
-                  addCateRef.current.input.focus();
-                }, 0);
-              }}
-            />
-          </div>
-          <Input 
-            ref={addCateRef}
-            style={{display:addingCate?'block':'none'}}
-            value={addCateName}
-            onChange={(e)=>{
-              setAddCateName(e.target.value);
-            }}
-            onBlur={()=>{
-              setAddingCate(false);
-            }}
-            onPressEnter={async ()=>{
-              const datas = _.cloneDeep(toJS(treeData));
-              let has = false;
-              datas.map(item=>{
-                if (item.name===addCateName) {
-                  has = true;
-                }
-                return item;
-              });
-              if (has) {
-                message.error('组件分类名称已存在，请修改！');
-              }else{
-                datas.push({name:addCateName,children:[]});
-                const res = await updateTreeDataService({categories:datas});
-                if (res && res.code==0) {
-                  setAddingCate(false);
-                  getTreeData();
-                  setAddCateName('');
-                }
-              }
-              
-            }}
-          ></Input>
-          <div className={styles.allBtn + ' '+ (selectedData.category==='全部组件'?styles.selected:'')}
-            onClick={
-              ()=>{
-                setSelectedData({
-                  category:'全部组件',
-                  subCategory:''
-                });
-                setSearchName('');
-                setSearchKey('');
-                setSearchStatus('');
-              }
-            }
-          >全部组件</div>
+        <div className={styles.leftWrap} style={{display:collapsed?'none':'flex'}}>
           <div className={styles.treeWrap}>
             <HandleMenu/>
           </div>
@@ -416,8 +355,8 @@ const ComponentDevelop = observer(() => {
                   value={searchName}
                   onChange={(e)=>{
                     setSearchName(e.target.value);
-                    setSearchKey('');
-                    setCurPage(1);
+                    // setSearchKey('');
+                    setCurPage(0);
                     getListDataWithCate();
                   }}
                   // onPressEnter={()=>{
@@ -428,12 +367,12 @@ const ComponentDevelop = observer(() => {
                 ></Input>
               </Col>
               <Col span={8}>
-                <Input style={{width:'90%'}} placeholder='输入组件名称/项目名称/描述/标签/创建人查找组件'
+                <Input style={{width:'90%'}} placeholder='输入项目名称/描述/标签/创建人查找组件'
                   value={searchKey}
                   onChange={(e)=>{
                     setSearchKey(e.target.value);
-                    setSearchName('');
-                    setCurPage(1);
+                    // setSearchName('');
+                    setCurPage(0);
                     getListDataWithCate();
                   }}
                   // onPressEnter={()=>{
@@ -455,7 +394,7 @@ const ComponentDevelop = observer(() => {
                 >
                   <Option value='all'>全部</Option>
                   <Option value="doing">开发中</Option>
-                  <Option value="online">已交付</Option>
+                  <Option value="online">已上线</Option>
                 </Select>
               </Col>
               {/* <Col span={5}>
@@ -490,7 +429,7 @@ const ComponentDevelop = observer(() => {
                 rowKey="id"
                 pagination={{
                   showSizeChanger:true,
-                  total:listData.total,
+                  total:listData?listData.total:0,
                   pageSize:pageSize,
                   current:curPage,
                   onShowSizeChange:(page,pageSize)=>{

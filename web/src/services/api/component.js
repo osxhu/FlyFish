@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-17 14:12:04
+ * @LastEditTime: 2021-11-18 15:58:48
  */
 /*
  * 应用
@@ -37,4 +37,8 @@ export default {
   UPLOADTO_LIBRARY: `${baseUrl}/components/up-to-lib`,
   //编译组件
   COMPILE_COMPONENT: `${baseUrl}/components/compile`,
+  //上线组件
+  PUBLISH_COMPONENT: `${baseUrl}/components/release`,
+  //获取组件提交记录
+  GET_RECORD: `${baseUrl}/components/git-history`,
 };

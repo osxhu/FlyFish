@@ -17,7 +17,8 @@ import { connect } from '@chaoswise/cw-mobx';
 const Layout = ({
   children,
   route, // 路由数据
-  currentRoute // 当前路由数据 （当前地址的）
+  currentRoute, // 当前路由数据 （当前地址的）
+  location
 }) => {
 
   const history = useHistory();
@@ -100,8 +101,15 @@ const check=(a)=>{
   // 动态的返回文字
   const routeBackName=()=>{
     if(name==='项目详情'){
-      return `项目管理/${JSON.parse(sessionStorage.getItem('activeProject')).name}`;}
-    };
+      return `项目管理/${JSON.parse(sessionStorage.getItem('activeProject')).name}`;
+    }
+    if(name==='开发组件'){
+      if (location.state && location.state.name) {
+        return `开发组件/${location.state.name}`;
+      }
+      return '开发组件';
+    }
+  };
   const clearCookies = () => {
     loginout();
     history.replace('/login');

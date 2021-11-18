@@ -106,7 +106,6 @@ const Detail = observer(()=>{
           <div style={{height:40}}>
             <span style={{marginRight:30}}>效果演示</span>
             <span>提供组件标识：{detailData.charactor}</span>
-            <Button type='primary' style={{float:'right'}}>上传Demo代码</Button>
           </div>
           <div style={{backgroundColor:'#eee',height:300}}>
               

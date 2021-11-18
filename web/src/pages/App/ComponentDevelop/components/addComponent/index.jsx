@@ -41,6 +41,7 @@ const AddComponent = observer((props)=>{
   return <Form
     {...formItemLayout}  
     onSubmit={handleSubmit}
+    style={{padding:20}}
   >
     <Form.Item label="组件名称">
       {getFieldDecorator('name', {

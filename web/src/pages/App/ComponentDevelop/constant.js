@@ -3,8 +3,11 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-13 14:59:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-13 15:03:57
+ * @LastEditTime: 2021-11-18 11:25:24
  */
+export const DEVELOPSTATUS_ONLINE = 'online';
+export const DEVELOPSTATUS_DOING = 'doing';
+
 export const componentDevelopStatus_map_ch = {
   doing:'开发中',
   online:'已上线'
