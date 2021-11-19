@@ -61,10 +61,8 @@ class ApplicationController extends BaseController {
         components: Joi.array().items(Joi.object().keys({
           id: Joi.string().required(),
           version: Joi.string().required(),
-        })).min(1)
-          .required(),
-      })).min(1)
-        .required(),
+        })),
+      })).required(),
     });
 
     const { value: id } = ctx.validate(Joi.string().length(24).required(), ctx.params.id);
