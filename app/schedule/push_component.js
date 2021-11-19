@@ -10,7 +10,7 @@ class PushComponent extends Subscription {
     return {
       interval: INTERVAL, // 2 分钟间隔
       type: 'worker', // 每台机器上只有一个 worker 会执行这个定时任务
-      env: 'prod',
+      env: [ 'prod' ],
     };
   }
 
