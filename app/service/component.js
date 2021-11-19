@@ -192,7 +192,7 @@ class ComponentService extends Service {
         };
       }),
       desc: componentInfo.desc,
-      $config: componentInfo.$config || {},
+      dataConfig: componentInfo.dataConfig || {},
       cover: componentInfo.cover,
       creatorInfo: {
         id: userInfo.id,
@@ -268,7 +268,7 @@ class ComponentService extends Service {
   async updateInfo(id, requestData) {
     const { ctx } = this;
 
-    const { status, type, projects, category, subCategory, isLib, desc, $config } = requestData;
+    const { status, type, projects, category, subCategory, isLib, desc, dataConfig } = requestData;
 
     const updateData = {};
     if (status) updateData.status = status;
@@ -279,7 +279,7 @@ class ComponentService extends Service {
     if (category) updateData.category = category;
     if (subCategory) updateData.subCategory = subCategory;
     if (desc) updateData.desc = desc;
-    if (!_.isEmpty($config)) updateData.$config = $config;
+    if (!_.isEmpty(dataConfig)) updateData.dataConfig = dataConfig;
 
     const tagInfo = await this.getTagData(requestData);
     Object.assign(updateData, tagInfo);

@@ -57,7 +57,7 @@ class ApplicationController extends BaseController {
     const { ctx, app: { Joi }, service } = this;
 
     const editSchema = Joi.object().keys({
-      $pages: Joi.array().items(Joi.object().keys({
+      pages: Joi.array().items(Joi.object().keys({
         components: Joi.array().items(Joi.object().keys({
           id: Joi.string().required(),
           version: Joi.string().required(),
@@ -167,11 +167,11 @@ class ApplicationController extends BaseController {
 
     const appInfo = await ctx.model.Application._findOne({ id });
 
-    await fs.writeJson(path.resolve(configPath, 'env.conf.json'), appInfo.$pages);
+    await fs.writeJson(path.resolve(configPath, 'env.conf.json'), appInfo.pages);
 
     const mergedGlobalOptions = {};
     const targetComponentPath = path.resolve(buildPath, 'components');
-    (appInfo.$pages || []).forEach(async page => {
+    (appInfo.pages || []).forEach(async page => {
       Object.assign(mergedGlobalOptions, page.options.ENVGlobalOptions || {});
       (page.components || []).forEach(async component => {
         await fs.copy(

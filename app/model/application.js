@@ -37,7 +37,7 @@ module.exports = app => {
       type: String,
       default: Enum.COMMON_STATUS.VALID,
     },
-    $pages: [ Object ],
+    pages: [ Object ],
   });
 
   ApplicationSchema.statics._create = async function(params) {
@@ -79,9 +79,7 @@ module.exports = app => {
 
     if (obj.id) obj._id = obj.id; delete (obj.id);
     if (update) obj.updateTime = Date.now();
-    return decamelizeKeys(obj, function(key, convert, options) {
-      return _.startsWith(key, '$') ? key : convert(key, options);
-    });
+    return decamelizeKeys(obj);
   }
 
   function _toObj(doc) {
@@ -90,9 +88,7 @@ module.exports = app => {
     const res = {};
     res.id = doc._id.toString();
 
-    const camelizeRes = camelizeKeys(doc, function(key, convert, options) {
-      return _.startsWith(key, '$') ? key : convert(key, options);
-    });
+    const camelizeRes = camelizeKeys(doc);
 
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();

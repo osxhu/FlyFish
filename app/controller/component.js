@@ -165,7 +165,7 @@ class ComponentsController extends BaseController {
       category: app.Joi.number(),
       subCategory: app.Joi.number(),
       desc: app.Joi.string(),
-      $config: app.Joi.object(),
+      dataConfig: app.Joi.object(),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
     const { value: requestData } = ctx.validate(updateInfoSchema, ctx.request.body);
