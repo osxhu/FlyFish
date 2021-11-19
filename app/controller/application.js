@@ -57,19 +57,12 @@ class ApplicationController extends BaseController {
     const { ctx, app: { Joi }, service } = this;
 
     const editSchema = Joi.object().keys({
-<<<<<<< HEAD
       pages: Joi.array().items(Joi.object().keys({
-        components: Joi.array().items(Joi.object()
-        // .keys({
-        //   id: Joi.string().required(),
-        //   version: Joi.string().required(),
-        // })
-        )
-        ,
-      })).required(),
-=======
-      pages: Joi.array().items(Joi.object()).required(),
->>>>>>> 8c506b2 (fix editDesignInfo)
+        components: Joi.array().items(Joi.object().keys({
+          id: Joi.string().required(),
+          version: Joi.string().required(),
+        }).unknown()).required(),
+      }).unknown()).required(),
     });
 
     const { value: id } = ctx.validate(Joi.string().length(24).required(), ctx.params.id);
