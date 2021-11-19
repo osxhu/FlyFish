@@ -60,6 +60,7 @@ class ApplicationController extends BaseController {
       pages: Joi.array().items(Joi.object().keys({
         components: Joi.array().items(Joi.object().keys({
           id: Joi.string().required(),
+          type: Joi.string().required(),
           version: Joi.string().required(),
         }).unknown()).required(),
       }).unknown()).required(),
