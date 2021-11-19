@@ -129,7 +129,7 @@ module.exports = {
       const cookie = {
         name: cookieName,
         value: cookieValue,
-        domain: '10.2.3.56',
+        domain: cookieDomain,
         path: '/',
         expires: Date.now() + 3600 * 1000,
         maxAge: 1000 * 60 * 60 * 24 * 7, // Unit : second  default Max-Age is one week
