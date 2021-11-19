@@ -26,6 +26,7 @@ module.exports = app => {
     projects: [ String ],
     tags: [ String ],
     applications: [ String ],
+    data_config: Object,
 
     versions: [{
       _id: false,

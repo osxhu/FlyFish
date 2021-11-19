@@ -129,9 +129,10 @@ module.exports = {
       const cookie = {
         name: cookieName,
         value: cookieValue,
-        domain: cookieDomain,
+        domain: '10.2.3.56',
         path: '/',
         expires: Date.now() + 3600 * 1000,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // Unit : second  default Max-Age is one week
       };
       await page.setCookie(cookie); // 设置cookie
 

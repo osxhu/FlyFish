@@ -290,7 +290,7 @@ class ApplicationService extends Service {
             id: component.id,
             name: component.name,
             cover: component.cover,
-            version: _.get(component, [ 'version', (component.version || []).length - 1, 'no' ], 'current'),
+            version: _.get(component, [ 'versions', (component.versions || []).length - 1, 'no' ], 'current'),
           };
         }));
         categoryInfo.subCategories.push(subCategoryInfo);
