@@ -183,7 +183,14 @@ class ComponentService extends Service {
           name: curTag.name || '',
         };
       }),
-      versions: componentInfo.versions || [],
+      versions: (componentInfo.versions || []).map(version => {
+        return {
+          no: version.no,
+          desc: version.desc || '无',
+          status: version.status,
+          time: version.time && version.time.getTime(),
+        };
+      }),
       desc: componentInfo.desc,
       cover: componentInfo.cover,
       creatorInfo: {
