@@ -1,10 +1,3 @@
-/*
- * @Descripttion:
- * @Author: zhangzhiyong
- * @Date: 2021-06-11 14:25:25
- * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-09-02 18:11:56
- */
 'use strict';
 module.exports = (component_mark, sceneInfo) => `
 'use strict';

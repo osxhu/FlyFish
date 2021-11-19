@@ -1,17 +1,10 @@
-/*
- * @Descripttion:
- * @Author: zhangzhiyong
- * @Date: 2021-06-11 14:25:25
- * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-08-02 11:39:54
- */
 'use strict';
-module.exports = component_mark => `
+module.exports = () => `
 'use strict';
 
-import Component from "data-vi/Component";
+import BaseComponent from "data-vi/Component";
 
-export default class ${component_mark} extends Component {
+export default class Component extends BaseComponent {
     // 默认配置
     static defaultConfig = {};
     // 默认选项

@@ -18,8 +18,8 @@ module.exports = _.defaultsDeep({
     devtool: '#source-map',
     mode: 'development',
     entry:{
-        "${component_mark}/main":"./src/main.js",
-        "${component_mark}/setting":"./src/setting.js",
+        "./main":"./src/main.js",
+        "./setting":"./src/setting.js",
     },
     output: {
         // 编译的目录

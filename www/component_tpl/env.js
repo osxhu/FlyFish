@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = (component_mark, component_replace_mark, version) => `
+module.exports = (component_mark, version) => `
 /**
  * @description 大屏配置
  */
@@ -23,7 +23,7 @@ window.DATAVI_ENV = (function() {
                 icon: 'changyongzujian',
                 components: [
                     {
-                        type: '${component_replace_mark}',
+                        type: '${component_mark}',
                         name: '组件开发',
                         author: 'Cloudwise',
                         description: '',
