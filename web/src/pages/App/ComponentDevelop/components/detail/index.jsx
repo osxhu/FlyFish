@@ -278,11 +278,12 @@ const Detail = observer(()=>{
             <div style={{fontWeight:800,padding:'10px 0'}}>注释：</div>
             <Input placeholder='输入注释'
               value={configData.annotationValue}
-              onChange={e=>{
+              onChange={(e)=>{
+                const txt = e.target.value;
                 setConfigData((state)=>{
                   return {
                     ...state,
-                    annotationValue:e.target.value
+                    annotationValue:txt
                   }
                 })
               }}
