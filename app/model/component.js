@@ -93,9 +93,12 @@ module.exports = app => {
 
     if (obj.id) obj._id = obj.id; delete (obj.id);
     if (update) obj.updateTime = Date.now();
-    return decamelizeKeys(obj, function(key, convert, options) {
+    const returnObj = decamelizeKeys(obj, function(key, convert, options) {
       return _.startsWith(key, '$') ? key : convert(key, options);
     });
+    if (obj.dataConfig) returnObj.dataConfig = obj.dataConfig;
+
+    return returnObj;
   }
 
   function _toObj(doc) {
@@ -105,6 +108,7 @@ module.exports = app => {
     res.id = doc._id.toString();
 
     const camelizeRes = camelizeKeys(doc);
+    if (doc.dataConfig) camelizeRes.dataConfig = doc.dataConfig;
 
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();
