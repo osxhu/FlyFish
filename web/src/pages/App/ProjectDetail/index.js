@@ -5,30 +5,23 @@ import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import AssemblyList from "./components/ComponentDevelop";
 import ApplyList from './components/ApplyList';
-import { successCode } from "@/config/global";
-import styles from "./assets/style.less";
-import AddAppModal from "./components/AddAppModal";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Menu } from 'antd';
 
 const ProjectDetail = observer((props) => {
   const intl = useIntl();
-  const {
-    getApplicationList,
-    setSearchParams,
-    saveProject,
-    openEditProjectModal, openProjectPage,
-    closeEditProjectModal, setCheckPageFLag
+  const { setCheckPageFLag
   } = store;
-  const { total, projectList, isEditProjectModalVisible, activeProject, checkPageFLag } =
+  const { checkPageFLag, hasMore, templateapplicationList,
+     total, activeProject, type, applicationList,industryList,
+      applicationLength, isAddModalVisible,pageSize,curPage } =
     store;
   const nowProgressId = props.match.params.id;
-  const loading = loadingStore.loading["ProjectDetail/getApplicationList"];
   return (
     <React.Fragment>
       <Menu onClick={setCheckPageFLag} mode="horizontal" selectedKeys={[checkPageFLag]} >
         <Menu.Item key="applyList" >
-          组件应用列表
+          项目应用列表
         </Menu.Item>
         <Menu.Item key="assemblyList" >
           项目组件列表
@@ -37,39 +30,22 @@ const ProjectDetail = observer((props) => {
       {/* 渲染应用或者组件 */}
       {
         checkPageFLag === 'applyList' ?
-          <ApplyList ProgressId={nowProgressId}/>
+          <ApplyList ProgressId={nowProgressId} 
+          templateapplicationList={templateapplicationList} 
+          hasMore={hasMore} total={total}
+           activeProject={activeProject} 
+           pageSize={pageSize}
+           curPage={curPage}
+           isAddModalVisible={isAddModalVisible} 
+           applicationList={applicationList}
+           industryList={industryList}
+            applicationLength={applicationLength} 
+            type={type} />
           :
-          <AssemblyList ProgressId={nowProgressId} />
+          <AssemblyList 
+         
+          ProgressId={nowProgressId} />
       }
-      {isEditProjectModalVisible && (
-        <AddAppModal
-          project={activeProject}
-          onSave={(project) => {
-            saveProject(project, (res) => {
-              if (res.code === successCode) {
-                message.success(
-                  intl.formatMessage({
-                    id: "common.saveSuccess",
-                    defaultValue: "保存成功！",
-                  })
-                );
-                closeEditProjectModal();
-                getApplicationList({
-                  curPage: 0,
-                });
-              } else {
-                message.error(
-                  intl.formatMessage({
-                    id: "common.saveError",
-                    defaultValue: "保存失败，请稍后重试！",
-                  })
-                );
-              }
-            });
-          }}
-          onCancel={closeEditProjectModal}
-        />
-      )}
     </React.Fragment>
   );
 });

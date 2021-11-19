@@ -21,12 +21,12 @@ const ApplyDevelop = observer(() => {
   const intl = useIntl(); const {
     getApplicationList,
     setSearchParams, setActiveCard,
-    setCurPage, addApplicationOne, deleteApplicationOne,
+    setCurPage, addApplicationOne, deleteApplicationOne, getApplicationListDelete,
     saveProject, getTagsList, getProjectList, changeApplicationOne,
     openAddProjectModal, closeDeleteApplyListModal, copyApplicationOne,
     closeAppProjectModal, openDeleteApplyListModal, setType, addNewTag
   } = store;
-  const { total, key, curPage, tagList, pageSize, activeCard, projectList, applicationList1, isDeleteApplyListModalVisible, applicationList, isAddModalVisible, activeProject } =
+  const { total, key, curPage, totalDelete, deleteCurPage, tagList, pageSize, activeCard, applicationListDelete, projectList, applicationList1, isDeleteApplyListModalVisible, applicationList, isAddModalVisible, activeProject } =
     store;
   const onShowSizeChange = (row) => {
     console.log('凤凰网', row);
@@ -182,6 +182,7 @@ const ApplyDevelop = observer(() => {
       <Button
         key="reset_project"
         onClick={() => {
+          getApplicationListDelete({ status: 'invalid' });
           openDeleteApplyListModal();
         }}
       >
@@ -269,8 +270,8 @@ const ApplyDevelop = observer(() => {
           type={key}
           addNewTag={addNewTag}
           projectList={projectList}
-          onCopy={(id,item) => {
-            copyApplicationOne(id,item, (res => {
+          onCopy={(id, item) => {
+            copyApplicationOne(id, item, (res => {
               if (res.code === successCode) {
                 message.success(
                   intl.formatMessage({
@@ -342,6 +343,34 @@ const ApplyDevelop = observer(() => {
       {
         isDeleteApplyListModalVisible && (
           <DeleteApplyListModal
+            total={totalDelete}
+            curPage={deleteCurPage}
+            project
+            onChange={(id,params)=>{
+              changeApplicationOne(id,params,(res)=>{
+                if (res.code === successCode) {
+                  message.success(
+                    intl.formatMessage({
+                      id: "common.addSuccess",
+                      defaultValue: "新增成功！",
+                    })
+                  );
+                  getApplicationListDelete({ status: 'invalid' });
+                  getApplicationList({
+                    curPage: 0,
+                  });
+                } else {
+                  message.error(
+                    res.msg || intl.formatMessage({
+                      id: "common.addError",
+                      defaultValue: "新增失败，请稍后重试！",
+                    })
+                  );
+                }
+              });
+            }}
+            deleteApplyList={applicationListDelete.list}
+            getDeleteApplyList={getApplicationListDelete}
             onCancel={closeDeleteApplyListModal}
           />
         )

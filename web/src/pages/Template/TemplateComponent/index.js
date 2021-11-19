@@ -145,27 +145,9 @@ const ComponentDevelop = observer(() => {
       showCollapsedBtn
       SiderWidth={200}
       Siderbar={(
-        <div className={styles.leftWrap}>
-          <div className={styles.leftBigTitle}>
-            <span style={{ marginLeft: 10 }}>组件列表</span>
-          </div>
-          <div className={styles.allBtn + ' ' + (selectedData.category === '全部组件' ? styles.selected : '')}
-            onClick={
-              () => {
-                setSelectedData({
-                  category: '全部组件',
-                  subCategory: ''
-                });
-                setSearchName('');
-                setSearchKey('');
-                setSearchStatus('');
-              }
-            }
-          >全部组件</div>
           <div className={styles.treeWrap}>
             <HandleMenu />
           </div>
-        </div>
       )}
     ><Detail />
       <SearchBar

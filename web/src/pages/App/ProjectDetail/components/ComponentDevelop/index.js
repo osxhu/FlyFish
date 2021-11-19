@@ -32,14 +32,16 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     addModalvisible,
     setAddModalvisible,
     getIndustrysList,
+    getTagsList,
     deleteAssembly,
-    getTreeData,
+    getTreeDataFirst,
     changeOneAssemly,
     getListData, setDrawerVisible,
     getAssemlyDetail,
-    setSelectedData
+    setSelectedData,setProjectId,
+    setHasMore
   } = store;
-  const { libraryListLength, listLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
+  const {tagsList,hasMore, listLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
   const [changeFlga, setchangeFlga] = useState(false); //编辑完成
   let [infinitKey, setInfinitKey] = useState(0);
   let [flagNum, setFlagNum] = useState(0);
@@ -56,6 +58,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   // 公共组件下滑
   const libraryChangePage = () => {
     setLibraryFlagNum(libraryFlagNum += 1);
+    setInfinitKey(Math.random().toString(36).substr(2),);
     getLibraryListData({
       curPage: libraryFlagNum,
       ...libraryParams
@@ -104,7 +107,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     {
       components: (
         <Select mode="tags"
-          id="tag"
+          id="tags"
           allowClear={true}
           key="tag"
           name='标签'
@@ -116,9 +119,9 @@ const ComponentDevelop = observer(({ ProgressId }) => {
             }) + "标签"
           }
         >
-          <Option value="jack">Jack</Option>
-          <Option value="lucy">Lucy</Option>
-          <Option value="Yiminghe">yiminghe</Option>
+           {
+            tagsList.map(item => <Option key={item.id} value={item.id}>{item.name}</Option>)
+          }
         </Select>
       ),
     },
@@ -136,14 +139,15 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   };
   // 请求列表数据
   useEffect(() => {
-    getTreeData();
+    setProjectId(ProgressId);
+    getTreeDataFirst();
     getLibraryListData({}, true);
-    getIndustrysList();
+    getIndustrysList(); //行业
+    getTagsList();
     setActiveProject(JSON.parse(sessionStorage.getItem('activeProject')).name);
   }, []);
   useEffect(() => {
-    setFlagNum(0);
-    getListData({ projectId: ProgressId }, true);
+    getListData();
   }, [selectedData]);
   return <>
     <AbreastLayout
@@ -152,19 +156,6 @@ const ComponentDevelop = observer(({ ProgressId }) => {
       SiderWidth={300}
       Siderbar={(
         <div className={styles.leftWrap}>
-          <div className={styles.leftBigTitle}>
-            <span style={{ marginLeft: 10 }}>组件列表</span>
-          </div>
-          <div className={styles.allBtn + ' ' + (selectedData.category === '全部组件' ? styles.selected : '')}
-            onClick={
-              () => {
-                setSelectedData({
-                  category: '全部组件',
-                  subCategory: ''
-                });
-              }
-            }
-          >全部组件</div>
           <div className={styles.treeWrap}>
             <HandleMenu />
           </div>
@@ -178,19 +169,19 @@ const ComponentDevelop = observer(({ ProgressId }) => {
             <>
               <span>{activeProject}</span>
               <span className={styles.title}>共</span>
-              <span>{basicTableListData.total}个应用</span>
+              <span>{listData&&listData.total}个应用</span>
             </>
           } key="1"
             extra={<Button onClick={(e) => {
               e.stopPropagation();
               setchangeFlga(!changeFlga);
-            }} type="primary" >{changeFlga?'完成':'编辑'}</Button>
+            }} type="primary" >{changeFlga ? '完成' : '编辑'}</Button>
             }>
             <div id="scrollableDiv" style={{ height: '470px', overflow: 'auto' }} >
               <InfiniteScroll
                 dataLength={listLength}
                 next={changePage}
-                hasMore={true}
+                hasMore={hasMore}
                 scrollableTarget="scrollableDiv"
                 key={infinitKey}
               >
@@ -201,7 +192,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                   onDelete={(params) => {
                     deleteAssembly(params, (res) => {
                       if (res.code === successCode) {
-                        getListData({ projectId: ProgressId },true);
+                        getListData({ projectId: ProgressId }, true);
                         message.success(
                           intl.formatMessage({
                             id: "common.deleteSuccess",
@@ -233,49 +224,44 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               searchContent={searchContent} showSearchCount={6}
             />
             <div id="scrollableDivTwo" style={{ height: '470px', overflow: 'auto' }} >
-              <InfiniteScroll
-                dataLength={libraryListLength}
-                next={libraryChangePage}
-                hasMore={true}
-                scrollableTarget="scrollableDivTwo"
-                key={infinitKey}
-              >
-                <Card
-                  checkCard={(id) => {
-                    getAssemlyDetail(id);
-                  }}
-                  value={libraryListData}
-                  state={1}
-                  canAdd={true}
-                  addOwn={(id, item) => {
-                    let result = item.filter(item => item === ProgressId);
-                    if (result.length > 0) {
-                      message.error('该组件已归属该项目');
-                      return;
+              <Card
+                checkCard={(id) => {
+                  getAssemlyDetail(id);
+                }}
+                value={libraryListData}
+                state={1}
+                canAdd={true}
+                addOwn={(id, item) => {
+                  console.log('的户外',item,ProgressId);
+                  let result = item.filter(item => item === ProgressId);
+                  if (result.length > 0) {
+                    message.error('该组件已归属该项目');
+                    return;
+                  }
+                  changeOneAssemly(id, { projects: [ProgressId] }, (res) => {
+                    if (res.code === successCode) {
+                      message.success(
+                        intl.formatMessage({
+                          id: "common.addSuccess",
+                          defaultValue: "新增成功！",
+                        })
+                      );
+                      setHasMore(true);
+                      getListData({ projectId: ProgressId }, true);
+                      getLibraryListData({ isLib: true }, true);
+                    } else {
+                      message.error(
+                        res.msg || intl.formatMessage({
+                          id: "common.addError",
+                          defaultValue: "新增失败，请稍后重试！",
+                        })
+                      );
                     }
-                    changeOneAssemly(id, { projects: [ProgressId, ...item] }, (res) => {
-                      if (res.code === successCode) {
-                        getListData(ProgressId);
-                        message.success(
-                          intl.formatMessage({
-                            id: "common.addSuccess",
-                            defaultValue: "新增成功！",
-                          })
-                        );
-                        getLibraryListData();
-                      } else {
-                        message.error(
-                          res.msg || intl.formatMessage({
-                            id: "common.addError",
-                            defaultValue: "新增失败，请稍后重试！",
-                          })
-                        );
-                      }
-                    });
-                  }}
-                >
-                </Card>
-              </InfiniteScroll>
+                  });
+                }}
+              >
+              </Card>
+            
             </div>
 
 

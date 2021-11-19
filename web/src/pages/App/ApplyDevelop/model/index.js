@@ -13,15 +13,17 @@ const model = {
     tagList: [],
     key: '',
     total: 0,
+    totalDelete:0,
     curPage: 0,
+    deleteCurPage:0,
     pageSize: 9,
+    applicationListDelete:{},
     activeCard: {},
     activeProject: null,
     isAddModalVisible: false,
     isDeleteApplyListModalVisible: false,
   },
   effects: {
-    // 获取项目列表数据
     *getApplicationList(params = {}) {
       let options = {
         type: this.key || '2D',
@@ -32,6 +34,16 @@ const model = {
       };
       const res = yield reqApplicationList(options);
       this.setApplicationList(res);
+    },
+    *getApplicationListDelete(params = {}) {
+      let options = {
+        type: this.key || '2D',
+        curPage: this.deleteCurPage,
+        pageSize: 10,
+        ...params,
+      };
+      const res = yield reqApplicationList(options);
+      this.setApplicationListDelete(res);
     },
     *getProjectList() {
       const res = yield reqProjectList();
@@ -80,6 +92,11 @@ const model = {
     setTagList(res) {
       this.tagList = res.data;
 
+    },
+    setApplicationListDelete(res){
+      this.applicationListDelete = res.data;
+      this.totalDelete = res.data.total;
+      this.deleteCurPage = res.data.curPage;
     },
     setApplicationList(res) {
       this.applicationList = res.data;

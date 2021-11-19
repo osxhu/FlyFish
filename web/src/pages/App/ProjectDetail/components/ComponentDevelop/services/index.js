@@ -23,7 +23,7 @@ export const getProjectsService = (param)=>{
   return fetchGet(API.GET_PROJECTS,{ body: param });
 };
 export const getTagsService = (param)=>{
-  return fetchGet(API.GET_TAGS,{ body: param });
+  return fetchGet(API.GET_TAGS,{ params: param });
 };
 export const addComponentService = (param)=>{
   return fetchPost(API.ADD_COMPONENT,{ body: param });
@@ -43,4 +43,7 @@ export const changeAssembly = (id,param) => {
 export const assemblyDetail=(id)=>{
   return fetchGet(API.DELETE_ASSEMBLY+id);
 
+};
+export const getUserInfoService = (param)=>{
+  return fetchGet(API.GET_USERINFO+'/'+param.id);
 };

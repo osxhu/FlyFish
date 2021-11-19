@@ -14,6 +14,7 @@ const computedTagColorByStatus = (status) => {
  };
 export default Form.create({ name: "BASIC_CARD" })(
     function BasicCard({ onDelete, setActiveCard, addOwn, checkCard, value, state, showStateTag, actions, canDelete, canAdd }) {
+// console.log('card数据',value);
         const tradesArr = (trades) => {
             if (trades.length === 0) {
                 return '暂无';
@@ -31,7 +32,7 @@ export default Form.create({ name: "BASIC_CARD" })(
         return (
             <Row justify="space-around" gutter={['16', '16']} style={{ margin: '10px' }} className={styles.cardList}>
                 {
-                    value.list && value.list.length > 0 ? value.list.map((item, index) => <Col span={8} key={index}>
+                    value&&value.list && value.list.length > 0 ? value.list.map((item, index) => <Col span={8} key={index}>
                         <Card
                             onClick={() => {
                                 setActiveCard && setActiveCard(item);
