@@ -20,6 +20,7 @@ module.exports = {
       maxAge: 1000 * 60 * 60 * 24 * 7, // Unit : second  default Max-Age is one week
       httpOnly: false,
       secure: false,
+      signed: false,
     };
 
     let cookieValueToSet;
@@ -35,7 +36,7 @@ module.exports = {
   getCookie() {
     const { ctx, config, logger } = this;
 
-    const cookieValueToSet = ctx.cookies.get(config.cookieConfig.name);
+    const cookieValueToSet = ctx.cookies.get(config.cookieConfig.name, { signed: false });
 
     let userCookie = {};
     try {
@@ -124,7 +125,7 @@ module.exports = {
       await page.setViewport({ width: 1280, height: 720 });
       await page.goto(url, { waitUntil: 'networkidle0', timeout: 50000 });
 
-      const cookieValue = ctx.cookies.get(cookieName);
+      const cookieValue = ctx.cookies.get(cookieName, { signed: false });
       const cookie = {
         name: cookieName,
         value: cookieValue,

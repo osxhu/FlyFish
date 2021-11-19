@@ -416,7 +416,7 @@ class ComponentService extends Service {
     const { ctx, logger } = this;
 
     try {
-      const url = 'http://www.baidu.com';
+      const url = 'http://10.2.3.56:8089/#/app/component-develop';
       const result = await ctx.helper.screenshot(url, savePath);
       if (result === 'success') {
         await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/cover.png` });
