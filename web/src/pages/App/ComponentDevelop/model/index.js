@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-18 18:03:53
+ * @LastEditTime: 2021-11-19 09:29:03
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -39,7 +39,7 @@ const model = {
     projectsData:[],
     tagsData:[],
     developing:false,
-    developingData:null,
+    developingData:{},
     total:0,
     curPage:1,
     pageSize:10

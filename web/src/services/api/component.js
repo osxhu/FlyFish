@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-18 15:58:48
+ * @LastEditTime: 2021-11-19 09:47:48
  */
 /*
  * 应用
@@ -41,4 +41,6 @@ export default {
   PUBLISH_COMPONENT: `${baseUrl}/components/release`,
   //获取组件提交记录
   GET_RECORD: `${baseUrl}/components/git-history`,
+  //获取组件提交详情
+  GET_DIFFRECORD:`${baseUrl}/components/git-commit-info`,
 };

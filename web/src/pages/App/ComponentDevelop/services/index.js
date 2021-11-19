@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-18 16:21:53
+ * @LastEditTime: 2021-11-19 09:53:01
  */
 import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api/component";
@@ -62,5 +62,9 @@ export const getRecordService = (options)=>{
   const { id,curPage,pageSize } = options;
   return fetchGet(API.GET_RECORD+`/${id}?curPage=${curPage}&pageSize=${pageSize}`);
 };
+export const getDiffRecordService = (id,hash)=>{
+  return fetchGet(API.GET_DIFFRECORD+`/${id}?hash=${hash}`);
+};
+
 
 
