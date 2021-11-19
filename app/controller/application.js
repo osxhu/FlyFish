@@ -58,10 +58,13 @@ class ApplicationController extends BaseController {
 
     const editSchema = Joi.object().keys({
       pages: Joi.array().items(Joi.object().keys({
-        components: Joi.array().items(Joi.object().keys({
-          id: Joi.string().required(),
-          version: Joi.string().required(),
-        })),
+        components: Joi.array().items(Joi.object()
+        // .keys({
+        //   id: Joi.string().required(),
+        //   version: Joi.string().required(),
+        // })
+        )
+        ,
       })).required(),
     });
 
