@@ -269,8 +269,9 @@ class ApplicationService extends Service {
     const queryCond = {
       status: Enum.COMMON_STATUS.VALID,
       developStatus: Enum.COMPONENT_DEVELOP_STATUS.ONLINE,
-      projects: applicationInfo.projectId,
     };
+
+    if (type === Enum.COMPONENT_TYPE.PROJECT) queryCond.projects = applicationInfo.projectId;
     if (name) queryCond.name = name;
     if (type) queryCond.type = type;
 
