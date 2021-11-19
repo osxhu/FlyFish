@@ -73,17 +73,17 @@ class ApplicationService extends Service {
 
   async updateDesignInfo(id, requestData) {
     const { ctx, config } = this;
-    const { pages } = requestData;
+    const { $pages } = requestData;
     const { pathConfig: { applicationPath } } = config;
 
     const curApplicationInfo = await ctx.model.Application._findOne({ id });
 
     const updateData = {};
-    if (!_.isEmpty(pages)) updateData.pages = pages;
+    if (!_.isEmpty($pages)) updateData.$pages = $pages;
     await ctx.model.Application._updateOne({ id }, updateData);
 
-    const curApplicationUseComponents = _.flatten((curApplicationInfo.pages || []).map(page => (page.components || []).map(component => component.type)));
-    const updateApplicationUseComponents = _.flatten((pages || []).map(page => (page.components || []).map(component => component.type)));
+    const curApplicationUseComponents = _.flatten((curApplicationInfo.$pages || []).map(page => (page.components || []).map(component => component.type)));
+    const updateApplicationUseComponents = _.flatten(($pages || []).map(page => (page.components || []).map(component => component.type)));
     const deleteComponentIds = _.difference(curApplicationUseComponents, updateApplicationUseComponents);
     const addComponentIds = _.difference(updateApplicationUseComponents, curApplicationUseComponents);
 
@@ -131,7 +131,7 @@ class ApplicationService extends Service {
       tags: copyApplication.tags || [],
       cover: copyApplication.cover,
       developStatus: copyApplication.developStatus,
-      pages: copyApplication.pages,
+      $pages: copyApplication.$pages,
       status: copyApplication.status,
 
       creator: userInfo.userId,
@@ -172,7 +172,7 @@ class ApplicationService extends Service {
           name: curTag.name || '',
         };
       }),
-      pages: applicationInfo.pages || [],
+      $pages: applicationInfo.$pages || [],
       type: applicationInfo.type,
       cover: applicationInfo.cover,
       developStatus: applicationInfo.developStatus,
@@ -219,7 +219,7 @@ class ApplicationService extends Service {
     const projectList = await ctx.model.Project._find();
     const tagList = await ctx.model.Tag._find();
 
-    const applicationList = await ctx.model.Application._find(queryCond, { pages: 0 });
+    const applicationList = await ctx.model.Application._find(queryCond, { $pages: 0 });
 
     const total = applicationList.length || 0;
     const data = (applicationList || []).splice(curPage * pageSize, pageSize).map(application => {

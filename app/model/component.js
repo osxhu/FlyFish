@@ -26,7 +26,7 @@ module.exports = app => {
     projects: [ String ],
     tags: [ String ],
     applications: [ String ],
-    data_config: Object,
+    $config: Object,
 
     versions: [{
       _id: false,
@@ -104,7 +104,9 @@ module.exports = app => {
     const res = {};
     res.id = doc._id.toString();
 
-    const camelizeRes = camelizeKeys(doc);
+    const camelizeRes = camelizeKeys(doc, function(key, convert, options) {
+      return _.startsWith(key, '$') ? key : convert(key, options);
+    });
 
     if (!_.isNil(camelizeRes.createTime)) res.createTime = camelizeRes.createTime.getTime();
     if (!_.isNil(camelizeRes.updateTime)) res.updateTime = camelizeRes.updateTime.getTime();
