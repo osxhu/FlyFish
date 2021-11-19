@@ -219,7 +219,7 @@ class ApplicationService extends Service {
     const projectList = await ctx.model.Project._find();
     const tagList = await ctx.model.Tag._find();
 
-    const applicationList = await ctx.model.Application._find(queryCond);
+    const applicationList = await ctx.model.Application._find(queryCond, { pages: 0 });
 
     const total = applicationList.length || 0;
     const data = (applicationList || []).splice(curPage * pageSize, pageSize).map(application => {
@@ -244,7 +244,6 @@ class ApplicationService extends Service {
           id: curProjectInfo.id,
           name: curProjectInfo.name,
         },
-        pages: application.pages || [],
         creator: curCreatorUser.username,
         updater: curUpdaterUser.username,
         updateTime: application.updateTime,
