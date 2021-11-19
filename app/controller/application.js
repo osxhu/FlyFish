@@ -145,14 +145,13 @@ class ApplicationController extends BaseController {
   async getComponentList() {
     const { ctx, app: { Joi }, service } = this;
     const getListSchema = Joi.object().keys({
+      id: Joi.string().length(24).required(),
       type: Joi.string().valid(...Object.values(Enum.COMPONENT_TYPE)).required(),
       name: Joi.string(),
     });
 
-    const { value: id } = ctx.validate(Joi.string().length(24).required(), ctx.params.id);
     const body = await getListSchema.validateAsync(ctx.request.body);
-
-    const result = await service.application.getComponentList(id, body);
+    const result = await service.application.getComponentList(body);
     if (result.msg === 'No Exists ProjectId') {
       this.fail('获取失败, 应用不属于任何项目', null, CODE.FAIL);
     } else {

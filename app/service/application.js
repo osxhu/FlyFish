@@ -255,10 +255,10 @@ class ApplicationService extends Service {
     return { total, data };
   }
 
-  async getComponentList(id, requestData) {
+  async getComponentList(requestData) {
     const { ctx } = this;
 
-    const { name, type } = requestData;
+    const { id, name, type } = requestData;
     const applicationInfo = await ctx.model.Application._findOne({ id });
 
     const returnData = { msg: 'ok', data: {} };
