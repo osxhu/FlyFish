@@ -1,28 +1,43 @@
 .wrap{
   height: 100%;
-  background-color: #eee;
+  position: relative;
 }
 .handleWrap{
   height: 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ccc;
   background-color: #fff;
 }
 .main{
   display: flex;
-  justify-content: space-between;
-  height: calc(~'100% - 50px');
-  margin-top: 10px;
+  // height: calc(~'100% - 50px');
+  position: absolute;
+  width: 100%;
 }
 .CodeWrap{
-  width: calc(~'50% - 5px');
   border: 1px solid #ccc;
   background-color: #fff;
 }
 .previewWrap{
-  width: calc(~'50% - 5px');
   border: 1px solid #ccc;
   background-color: #fff;
+}
+.btnwrap{
+  display: flex;
+}
+.vscodeFrame ,.previewFrame{
+  height: calc(~'100% - 30px');
+  width: 100%;
+}
+.rowBar{
+  cursor: ew-resize;
+  width: 10px;
+  background-color: rgba(0,0,0,0.2);
+}
+.colBar{
+  cursor: ns-resize;
+  width: 100%;
+  height: 10px;
+  background-color: rgba(0,0,0,0.2);;
 }

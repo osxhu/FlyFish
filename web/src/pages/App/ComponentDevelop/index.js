@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-19 11:05:56
+ * @LastEditTime: 2021-11-22 18:23:48
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -42,6 +42,7 @@ const ComponentDevelop = observer((props) => {
     {
       title: '组件类型',
       dataIndex: 'type',
+      width:150,
       key: 'type',
       render:(text)=>{
       return <span>{CONSTANT.componentType_map_ch[text]}</span>;
@@ -427,9 +428,12 @@ const ComponentDevelop = observer((props) => {
                 columns={columns}
                 dataSource={listData?toJS(listData).list:[]}
                 rowKey="id"
-                scroll={{ x: 500 ,y:300}}
+                // scroll={{ x: 500}}
                 pagination={{
                   showSizeChanger:true,
+                  showTotal:(total)=>{
+                    return `共${total}条记录`;
+                  },
                   total:listData?listData.total:0,
                   pageSize:pageSize,
                   current:curPage,
