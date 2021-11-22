@@ -138,7 +138,7 @@ const CodeDevelop = observer((props)=>{
         <iframe 
           className={styles.previewFrame} 
           name='preview' 
-          src={`http://${window.location.hostname}:7001/components/${developingData.id}/current/editor.html?random=${previewRandom}`} 
+          src={`http://${window.location.hostname}:7001/components/${developingData.id}/v-current/editor.html?random=${previewRandom}`} 
           frameBorder={0}
         >
         </iframe>
