@@ -231,7 +231,8 @@ class ApplicationController extends BaseController {
 
     const { id } = await appSchema.validateAsync(ctx.params);
     const file = ctx.request.files[0];
-    const targetPath = `${staticDir}/${applicationPath}/${id}/${uuidv4()}${path.extname(file.filepath)}`;
+    const targetRelativePath = `${applicationPath}/${id}/${uuidv4()}${path.extname(file.filepath)}`;
+    const targetPath = path.resolve(staticDir, targetRelativePath);
 
     try {
       await fs.copy(file.filepath, targetPath);
@@ -239,7 +240,22 @@ class ApplicationController extends BaseController {
       await fs.remove(file.filepath);
     }
 
-    return targetPath;
+    this.success('上传成功', targetRelativePath);
+  }
+
+  async deleteApplicationImg() {
+    const { ctx, app: { Joi }, config: { pathConfig: { staticDir, applicationPath } } } = this;
+    const appSchema = Joi.object().keys({
+      id: Joi.string().length(24).required(),
+    });
+    const { id } = await appSchema.validateAsync(ctx.params);
+    const { img } = ctx.query;
+    const imgPath = `${staticDir}/${applicationPath}/${id}/${img}`;
+    const imgStat = await fs.stat(imgPath);
+    if (imgStat.isFile()) {
+      await fs.remove(imgPath);
+    }
+    this.success('删除成功');
   }
 }
 

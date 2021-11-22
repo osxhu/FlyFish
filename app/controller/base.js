@@ -3,7 +3,7 @@
 const Controller = require('egg').Controller;
 const CODE = require('../lib/error');
 class BaseController extends Controller {
-  async success(msg, data) {
+  async success(msg, data = null) {
     const { ctx } = this;
     ctx.body = {
       code: CODE.SUCCESS,
