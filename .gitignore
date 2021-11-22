@@ -16,3 +16,4 @@ typings/
 runtime/
 components/*
 .DS_Store
+www

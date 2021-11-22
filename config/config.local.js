@@ -32,6 +32,11 @@ module.exports = appInfo => {
     },
   };
 
+  const staticDir = path.join(appInfo.baseDir, 'www');
+  config.pathConfig = {
+    staticDir,
+  };
+
   config.cluster = {
     listen: {
       port: 7001,

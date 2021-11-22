@@ -43,6 +43,11 @@ module.exports = appInfo => {
     domain: '10.2.3.56',
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
   };
+  
+  const staticDir = '/www';
+  config.pathConfig = {
+    staticDir,
+  };
 
   return {
     ...config,

@@ -44,6 +44,12 @@ module.exports = appInfo => {
     privateToken: 'cetyg4VERmdwxQBAGgsF',
   };
 
+  const staticDir = '/www';
+
+  config.pathConfig = {
+    staticDir,
+  };
+
   return {
     ...config,
     ...userConfig,
