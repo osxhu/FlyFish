@@ -112,7 +112,6 @@ class ComponentService extends Service {
         name: component.name,
         developStatus: component.developStatus,
         type: component.type,
-        cover: component.cover,
         category: component.category,
         subCategory: component.subCategory,
         tags: (curTags || []).map(tag => {
@@ -127,7 +126,7 @@ class ComponentService extends Service {
             name: project.name,
           };
         }),
-        version: _.get(component, [ 'versions', (component.versions || []).length - 1, 'no' ], '暂未上线'),
+        versions: component.versions || [],
         creator: curUser.username,
         isLib: component.isLib || false,
 
@@ -188,12 +187,12 @@ class ComponentService extends Service {
           no: version.no,
           desc: version.desc || '无',
           status: version.status,
+          cover: version.cover,
           time: version.time && version.time.getTime(),
         };
       }),
       desc: componentInfo.desc,
       dataConfig: componentInfo.dataConfig || {},
-      cover: componentInfo.cover,
       creatorInfo: {
         id: userInfo.id,
         username: userInfo.username,
@@ -205,7 +204,8 @@ class ComponentService extends Service {
   }
 
   async addComponent(createComponentInfo) {
-    const { ctx } = this;
+    const { ctx, config } = this;
+    const { pathConfig: { defaultComponentCoverPath } } = config;
 
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
@@ -227,7 +227,7 @@ class ComponentService extends Service {
       tags: tagInfo.tags || [],
       desc: createComponentInfo.desc || '无',
       versions: [],
-      cover: '/component_tpl/public/cover.png',
+      cover: defaultComponentCoverPath,
       creator: userInfo.userId,
       updater: userInfo.userId,
     };
@@ -309,7 +309,7 @@ class ComponentService extends Service {
 
   async copyComponent(id, componentInfo) {
     const { ctx, config, logger } = this;
-    const { pathConfig: { componentsPath } } = config;
+    const { pathConfig: { componentsPath, initComponentVersion } } = config;
 
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
@@ -346,9 +346,9 @@ class ComponentService extends Service {
     const componentId = result.id;
     returnData.data.id = componentId;
 
-    const src = `${componentsPath}/${id}/current`;
-    const dest = `${componentsPath}/${componentId}/current`;
-    await ctx.helper.copyAndReplace(src, dest, [ 'node_modules', '.git', 'components', 'release', 'package-lock.json', 'cover.png' ], { from: id, to: componentId });
+    const src = `${componentsPath}/${id}/${initComponentVersion}`;
+    const dest = `${componentsPath}/${componentId}/${initComponentVersion}`;
+    await ctx.helper.copyAndReplace(src, dest, [ 'node_modules', '.git', 'components', 'release', 'package-lock.json' ], { from: id, to: componentId });
 
     // 初始化git仓库
     if (config.env === 'prod') {
@@ -364,9 +364,8 @@ class ComponentService extends Service {
 
   async compileComponent(id) {
     const { ctx, config } = this;
-    const { pathConfig: { componentsPath } } = config;
+    const { pathConfig: { componentsPath, initComponentVersion } } = config;
 
-    const version = 'current';
     const returnData = { msg: 'ok', data: { error: '' } };
     const existsComponent = await ctx.model.Component._findOne({ id });
     if (_.isEmpty(existsComponent)) {
@@ -375,14 +374,14 @@ class ComponentService extends Service {
     }
 
     const componentPath = `${componentsPath}/${id}`;
-    const componentDevPath = `${componentPath}/${version}`;
+    const componentDevPath = `${componentPath}/${initComponentVersion}`;
     if (!fs.existsSync(componentDevPath)) {
       returnData.msg = 'No Exists Dir';
       return returnData;
     }
 
-    const componentDevPackageJsonPath = `${componentPath}/${version}/package.json`;
-    const componentDevNodeModulesPath = `${componentPath}/${version}/node_modules`;
+    const componentDevPackageJsonPath = `${componentPath}/${initComponentVersion}/package.json`;
+    const componentDevNodeModulesPath = `${componentPath}/${initComponentVersion}/node_modules`;
     const packageJson = JSON.parse(fs.readFileSync(componentDevPackageJsonPath).toString());
 
     if ((!_.isEmpty(packageJson.dependencies) || !_.isEmpty(packageJson.devDependencies)) && !fs.existsSync(componentDevNodeModulesPath)) {
@@ -391,7 +390,7 @@ class ComponentService extends Service {
     }
 
     try {
-      await exec(`cd ${componentDevPath} && npm run ${config.env === 'prod' ? 'build-production' : 'build-dev'}`);
+      await exec(`cd ${componentDevPath} && npm run build-dev`);
     } catch (error) {
       returnData.msg = 'Compile Fail';
       returnData.data.error = error.message || error.stack;
@@ -399,8 +398,8 @@ class ComponentService extends Service {
     }
 
     // note: async screenshot component cover, no wait!!!!!
-    const savePath = `${componentDevPath}/cover.png`;
-    this.genCoverImage(id, savePath, version);
+    const savePath = `${componentDevPath}/components/cover.png`;
+    this.genCoverImage(id, savePath);
 
     // 用于git push
     if (config.env === 'prod') {
@@ -414,14 +413,15 @@ class ComponentService extends Service {
     return returnData;
   }
 
-  async genCoverImage(id, savePath, version) {
+  async genCoverImage(id, savePath) {
     const { ctx, logger } = this;
-
     try {
       const url = 'http://10.2.3.56:8089/#/app/component-develop';
+      const [ version, buildPath, coverFileName ] = savePath.split('/').slice(-3);
+
       const result = await ctx.helper.screenshot(url, savePath);
       if (result === 'success') {
-        await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/cover.png` });
+        await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/${buildPath}/${coverFileName}` });
       }
       logger.info(`${id} gen cover success!`);
     } catch (error) {
@@ -431,7 +431,7 @@ class ComponentService extends Service {
 
   async installComponentDepend(id) {
     const { ctx, config } = this;
-    const { pathConfig: { componentsPath } } = config;
+    const { pathConfig: { componentsPath, initComponentVersion } } = config;
 
     const returnData = { msg: 'ok', data: { error: '' } };
     const existsComponent = await ctx.model.Component._findOne({ id });
@@ -441,7 +441,7 @@ class ComponentService extends Service {
     }
 
     const componentPath = `${componentsPath}/${id}`;
-    const componentDevPath = `${componentPath}/current`;
+    const componentDevPath = `${componentPath}/${initComponentVersion}`;
     if (!fs.existsSync(componentDevPath)) {
       returnData.msg = 'No Exists Dir';
       return returnData;
@@ -476,7 +476,7 @@ class ComponentService extends Service {
     }
 
     const newVersion = compatible ? _.get(componentInfo, [ 'versions', (componentInfo.versions || []).length - 1, 'no' ], no || 'v1') : no;
-    const createResult = this.initReleaseWorkspace(componentId, newVersion);
+    const createResult = await this.initReleaseWorkspace(componentId, newVersion);
     await ctx.model.Component._updateOne({ id: componentId }, { developStatus: Enum.COMPONENT_DEVELOP_STATUS.ONLINE, $push: { versions: { no: newVersion, desc, status: Enum.COMMON_STATUS.VALID, time: Date.now() } } });
 
     if (createResult.msg !== 'Success') returnData.msg = createResult.msg;
@@ -484,20 +484,23 @@ class ComponentService extends Service {
     return returnData;
   }
 
-  // 初始化上线组件空间  compatible: 是否兼容旧版本组件
-  initReleaseWorkspace(componentId, version) {
+  async initReleaseWorkspace(componentId, releaseVersion) {
     const { ctx, config, logger } = this;
-    const { pathConfig: { componentsPath } } = config;
+    const { pathConfig: { componentsPath, initComponentVersion } } = config;
 
     const returnInfo = { msg: 'Success' };
 
     try {
       const componentPath = `${componentsPath}/${componentId}`;
-      const componentDevPath = `${componentPath}/current`;
-      const componentReleasePath = `${componentPath}/${version}`;
+      const componentDevPath = `${componentPath}/${initComponentVersion}`;
+      const componentReleasePath = `${componentPath}/${releaseVersion}`;
 
-      const ignoreDirs = [ 'node_modules' ];
-      ctx.helper.copyDirSync(componentDevPath, componentReleasePath, ignoreDirs);
+      const ignoreDirs = [ 'node_modules', '.git', 'components', 'release', 'package-lock.json' ];
+      await ctx.helper.copyAndReplace(componentDevPath, componentReleasePath, ignoreDirs, { from: initComponentVersion, to: releaseVersion });
+      await exec(`cd ${componentReleasePath} && npm run build-production`);
+
+      const savePath = `${componentReleasePath}/release/cover.png`;
+      this.genCoverImage(componentId, savePath);
     } catch (error) {
       returnInfo.msg = 'Fail';
       logger.error('releaseCompatibleComponent error: ', error || error.stack);
@@ -509,24 +512,21 @@ class ComponentService extends Service {
   // 初始化开发组件空间
   async initDevWorkspace(componentId) {
     const { config, logger } = this;
-    const { pathConfig: { componentsPath, componentsTplPath } } = config;
+    const { pathConfig: { componentsPath, componentsTplPath, initComponentVersion } } = config;
 
     const returnInfo = { msg: 'Success' };
 
-    const version = 'current';
     const componentPath = `${componentsPath}/${componentId}`;
-    const componentDevPath = `${componentPath}/${version}`;
+    const componentDevPath = `${componentPath}/${initComponentVersion}`;
     try {
       fs.mkdirSync(`${componentPath}`);
-
       fs.mkdirSync(componentDevPath);
 
       const srcPath = `${componentDevPath}/src`;
       const srcTplPath = `${componentsTplPath}/src`;
 
-      const replaceId = 'Component_' + componentId;
       fs.mkdirSync(srcPath);
-      fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId));
+      fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId, initComponentVersion));
       fs.writeFileSync(`${srcPath}/Component.js`, require(`${srcTplPath}/ComponentJs.js`)());
       fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(componentId));
 
@@ -542,7 +542,7 @@ class ComponentService extends Service {
       fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
 
       fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(componentId));
-      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentId, version));
+      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentId, initComponentVersion));
       fs.writeFileSync(`${componentDevPath}/options.json`, require(`${componentsTplPath}/options.json.js`)(componentId));
       fs.writeFileSync(`${componentDevPath}/package.json`, require(`${componentsTplPath}/package.json.js`)(componentId));
       await fsExtra.copy(`${componentsTplPath}/.gitignore`, `${componentDevPath}/.gitignore`);
@@ -562,8 +562,8 @@ class ComponentService extends Service {
   }
 
   async initGit(componentId) {
-    const { ctx, config: { pathConfig: { componentsPath }, componentGit }, logger } = this;
-    const componentDevPath = `${componentsPath}/${componentId}/current`;
+    const { ctx, config: { pathConfig: { componentsPath, initComponentVersion }, componentGit }, logger } = this;
+    const componentDevPath = `${componentsPath}/${componentId}/${initComponentVersion}`;
     const userInfo = ctx.userInfo;
     try {
       const git = simpleGit(componentDevPath);
@@ -590,10 +590,10 @@ class ComponentService extends Service {
   }
 
   async getComponentHistory(options) {
-    const { ctx, config: { pathConfig: { componentsPath } } } = this;
+    const { config: { pathConfig: { componentsPath, initComponentVersion } } } = this;
     const { id, curPage, pageSize } = options;
 
-    const componentDevPath = `${componentsPath}/${id}/current`;
+    const componentDevPath = `${componentsPath}/${id}/${initComponentVersion}`;
     const git = simpleGit(componentDevPath);
     const { all: totalLogs } = await git.log();
     const total = totalLogs.length;
@@ -612,10 +612,10 @@ class ComponentService extends Service {
   }
 
   async getCommitInfo(options) {
-    const { config: { pathConfig: { componentsPath } } } = this;
+    const { config: { pathConfig: { componentsPath, initComponentVersion } } } = this;
     const { id, hash } = options;
 
-    const componentDevPath = `${componentsPath}/${id}/current`;
+    const componentDevPath = `${componentsPath}/${id}/${initComponentVersion}`;
 
     const git = simpleGit(componentDevPath);
     const diffStr = await git.show(hash);

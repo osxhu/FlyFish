@@ -255,7 +255,7 @@ class ApplicationService extends Service {
   }
 
   async getComponentList(requestData) {
-    const { ctx } = this;
+    const { ctx, config: { pathConfig: { initComponentVersion } } } = this;
 
     const { id, name, type } = requestData;
     const applicationInfo = await ctx.model.Application._findOne({ id });
@@ -291,7 +291,7 @@ class ApplicationService extends Service {
             id: component.id,
             name: component.name,
             cover: component.cover,
-            version: _.get(component, [ 'versions', (component.versions || []).length - 1, 'no' ], 'current'),
+            version: _.get(component, [ 'versions', (component.versions || []).length - 1, 'no' ], initComponentVersion),
           };
         }));
         categoryInfo.subCategories.push(subCategoryInfo);

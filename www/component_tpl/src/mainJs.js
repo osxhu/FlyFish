@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = component_mark => `
+module.exports = (component_mark, version) => `
 'use strict';
 
 /**
@@ -11,5 +11,5 @@ import { registerComponent } from "data-vi/components";
 
 import Component from "./Component";
 
-registerComponent("${component_mark}", Component);
+registerComponent("${component_mark}", "${version}", Component);
 `;
