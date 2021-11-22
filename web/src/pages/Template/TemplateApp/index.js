@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { message, SearchBar, Pagination ,Input,Icon} from "@chaoswise/ui";
+import { message, SearchBar, Pagination, Input, Icon } from "@chaoswise/ui";
 import {
   observer
 } from "@chaoswise/cw-mobx";
 import store from "./model/index";
-import CopyApplyModal from "./components/CopyApplyModal";
 import TsetCard from '@/components/TestCard';
 import { successCode } from "@/config/global";
 import styles from "./assets/style.less";
@@ -17,36 +16,37 @@ const ApplyDevelop = observer(() => {
   const intl = useIntl();
 
   const {
-    getProjectList,
+    getApplicationList,
     setSearchParams,
-    saveProject,
     openCopyApplyModal,
-    closeCopyApplyModal,
+    setOptions,
+    setType,
+    getTradesList,
+    getTagsList
   } = store;
-  const { isCopyApplyModalVisible, activeProject } =
+  const { tradesList, searchOptions, tagsList, applicationList, type, total, curPage, pageSize, } =
     store;
-  const testCardArr = {
-    list:[{name: "copy组件",id: "618f6c5a060f18039f74429b",trades:[{name:'测试行业1'}]},{name: "侧边栏组件",id: "618f6c5a060f18039f74429a",trades:[{name:'测试行业2'},{name:'测试行业3'}]}]
-  };
-  const AllMethod = {
-    change: openCopyApplyModal
-  };
   const searchContent = [
     {
       components: (
         <Select
-          id="trade"
-          key="trade"
+          id="trades"
+          key="trades"
           name='行业'
+          showSearch
+          mode="multiple"
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          allowClear
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.applyTemplate.trade",
             defaultValue: "选择行业进行查询",
           })}
         >
-          <Option value="jack">Jack</Option>
-          <Option value="lucy">Lucy</Option>
-          <Option value="Yiminghe">yiminghe</Option>
+          {
+            tradesList.map(item => <Option key={item.id} value={item.id}>{item.name}</Option>)
+          }
         </Select>
       ),
     },
@@ -56,9 +56,10 @@ const ApplyDevelop = observer(() => {
         <Input
           id="name"
           key="name"
+          allowClear
           name='应用名称'
-          suffix	={<Icon type="search" />
-        }
+          suffix={<Icon type="search" />
+          }
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.applyTemplate.applyName",
@@ -69,32 +70,53 @@ const ApplyDevelop = observer(() => {
     },
     {
       components: (
-        <Select mode="tags" id="ApplyLabel"
-          key="ApplyLabel"
+        <Select id="tags"
+          key="tags"
+          showSearch
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          mode="multiple"
+          allowClear
           name='应用标签' style={{ width: 200 }}
           placeholder={intl.formatMessage({
             id: "pages.applyTemplate.searchInputApplyLabel",
             defaultValue: "选择应用标签进行查询",
           })}
         >
-          <Option value="jack">Jack</Option>
-          <Option value="lucy">Lucy</Option>
-          <Option value="Yiminghe">yiminghe</Option>
+          {
+            tagsList.map(item => <Option key={item.id} value={item.id}>{item.name}</Option>)
+          }
         </Select>
       ),
     },
   ];
+  const handleChange = (value) => {
+    setType(value);
+    getApplicationList();
+  };
+  const changeColumns = (values) => {
+    for (let i in values) {
+      if (!values[i] || values[i].length === 0) {
+        delete values[i];
+      }
+    }
+    setOptions(values);
+  };
   // 请求列表数据
   useEffect(() => {
-    getProjectList();
+    getTagsList();
+    getTradesList({});
   }, []);
+  useEffect(() => {
+    getApplicationList();
+  }, [searchOptions]);
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
-    getProjectList({ curPage, pageSize });
+    getApplicationList({ curPage, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
-    getProjectList({
+    getApplicationList({
       curPage: 0,
     });
   };
@@ -102,57 +124,44 @@ const ApplyDevelop = observer(() => {
     <React.Fragment>
       <div className={styles.searchCotainer1}>
         应用类型选择：<Select
+          onChange={handleChange}
           id="name"
           key="name"
+          defaultValue={type || '2D'}
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.applyDevelop.searchInputPlaceholder",
             defaultValue: "选择应用类型进行查询",
           })}
-        />
+        >
+          <Option value="2D" >2D大屏应用</Option>
+          <Option value="3D">3D大屏应用</Option>
+        </Select>
       </div>
       <SearchBar
-        searchContent={searchContent} showSearchCount={6} 
+        searchContent={searchContent} showSearchCount={6}
+        onSearch={changeColumns}
       />
-      {/* 测试card */}
       {
-        <TsetCard value={testCardArr} state={1}>
-          <>
-            <div key="change" className={styles.mybtn} >预览模板应用</div>
-            <div key="delete" className={styles.mybtn} onClick={()=>{openCopyApplyModal();}}>  使用模板创建应用</div>
-          </>
+        <TsetCard value={applicationList} state={1}
+          actions={(item) => {
+            return (
+              <>
+                <div key="change" className={styles.mybtn} >预览模板应用</div>
+                <div key="delete" className={styles.mybtn} onClick={() => { openCopyApplyModal(); }}>  使用模板创建应用</div>
+              </>
+            );
+          }}
+        >
+
         </TsetCard>
       }
-      <Pagination defaultCurrent={6} total={500} showQuickJumper={true} showSizeChanger={true} />
-      {isCopyApplyModalVisible && (
-        <CopyApplyModal
-          project={activeProject}
-          onSave={(project) => {
-            saveProject(project, (res) => {
-              if (res.code === successCode) {
-                message.success(
-                  intl.formatMessage({
-                    id: "common.saveSuccess",
-                    defaultValue: "保存成功！",
-                  })
-                );
-                closeCopyApplyModal();
-                getProjectList({
-                  curPage: 0,
-                });
-              } else {
-                message.error(
-                  intl.formatMessage({
-                    id: "common.saveError",
-                    defaultValue: "保存失败，请稍后重试！",
-                  })
-                );
-              }
-            });
-          }}
-          onCancel={closeCopyApplyModal}
-        />
-      )}
+      {/* {
+
+applicationList.list.length > 0 ? <Pagination current={curPage + 1} pageSize={pageSize} total={total} showQuickJumper={true} onChange={(current) => {
+          getApplicationList({ curPage: current - 1 });
+        }} /> : null
+      } */}
     </React.Fragment>
   );
 });

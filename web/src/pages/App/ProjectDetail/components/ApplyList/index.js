@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Input, Form, Button, SearchBar, Collapse, message, Popconfirm, Pagination } from "@chaoswise/ui";
+import { Modal, Input, Form, Button, SearchBar,Tooltip, Collapse, message, Popconfirm, Pagination } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 import styles from "./index.less";
 import store from "../../model";
@@ -30,9 +30,11 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
     const searchContent = [
       {
         components: (
-          <Select mode="tags"
+          <Select 
             id="name"
             key="name"
+            mode="multiple"
+            allowClear
             name='行业'
             style={{ width: "170px" }}
             placeholder={
@@ -104,7 +106,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
             onChange={handleChange}
             id="name"
             key="name"
-            defaultValue={type||'2D'}
+            defaultValue={type || '2D'}
             style={{ width: "200px" }}
             select
             className={styles.select}
@@ -136,41 +138,51 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                 actions={(item) => {
                   return (
                     <>
-                      <div key="development" className={styles.mybtn}>开发应用</div>
-                      <div key="look" className={styles.mybtn}>预览应用</div>
-                      <div key="copy" className={styles.mybtn} onClick={() => {
-                        setCheckFlag(2);
-                        openAddProjectModal();
-                      }}>复制应用</div>
-                      <div key="export" className={styles.mybtn}>导出应用</div>
-                      <div key="change" className={styles.mybtn}
-                        onClick={() => {
+                      <a title="开发应用" target="_blank" href={window.APP_CONFIG.basename + '/big_screen/editor.html' + '?id=' + item.id} rel="noreferrer">
+                        <Button value="small" type="primary">开发</Button>
+      
+                      </a>
+                      <a title="预览应用" target="_blank" href={window.APP_CONFIG.basename + '/screen/index.html' + '?id=' + item.id} rel="noreferrer">
+                        <Button value="small" type="primary">预览</Button>
+                      </a>
+                      <Tooltip key="copy" title="复制">
+                        <a title="复制" onClick={() => {
+                          setCheckFlag(2);
+                          openAddProjectModal();
+                        }}><Icon type="copy" style={{ color: '#333' }} /></a>
+                      </Tooltip>
+                      <Tooltip key="export" title="导出">
+                        <a title="导出" target="_blank" ><Icon type="export" style={{ color: '#333' }} /></a>
+                      </Tooltip>
+                      <Tooltip key="edit" title="编辑">
+                        <a title="编辑" target="_blank" onClick={() => {
                           setCheckFlag(1), openAddProjectModal();
-                        }}
-                      >编辑信息</div>
-                      <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
-
-                        deleteApplicationOne(item.id, (res) => {
-                          if (res.code === successCode) {
-                            message.success(
-                              intl.formatMessage({
-                                id: "common.deleteSuccess",
-                                defaultValue: "删除成功！",
-                              })
-                            );
-                            getApplicationList();
-                          } else {
-                            message.error(
-                              res.msg || intl.formatMessage({
-                                id: "common.deleteError",
-                                defaultValue: "删除失败，请稍后重试！",
-                              })
-                            );
-                          }
-                        });
-                      }}>
-                        <div key="delete" className={styles.mybtn}>删除</div>
-                      </Popconfirm>
+                        }}><Icon type="edit" style={{ color: '#333' }} /></a>
+                      </Tooltip>
+                      <Tooltip key="delete" title="删除">
+                        <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+                          deleteApplicationOne(item.id, (res) => {
+                            if (res.code === successCode) {
+                              message.success(
+                                intl.formatMessage({
+                                  id: "common.deleteSuccess",
+                                  defaultValue: "删除成功！",
+                                })
+                              );
+                              getApplicationList();
+                            } else {
+                              message.error(
+                                res.msg || intl.formatMessage({
+                                  id: "common.deleteError",
+                                  defaultValue: "删除失败，请稍后重试！",
+                                })
+                              );
+                            }
+                          });
+                        }}>
+                          <a title="删除"><Icon type="delete" style={{ color: '#333' }} /></a>
+                        </Popconfirm>
+                      </Tooltip>
                     </>
                   );
                 }}

@@ -13,8 +13,8 @@ const computedTagColorByStatus = (status) => {
     return TAG_COLORS.find(item => item.id === status).color;
 };
 export default Form.create({ name: "BASIC_CARD" })(
-    function BasicCard({number, onDelete, setActiveCard, addOwn, checkCard, value, state, showStateTag, actions, canDelete, canAdd }) {
-        
+    function BasicCard({ number, onDelete, setActiveCard, addOwn, showOwn,checkCard, value, state, showStateTag, actions, canDelete, canAdd }) {
+
         const tradesArr = (trades) => {
             if (trades.length === 0) {
                 return '暂无';
@@ -29,15 +29,14 @@ export default Form.create({ name: "BASIC_CARD" })(
             }
         };
         let [checkid, setCheckId] = React.useState('');
+        let [isOwnArr, setIsOwnArr] = React.useState([]);
         return (
             <Row justify="space-around" gutter={['16', '16']} style={{ margin: '10px' }} className={styles.cardList}>
                 {
-                    value && value.list && value.list.length > 0 ? value.list.map((item, index) => <Col span={number||8} key={index}>
+                    value && value.list && value.list.length > 0 ? value.list.map((item, index) => <Col span={number || 8} key={index}>
                         <Card
                             onClick={() => {
-
                                 setActiveCard && setActiveCard(item);
-
                             }}
                             style={{ boxShadow: checkid == item.id ? '3px 3px 3px 3px #dedede' : null }}
                             cover={
@@ -50,17 +49,20 @@ export default Form.create({ name: "BASIC_CARD" })(
                                         </Popconfirm> : null
                                     }
                                     {
-                                        canAdd ? <Tag className={styles.deleteTag} color="#2db7f5" onClick={() => {
+                                        canAdd ? <Tag className={styles.deleteTag } color={showOwn.includes(item.id)?"#52C41A":"#2db7f5"} onClick={() => {
+                                            if(showOwn.includes(item.id)) return;
                                             let projects = item.projects.map(item => item.id);
                                             addOwn && addOwn(item.id, projects);
-                                        }}>+</Tag> : null
+                                        }}>
+                                            {showOwn.includes(item.id) ? <Icon type="check" /> : <Icon type="plus" />}
+                                        </Tag> : null
                                     }
                                     {
                                         !showStateTag ? null : <Tag className={styles.tag} color={computedTagColorByStatus(item.developStatus)}>{computedTagWordByStatus(item.developStatus)}</Tag>
                                     }
                                     <img
                                         onClick={() => {
-                                            checkCard(item.id);
+                                            checkCard && checkCard(item.id);
                                             setCheckId(item.id);
                                         }}
                                         alt="example"
@@ -72,7 +74,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                         >
                             <Meta
                                 onClick={() => {
-                                    checkCard(item.id);
+                                    checkCard && checkCard(item.id);
                                     setCheckId(item.id);
                                 }}
                                 title={(() => {
@@ -115,7 +117,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                             />
 
                         </Card>
-                    </Col>) :<div className='flexContainer'> <Empty /></div>
+                    </Col>) : <div className='flexContainer'> <Empty /></div>
                 }
             </Row>
         );

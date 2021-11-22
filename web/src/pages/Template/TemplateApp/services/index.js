@@ -1,32 +1,19 @@
 import { fetchGet, fetchPost } from "@/utils/request";
-import API from "@/services/api";
+import API from "@/services/api/application";
+import APP from "@/services/api/app";
+import COMPONENTS from "@/services/api/component";
 
-export const getProjectManageListService = (options) => {
-  //return fetchGet(API.GET_PROJECT_MANAGELIST_API, { params: options });
+//应用列表
+export const getApplicationTemplateService = (options) => {
+  return fetchPost(API.GET_APPLICATION_LIST, { body: options });
 
-  return new Promise((res, rej) => {
-    res({
-      data: [
-        {
-          id: 1,
-          projectMark: "12212",
-          name: "test",
-        },
-      ],
-      total: 10,
-      curPage:0,
-      pageSize: 20,
-    });
-  });
+};
+//行业列表
+export const getTradesService = (options) => {
+  return fetchGet(APP.INDUSTRY_LIST, { params: options });
 };
 
-export const saveProjectService = (options) => {
-  //return fetchPost(API.SAVE_PROJECT_API, { body: options });
-
-  return new Promise((res, rej) => {
-    res({
-      code: 200
-    });
-  });
+//标签列表
+export const getTagsService = (options) => {
+  return fetchGet(COMPONENTS.GET_TAGS, { params: options });
 };
-

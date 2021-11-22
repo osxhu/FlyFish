@@ -9,7 +9,7 @@
         -webkit-box-orient: vertical;
       }
       .flexContainer{
-          height: 100%;
+          min-height: 556px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -34,5 +34,28 @@
     }
     .ant-popover-message-title{
     padding-left: 24px !important;
+    }
+    .ant-card-actions > li:not(:last-child){
+        margin-right: 10px !important;
+    }
+    .ant-card-actions > li{
+        width: 32px !important;
+        height: 32px !important;
+        border: 1px solid lightgray !important;
+        display: flex;
+        align-items: center;
+    }
+    .ant-card-actions > li:nth-child(1){
+        width: 65px !important;
+    }
+    .ant-card-actions > li:nth-child(2){
+        width: 65px !important;
+    }
+    .ant-card-actions{
+        padding-right: 24px !important;
+       display: flex;
+       justify-content: right;
+      flex-wrap: wrap;
+
     }
 }

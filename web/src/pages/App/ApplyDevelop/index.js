@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { Input, Button, message, SearchBar, Icon, Pagination, Popconfirm } from "@chaoswise/ui";
+import { Input, Button, message, SearchBar, Icon, Pagination, Popconfirm, Tooltip } from "@chaoswise/ui";
 import {
   observer, loadingStore, toJS, Form, Row,
   Col
@@ -37,7 +37,10 @@ const ApplyDevelop = observer(() => {
         <Select
           id="projectId"
           key="projectId"
-          allowClear={true}
+          mode="multiple"
+          allowClear
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           style={{ width: "200px" }}
           name='项目名称'
           placeholder={intl.formatMessage({
@@ -59,7 +62,9 @@ const ApplyDevelop = observer(() => {
         <Select
           id="developStatus"
           key="developStatus"
+          allowClear
           name='开发状态'
+
           style={{ width: "100px" }}
           placeholder={intl.formatMessage({
             id: "pages.applyDevelop.searchInputDevelopmentState",
@@ -81,7 +86,7 @@ const ApplyDevelop = observer(() => {
         <Input
           id="name"
           key="name"
-          allowClear={true}
+          allowClear
           name='应用名称'
           suffix={<Icon type="search" />
           }
@@ -94,10 +99,13 @@ const ApplyDevelop = observer(() => {
     },
     {
       components: (
-        <Select mode="tags" id="tags"
+        <Select id="tags"
           key="tags"
-          allowClear={true}
+          allowClear
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           name='应用标签' style={{ width: 200 }}
+          mode="multiple"
           placeholder={intl.formatMessage({
             id: "pages.applyDevelop.searchInputApplyLabel",
             defaultValue: "选择应用标签进行查询",
@@ -211,42 +219,51 @@ const ApplyDevelop = observer(() => {
           actions={(item) => {
             return (
               <>
-                <div key="development" className={styles.mybtn}>开发应用</div>
-                <div key="look" className={styles.mybtn}>预览应用</div>
-                <div key="copy" className={styles.mybtn}
-                  onClick={() => {
+                <a title="开发应用" target="_blank" href={window.APP_CONFIG.basename + '/big_screen/editor.html' + '?id=' + item.id} rel="noreferrer">
+                  <Button value="small" type="primary">开发</Button>
+
+                </a>
+                <a title="预览应用" target="_blank" href={window.APP_CONFIG.basename + '/screen/index.html' + '?id=' + item.id} rel="noreferrer">
+                  <Button value="small" type="primary">预览</Button>
+                </a>
+                <Tooltip key="copy" title="复制">
+                  <a title="复制" onClick={() => {
                     setCheckFlag(2);
                     openAddProjectModal();
-                  }}
-                >复制应用</div>
-                <div key="export" className={styles.mybtn}>导出应用</div>
-                <div key="change" className={styles.mybtn}
-                  onClick={() => {
+                  }}><Icon type="copy" style={{ color: '#333' }} /></a>
+                </Tooltip>
+                <Tooltip key="export" title="导出">
+                  <a title="导出" target="_blank" ><Icon type="export" style={{ color: '#333' }} /></a>
+                </Tooltip>
+                <Tooltip key="edit" title="编辑">
+                  <a title="编辑" target="_blank" onClick={() => {
                     setCheckFlag(1), openAddProjectModal();
-                  }}>编辑信息</div>
-                <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
-                  deleteApplicationOne(item.id, (res) => {
-                    if (res.code === successCode) {
-                      message.success(
-                        intl.formatMessage({
-                          id: "common.deleteSuccess",
-                          defaultValue: "删除成功！",
-                        })
-                      );
-                      getApplicationList();
-                    } else {
-                      message.error(
-                        res.msg || intl.formatMessage({
-                          id: "common.deleteError",
-                          defaultValue: "删除失败，请稍后重试！",
-                        })
-                      );
-                    }
-                  });
-                }}>
-                  <div key="delete" className={styles.mybtn}>删除</div>
-                </Popconfirm>
-
+                  }}><Icon type="edit" style={{ color: '#333' }} /></a>
+                </Tooltip>
+                <Tooltip key="delete" title="删除">
+                  <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+                    deleteApplicationOne(item.id, (res) => {
+                      if (res.code === successCode) {
+                        message.success(
+                          intl.formatMessage({
+                            id: "common.deleteSuccess",
+                            defaultValue: "删除成功！",
+                          })
+                        );
+                        getApplicationList();
+                      } else {
+                        message.error(
+                          res.msg || intl.formatMessage({
+                            id: "common.deleteError",
+                            defaultValue: "删除失败，请稍后重试！",
+                          })
+                        );
+                      }
+                    });
+                  }}>
+                    <a title="删除"><Icon type="delete" style={{ color: '#333' }} /></a>
+                  </Popconfirm>
+                </Tooltip>
               </>
             );
           }}
@@ -346,8 +363,8 @@ const ApplyDevelop = observer(() => {
             total={totalDelete}
             curPage={deleteCurPage}
             project
-            onChange={(id,params)=>{
-              changeApplicationOne(id,params,(res)=>{
+            onChange={(id, params) => {
+              changeApplicationOne(id, params, (res) => {
                 if (res.code === successCode) {
                   message.success(
                     intl.formatMessage({

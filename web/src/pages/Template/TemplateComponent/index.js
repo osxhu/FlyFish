@@ -22,16 +22,15 @@ const ComponentDevelop = observer(() => {
   const intl = useIntl();
   let [flagNum, setFlagNum] = useState(0);
   let [infinitKey, setInfinitKey] = useState(0);
-  let [searchParams, setSearchParams] = useState({});
   const {
     getTreeDataFirst,
     getListData,
     setDrawerVisible,
     getIndustrysList,
     getTagsData,
-    getAssemlyDetail,
+    getAssemlyDetail,setSelectedOptions,
   } = store;
-  const { isDrawerVisible, hasMore, tagsData, assemlyDetail, industryList, selectedData, listLength, listData } = store;
+  const { isDrawerVisible,selectedOptions,hasMore, tagsData, assemlyDetail, industryList, selectedData, listLength, listData } = store;
 
   const onSearch = (params) => {
     for (const i in params) {
@@ -39,16 +38,14 @@ const ComponentDevelop = observer(() => {
         delete params[i];
       }
     }
-    setSearchParams(params);
+    setSelectedOptions(params);
     setFlagNum(0);
-    getListData(params, true);
   };
   let cardDate = toJS(listData);
   const changePage = () => {
     setFlagNum(flagNum += 1);
     getListData({
-      curPage: flagNum,
-      ...searchParams
+      curPage: flagNum
     });
   };
   const searchContent = [
@@ -92,8 +89,8 @@ const ComponentDevelop = observer(() => {
     },
     {
       components: (
-        <Select mode="tags" id="ApplyLabel"
-          key="ApplyLabel"
+        <Select mode="tags" id="tags"
+          key="tags"
           allowClear={true}
           name='标签' style={{ width: 200 }}
           placeholder={intl.formatMessage({
@@ -131,10 +128,9 @@ const ComponentDevelop = observer(() => {
     getIndustrysList();
   }, []);
   useEffect(() => {
-    Number(selectedData.category)? getListData({}, true):null;
+    Number(selectedData.category) ? getListData({}, true) : null;
     setFlagNum(0);
-    // setInfinitKey(Math.random().toString(36).substr(2));
-  }, [selectedData]);
+  }, [selectedData,selectedOptions]);
   return <div className={styles.templateComponent}>
     <AbreastLayout
       type='leftOperationArea'

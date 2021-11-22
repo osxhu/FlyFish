@@ -86,32 +86,19 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
   const columns = [
     {
       title: '版本',
-      dataIndex: 'name',
-      key: 'name',
-      align: 'center',
-      render: text => <a>{text}</a>,
+      dataIndex: 'no',
+      key: 'no',
+      align: 'center'
     },
     {
       title: '变更描述',
       align: 'center',
-      dataIndex: 'age',
-      key: 'age',
-    }
-  ];
-  const data = [
-    {
-      key: '1',
-      name: 'V1.0',
-      age: '新增组件标识(v.10)',
-    },
-    {
-      key: '2',
-      name: 'V2.0',
-      age: '新增属性...',
+      dataIndex: 'desc',
+      key: 'desc',
     }
   ];
   const showTrades = (arr) => {
-    if(arr){
+    if(arr&&arr.length>0){
       return arr.map((item,index) => {
         if (index !== arr.length - 1) {
           return item.name + ',';
@@ -155,7 +142,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
         <div className={stylus.table}>
           <Collapse defaultActiveKey={[]} >
             <Panel header="版本更新历史" key="1">
-              <Table rowKey="id" pagination={false} size='small' bordered={true} columns={columns} dataSource={data} />
+              <Table rowKey="id" pagination={false} size='small' bordered={true} columns={columns} dataSource={assemly.versions} />
             </Panel>
           </Collapse>
         </div>

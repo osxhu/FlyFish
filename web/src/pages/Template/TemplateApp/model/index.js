@@ -1,55 +1,66 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getProjectManageListService, saveProjectService } from "../services";
+import { getApplicationTemplateService, getTradesService, getTagsService } from "../services";
 import _ from "lodash";
 
 const model = {
   // 唯一命名空间
-  namespace: "ApplyDevelop",
+  namespace: "ApplicationTemplate",
   // 状态
   state: {
     searchParams: {},
-    projectList: [],
+    applicationList: [],
     total: 0,
-    activeProject: null,
-    isCopyApplyModalVisible: false,
+    pageSize: 12,
+    curPage: 0,
+    type: '',
+  searchOptions: {},
+    tradesList: [],
+    tagsList: []
   },
   effects: {
-    // 获取项目列表数据
-    *getProjectList(params = {}) {
-      // 处理参数
+    *getApplicationList(params = {}) {
       let options = {
+        isLib: true,
+        type: this.type || '2D',
         curPage: this.curPage,
         pageSize: this.pageSize,
         ...this.searchParams,
+        ...this.searchOptions,
         ...params,
       };
-      // 请求数据
-      const res = yield getProjectManageListService(options);
-      this.setProjectList(res);
+      const res = yield getApplicationTemplateService(options);
+      this.setApplicationList(res);
     },
-    *saveProject(params = {}, callback) {
-      // 测试代码
-      const res = yield saveProjectService(params);
-      callback && callback(res);
+    *getTradesList() {
+      const res = yield getTradesService();
+      this.setTradesList(res.data.list);
+    },
+    *getTagsList() {
+      const res = yield getTagsService({ type: 'application' });
+      this.setTagsList(res.data);
     },
   },
   reducers: {
-    setProjectList(res) {
-      this.projectList = res.data;
-      this.total = res.total;
-      this.curPage = res.curPage;
-      this.pageSize = res.pageSize;
+    setOptions(options){
+      this.searchOptions=options;
+    },
+    setTagsList(res) {
+      this.tagsList = res;
+    },
+    setTradesList(res) {
+      this.tradesList = res;
+    },
+    setType(str) {
+      this.type = str;
+    },
+    setApplicationList(res) {
+      this.applicationList = res.data;
+      this.total = res.data.total;
+      this.curPage = res.data.curPage;
+      this.pageSize = res.data.pageSize;
     },
     setSearchParams(searchParams) {
       this.searchParams = searchParams || {};
-    },
-    openCopyApplyModal(project) {
-      this.activeProject = _.clone(project);
-      this.isCopyApplyModalVisible = true;
-    },
-    closeCopyApplyModal() {
-      this.activeProject = null;
-      this.isCopyApplyModalVisible = false;
     },
   },
 };

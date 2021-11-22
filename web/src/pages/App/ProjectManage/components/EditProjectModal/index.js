@@ -107,7 +107,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
             })(
               <Select
                 showSearch={true}
-                // optionFilterProp="label"
                 mode='tags'
                 placeholder={
                   intl.formatMessage({

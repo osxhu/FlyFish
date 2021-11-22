@@ -15,16 +15,16 @@ const model = {
     treeData: [],
     listData: {},
     selectedData: {
-      isLib: true,
       category: '全部组件',
       subCategory: ''
     },
+    selectedOptions:{},
     total: 0,
     curPage: 1,
     pageSize: 12,
     searchName: '',
     searchKey: '',
-    hasMore:true,
+    hasMore: true,
     searchStatus: 'all',
     tagsData: [],
     industryList: [],
@@ -68,6 +68,8 @@ const model = {
         subCategory: subCategory === '' ? undefined : subCategory,
         curPage: curPage,
         pageSize,
+        isLib: true,
+        ...this.selectedOptions,
         ...obj
       };
       const res = yield getListDataService(params);
@@ -85,6 +87,9 @@ const model = {
     },
   },
   reducers: {
+    setSelectedOptions(res){
+      this.selectedOptions=res;
+    },
     setIndustryList(res) {
       this.industryList = res.data.list;
     },
@@ -98,23 +103,24 @@ const model = {
       this.treeData = res;
     },
     setListData(res, state) {
-      
+
       if (state) {
         this.listData = res;
       } else {
         this.listData.list && this.listData.list.push(...res.list);
       }
-      this.listLength=this.listData&&this.listData.list.length;
-      this.total=res&&res.total;
-      if(this.listLength>= this.total){
-        this.hasMore=false;
+      this.listLength = this.listData && this.listData.list.length;
+      this.total = res && res.total;
+      if (this.listLength >= this.total) {
+        this.hasMore = false;
       }
     },
-    setHasMore(flag){
-      this.hasMore=flag;
+    setHasMore(flag) {
+      this.hasMore = flag;
     },
     setSelectedData(res) {
-      this.selectedData = res;
+        this.selectedData = res;
+ 
     },
     setSearchName(res) {
       this.searchName = res;

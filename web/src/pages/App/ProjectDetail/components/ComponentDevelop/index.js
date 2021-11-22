@@ -46,6 +46,8 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   let [infinitKey, setInfinitKey] = useState(0);
   let [libraryFlagNum, setLibraryFlagNum] = useState(0);
   let [libraryParams, setLibraryParams] = useState({});
+  let [isShowOwn, setIsShowOwn] = useState([]);
+
   // 公共组件下滑
   const changePage = () => {
     setLibraryFlagNum(libraryFlagNum += 1);
@@ -170,6 +172,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
             <div id="scrollableDiv" style={{ height: '470px', overflow: 'auto' }} >
               <Card
               number={6}
+              
                 checkCard={(id) => {
                   setDrawerVisible(true);
                   getAssemlyDetail(id);
@@ -225,6 +228,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               >
                 <Card
                 number={6}
+                showOwn={isShowOwn}
                   checkCard={(id) => {
                     getAssemlyDetail(id);
                   }}
@@ -245,6 +249,8 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                             defaultValue: "新增成功！",
                           })
                         );
+                        let arr=[...isShowOwn,id];
+                        setIsShowOwn(arr);
                         setHasMore(true);
                         getListData({ projectId: ProgressId }, true);
                       } else {
