@@ -14,17 +14,31 @@ const HandleMenu = observer((props)=>{
     getTreeData,
     setSelectedData,
     selectedData,
-    userInfo
+    userInfo,
+    setCurPage,
+    setPageSize
   } = store;
   const [data, setData] = useState([]);
+  const addinput = useRef();
+  const editInput = useRef();
+  const addCateRef = useRef();
 
+  const [addCateName, setAddCateName] = useState('');
+  const [editName, setEditName] = useState('');
+  const [addingCate, setAddingCate] = useState(false);
   useEffect(() => {
     if (treeData) {
       const data = _.cloneDeep(toJS(treeData));
       setData(
         data.map(item=>{
+          item.showBtn = false;
           item.expand = defaultExpandAll;
+          item.focus = false;
+          item.adding = false;
+          item.editing = false;
           item.children?item.children.map(item=>{
+            item.showBtn = false;
+            item.editing = false;
             return item;
           }):null;
           return item;
@@ -32,26 +46,18 @@ const HandleMenu = observer((props)=>{
       )
     }
   }, [treeData]);
-  return <div style={{position:'relative'}}>
+  return <>
+  <div style={{position:'relative'}}>
     {
       data.map((v,k)=>{
         return <div key={k+''}>
           <div 
-            className={styles.firstLine}
-            onMouseOver={()=>{
-              setData(olddata=>{
-                return olddata.map((v1,k1)=>{
-                  v1.showBtn=(k1===k);
-                  return v1;
-                })
-              })
-            }}
-            onMouseOut={()=>{
-              setData(olddata=>{
-                return olddata.map((v1,k1)=>{
-                  v1.showBtn=false;
-                  return v1;
-                })
+            className={styles.firstLine+ ((selectedData.category===v.id && selectedData.subCategory==='')?(' '+styles.selected):'')}
+            onClick={()=>{
+              setCurPage(1);
+              setSelectedData({
+                category:v.id,
+                subCategory:''
               })
             }}
           >
@@ -70,64 +76,132 @@ const HandleMenu = observer((props)=>{
                   })
                 }}
               />
-             <span className={styles.firstTitle}>{v.name}</span>
-              
+              <span className={styles.firstTitle}>{v.name}</span>
             </div>
-            <div className={styles.firstBtnWrap}>
-             
-            </div>
+           
           </div>
           {v.children?v.children.map((v2,k2)=>{
             return <div
               key={k+'-'+k2}
-              className={styles.secondLine + ((selectedData.category===v.name && selectedData.subCategory===v2.name)?(' '+styles.selected):'')}
+              className={styles.secondLine + ((selectedData.category===v.id && selectedData.subCategory===v2.id)?(' '+styles.selected):'')}
               style={{display:v.expand?'flex':'none'}}
-              onMouseOver={()=>{
-                setData(olddata=>{
-                  return olddata.map((v1,k1)=>{
-                    if (k1===k) {
-                      v1.children.map((v3,k3)=>{
-                        v3.showBtn=(k3===k2);
-                        return v3;
-                      })
-                    }
-                    return v1;
-                  })
-                })
-              }}
-              onMouseOut={()=>{
-                setData(olddata=>{
-                  return olddata.map((v1,k1)=>{
-                    if (k1===k) {
-                      v1.children.map((v3,k3)=>{
-                        v3.showBtn=false;
-                        return v3;
-                      })
-                    }
-                    return v1;
-                  })
-                })
-              }}
               onClick={()=>{
+                setCurPage(1);
                 setSelectedData({
-                  category:v.name,
-                  subCategory:v2.name
+                  category:v.id,
+                  subCategory:v2.id
                 })
               }}
             >
               <div>
-            <span>{v2.name}</span>
-            
+             <span>{v2.name}</span>
               </div>
               <div className={styles.secondBtnWrap}>
-               
+                <Icon type="form" style={{display:v2.showBtn?'inline':'none'}}
+                  onClick={(e)=>{
+                    e.stopPropagation()
+                    setEditName(v2.name)
+                    setData(olddata=>{
+                      return olddata.map((v1,k1)=>{
+                        if (k1===k) {
+                          v1.children.map((v3,k3)=>{
+                            if (k2===k3) {
+                              v3.editing = true;
+                            }
+                          })
+                        }
+                        return v1;
+                      })
+                    })
+                    setTimeout(() => {
+                      editInput.current.input.focus();
+                    }, 0);
+                  }}
+                />
+                
               </div>
             </div>
           }):null}
+          {
+            v.adding?<Input 
+              ref={addinput}
+              className={styles.addingInput}
+              value={addCateName}
+              onChange={(e)=>{setAddCateName(e.target.value)}}
+              onBlur={(e)=>{
+                setData(olddata=>{
+                  return olddata.map((v1,k1)=>{
+                    if (k1===k) {
+                      v1.adding=false;
+                    }
+                    return v1;
+                  })
+                })
+              }}
+              onPressEnter={async (e)=>{
+                const datas = _.cloneDeep(toJS(treeData));
+                datas.map((v4,k4)=>{
+                  if (k4===k) {
+                    v4.children.push({name:addCateName})
+                  }
+                  return v4;
+                })
+                const res = await updateTreeDataService({categories:datas});
+                if (res && res.code==0) {
+                  setData(olddata=>{
+                    return olddata.map((v1,k1)=>{
+                      if (k1===k) {
+                        v1.adding=false;
+                      }
+                      return v1;
+                    })
+                  })
+                  getTreeData();
+                  setAddCateName('');
+                  message.success('添加成功！')
+                }
+                
+              }}
+            />:null
+          }
         </div>
       })
     }
+    <Input 
+      ref={addCateRef}
+      style={{display:addingCate?'block':'none'}}
+      value={addCateName}
+      onChange={(e)=>{
+        setAddCateName(e.target.value);
+      }}
+      onBlur={()=>{
+        setAddingCate(false);
+      }}
+      onPressEnter={async ()=>{
+        const datas = _.cloneDeep(toJS(treeData));
+        let has = false;
+        datas.map(item=>{
+          if (item.name===addCateName) {
+            has = true;
+          }
+          return item;
+        });
+        if (has) {
+          message.error('组件分类名称已存在，请修改！');
+        }else{
+          datas.push({name:addCateName,children:[]});
+          const res = await updateTreeDataService({categories:datas});
+          if (res && res.code==0) {
+            setAddingCate(false);
+            getTreeData();
+            setAddCateName('');
+          }
+        }
+        
+      }}
+    ></Input>
   </div>
+  </>
 })
 
 export default HandleMenu;

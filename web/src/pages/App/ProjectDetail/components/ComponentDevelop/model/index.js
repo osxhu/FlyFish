@@ -6,14 +6,16 @@
  * @LastEditTime: 2021-11-12 16:31:23
  */
 import { toMobx, toJS } from '@chaoswise/cw-mobx';
-import { getTreeDataService, 
-  industryList, 
-  assemblyDetail, 
-  changeAssembly, 
+import {
+  getTreeDataService,
+  industryList,
+  assemblyDetail,
+  changeAssembly,
   getUserInfoService,
-  getListDataService, 
+  getListDataService,
   getTagsService,
-  deleteOneAssembly } from '../services';
+  deleteOneAssembly
+} from '../services';
 import { message } from 'antd';
 import { successCode } from "@/config/global";
 
@@ -26,22 +28,22 @@ const model = {
     addModalvisible: false,
     treeData: null,
     listData: {},
-    userInfo:{},
-   
+    userInfo: {},
+
     libraryListData: {},
     selectedData: {
-      category:'',
+      category: '',
       subCategory: ''
     },
-    searchName:'',
-    searchKey:'',
-    searchStatus:'all',
-    projectId:'',
+    searchName: '',
+    searchKey: '',
+    searchStatus: 'all',
+    projectId: '',
     total: 0,
-    curPage:1,
-    pageSize:12,
+    curPage: 1,
+    pageSize: 20,
     hasMore: true,
-    tagsList:[],
+    tagsList: [],
     industryList: [],//行业列表
     assemlyDetail: [],//组件详情
     isDrawerVisible: false,
@@ -51,7 +53,7 @@ const model = {
   effects: {
     *getUserInfo() {
       const id = localStorage.getItem('id');
-      const res = yield getUserInfoService({id});
+      const res = yield getUserInfoService({ id });
       if (res && res.data) {
         this.setUserInfo(res.data);
       }
@@ -64,27 +66,27 @@ const model = {
         const first = toJS(data)[0];
         if (first) {
           this.setSelectedData({
-            category:first.id,
-            subCategory:''
+            category: first.id,
+            subCategory: ''
           });
         }
       }
     },
     *getListData(obj, state) {
-      let curPage = this.curPage-1;
+      let curPage = this.curPage - 1;
       const pageSize = this.pageSize;
-      const { category,subCategory } = toJS(this.selectedData);
+      const { category, subCategory } = toJS(this.selectedData);
       const searchName = this.searchName;
       const searchKey = this.searchKey;
       const searchStatus = this.searchStatus;
       const params = {
-        projectId:this.projectId,
-        name:searchName?searchName:undefined,
-        key:searchKey?searchKey:undefined,
-        developStatus:searchStatus!=='all'?searchStatus:undefined,
-        category:category,
-        subCategory:subCategory===''?undefined:subCategory,
-        curPage:curPage,
+        projectId: this.projectId,
+        name: searchName ? searchName : undefined,
+        key: searchKey ? searchKey : undefined,
+        developStatus: searchStatus !== 'all' ? searchStatus : undefined,
+        category: category,
+        subCategory: subCategory === '' ? undefined : subCategory,
+        curPage: curPage,
         pageSize
       };
       const res = yield getListDataService(params);
@@ -94,12 +96,11 @@ const model = {
     *getLibraryListData(options, state) {
       const params = {
         isLib: true,
+        pageSize: 20,
         ...options
       };
       const res = yield getListDataService(params);
-      if (res.code === successCode) {
-        this.setLibraryListData(res.data, state);
-      }
+      this.setLibraryListData(res.data, state);
     },
     *deleteAssembly(params = {}, callback) {
       // 请求数据
@@ -108,7 +109,7 @@ const model = {
     },
     // 标签列表
     *getTagsList() {
-      const res = yield getTagsService({type:'component'});
+      const res = yield getTagsService({ type: 'component' });
       this.setTagsList(res);
     },
     // 行业列表
@@ -128,13 +129,13 @@ const model = {
     },
   },
   reducers: {
-    setTagsList(res){
-      this.tagsList=res.data;
+    setTagsList(res) {
+      this.tagsList = res.data;
     },
-    setProjectId(id){
-      this.projectId=id;
+    setProjectId(id) {
+      this.projectId = id;
     },
-    setUserInfo(res){
+    setUserInfo(res) {
       this.userInfo = res;
     },
     setDrawerVisible(res) {
@@ -154,6 +155,9 @@ const model = {
       }
       let libraryListData = toJS(this.libraryListData.list);
       this.libraryListLength = libraryListData.length;
+      if(this.libraryListLength>=res.total){
+        this.hasMore=false;
+      }
     },
     setDetailShow(res) {
       this.detailShow = res;
@@ -166,8 +170,9 @@ const model = {
     },
     setListData(res) {
       this.listData = res;
+      this.total = res && res.total;
     },
-    setCurPage(res){
+    setCurPage(res) {
       this.curPage = res;
     },
     setHasMore(flag) {

@@ -351,8 +351,8 @@ const ApplyDevelop = observer(() => {
                 if (res.code === successCode) {
                   message.success(
                     intl.formatMessage({
-                      id: "common.addSuccess",
-                      defaultValue: "新增成功！",
+                      id: "common.reductionSuccess",
+                      defaultValue: "还原成功！",
                     })
                   );
                   getApplicationListDelete({ status: 'invalid' });
@@ -362,8 +362,8 @@ const ApplyDevelop = observer(() => {
                 } else {
                   message.error(
                     res.msg || intl.formatMessage({
-                      id: "common.addError",
-                      defaultValue: "新增失败，请稍后重试！",
+                      id: "common.reductionError",
+                      defaultValue: "还原失败，请稍后重试！",
                     })
                   );
                 }

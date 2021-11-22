@@ -66,6 +66,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         ]}
       >
         <Table
+        scroll={{y:'450px'}}
           pagination={{
             current: curPage + 1,
             pageSize: 10,

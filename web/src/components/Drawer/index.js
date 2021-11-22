@@ -113,7 +113,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
   const showTrades = (arr) => {
     if(arr){
       return arr.map((item,index) => {
-        if (index !== arr.length - 1&&index!=0) {
+        if (index !== arr.length - 1) {
           return item.name + ',';
         } else {
           return item.name;
@@ -153,7 +153,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
         <div className={stylus.screen}></div>
         {/* 版本 表格 */}
         <div className={stylus.table}>
-          <Collapse defaultActiveKey={['1']} >
+          <Collapse defaultActiveKey={[]} >
             <Panel header="版本更新历史" key="1">
               <Table rowKey="id" pagination={false} size='small' bordered={true} columns={columns} dataSource={data} />
             </Panel>

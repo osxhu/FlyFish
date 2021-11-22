@@ -17,7 +17,7 @@ const model = {
     type: '',
     total: 0,
     curPage: 0,
-    pageSize: 21,
+    pageSize: 15,
     hasMore: true,
     templatehasMore: true,
     activeProject: {},

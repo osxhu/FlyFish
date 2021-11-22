@@ -264,7 +264,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                       defaultValue: "复制成功！",
                     })
                   );
-                  setHasMore(true);
                   closeAppProjectModal();
                   getApplicationList();
                 } else {

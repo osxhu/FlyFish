@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { SearchBar, AbreastLayout ,Icon} from "@chaoswise/ui";
+import { SearchBar, AbreastLayout, Icon } from "@chaoswise/ui";
 import { Select, Input } from 'antd';
 import { observer, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
@@ -24,18 +24,14 @@ const ComponentDevelop = observer(() => {
   let [infinitKey, setInfinitKey] = useState(0);
   let [searchParams, setSearchParams] = useState({});
   const {
-    getTreeData,
+    getTreeDataFirst,
     getListData,
-    setSelectedData,
-    setSearchName,
-    setSearchKey,
-    setSearchStatus,
     setDrawerVisible,
     getIndustrysList,
     getTagsData,
-    getAssemlyDetail
+    getAssemlyDetail,
   } = store;
-  const { isDrawerVisible, assemlyDetail, industryList, selectedData, listLength, listData } = store;
+  const { isDrawerVisible, hasMore, tagsData, assemlyDetail, industryList, selectedData, listLength, listData } = store;
 
   const onSearch = (params) => {
     for (const i in params) {
@@ -85,8 +81,8 @@ const ComponentDevelop = observer(() => {
           allowClear={true}
           key="key"
           style={{ width: "300px" }}
-          suffix	={<Icon type="search" />
-        }
+          suffix={<Icon type="search" />
+          }
           placeholder={intl.formatMessage({
             id: "pages.applyTemplate.name",
             defaultValue: "输入组件名称/组件编号/描述/标签/查找组件",
@@ -105,9 +101,9 @@ const ComponentDevelop = observer(() => {
             defaultValue: "选择应用标签进行查询",
           })}
         >
-          <Option value="jack">Jack</Option>
-          <Option value="lucy">Lucy</Option>
-          <Option value="Yiminghe">yiminghe</Option>
+          {
+            tagsData.map(item => <Option key={item.id} value={item.id}>{item.name}</Option>)
+          }
         </Select>
       ),
     },
@@ -131,13 +127,13 @@ const ComponentDevelop = observer(() => {
   // 请求列表数据
   useEffect(() => {
     getTagsData();
-    getTreeData();
+    getTreeDataFirst();
     getIndustrysList();
   }, []);
   useEffect(() => {
-    getListData({}, true);
+    Number(selectedData.category)? getListData({}, true):null;
     setFlagNum(0);
-    setInfinitKey(Math.random().toString(36).substr(2));
+    // setInfinitKey(Math.random().toString(36).substr(2));
   }, [selectedData]);
   return <div className={styles.templateComponent}>
     <AbreastLayout
@@ -145,24 +141,24 @@ const ComponentDevelop = observer(() => {
       showCollapsedBtn
       SiderWidth={200}
       Siderbar={(
-          <div className={styles.treeWrap}>
-            <HandleMenu />
-          </div>
+        <div className={styles.treeWrap}>
+          <HandleMenu />
+        </div>
       )}
     ><Detail />
       <SearchBar
         searchContent={searchContent} showSearchCount={6} onSearch={onSearch}
       />
       {/* 更改二级菜单覆盖否则push数据。页码一致会导致识别不了更新，随机key值 */}
-      <div id="scrollableDiv" style={{ height: '490px', overflow: 'auto' }} >
+      <div id="scrollableDiv" style={{ height: 'calc(100vh - 233px)', overflow: 'auto' }} >
         <InfiniteScroll
           dataLength={listLength}
           next={changePage}
-          hasMore={true}
+          hasMore={hasMore}
           scrollableTarget="scrollableDiv"
           key={infinitKey}
         >
-          <Card value={cardDate} checkCard={(id) => {
+          <Card number={6} value={cardDate} checkCard={(id) => {
             getAssemlyDetail(id);
           }} state={1} />
         </InfiniteScroll>

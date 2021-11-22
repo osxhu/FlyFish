@@ -3,18 +3,18 @@ import { Form, Popconfirm } from "@chaoswise/ui";
 import { Card, Tag, Col, Row, Icon, Avatar, Empty, Tooltip } from 'antd';
 const { Meta } = Card;
 import styles from './index.less';
-import { TAG_COLORS ,APP_DEVELOP_STATUS} from '@/config/global';
+import { TAG_COLORS, APP_DEVELOP_STATUS } from '@/config/global';
 import { observer, toJS } from "@chaoswise/cw-mobx";
 import { wordlimit } from '@/config/global';
 const computedTagWordByStatus = (status) => {
-   return APP_DEVELOP_STATUS.find(item=>item.id===status).name;
+    return APP_DEVELOP_STATUS.find(item => item.id === status).name;
 };
 const computedTagColorByStatus = (status) => {
-    return TAG_COLORS.find(item=>item.id===status).color;
- };
+    return TAG_COLORS.find(item => item.id === status).color;
+};
 export default Form.create({ name: "BASIC_CARD" })(
-    function BasicCard({ onDelete, setActiveCard, addOwn, checkCard, value, state, showStateTag, actions, canDelete, canAdd }) {
-// console.log('card数据',value);
+    function BasicCard({number, onDelete, setActiveCard, addOwn, checkCard, value, state, showStateTag, actions, canDelete, canAdd }) {
+        
         const tradesArr = (trades) => {
             if (trades.length === 0) {
                 return '暂无';
@@ -32,11 +32,12 @@ export default Form.create({ name: "BASIC_CARD" })(
         return (
             <Row justify="space-around" gutter={['16', '16']} style={{ margin: '10px' }} className={styles.cardList}>
                 {
-                    value&&value.list && value.list.length > 0 ? value.list.map((item, index) => <Col span={8} key={index}>
+                    value && value.list && value.list.length > 0 ? value.list.map((item, index) => <Col span={number||8} key={index}>
                         <Card
                             onClick={() => {
+
                                 setActiveCard && setActiveCard(item);
-                                setCheckId(item.id);
+
                             }}
                             style={{ boxShadow: checkid == item.id ? '3px 3px 3px 3px #dedede' : null }}
                             cover={
@@ -55,17 +56,25 @@ export default Form.create({ name: "BASIC_CARD" })(
                                         }}>+</Tag> : null
                                     }
                                     {
-                                         !showStateTag ? null : <Tag className={styles.tag} color={computedTagColorByStatus(item.developStatus)}>{computedTagWordByStatus(item.developStatus)}</Tag>
+                                        !showStateTag ? null : <Tag className={styles.tag} color={computedTagColorByStatus(item.developStatus)}>{computedTagWordByStatus(item.developStatus)}</Tag>
                                     }
                                     <img
+                                        onClick={() => {
+                                            checkCard(item.id);
+                                            setCheckId(item.id);
+                                        }}
                                         alt="example"
                                         src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                                     />
                                 </>
                             }
-                            actions={actions&&actions(item).props.children}
+                            actions={actions && actions(item).props.children}
                         >
                             <Meta
+                                onClick={() => {
+                                    checkCard(item.id);
+                                    setCheckId(item.id);
+                                }}
                                 title={(() => {
                                     if (!actions) return `组件名称:${item.name || '暂无'}`;
                                     if (state) {
@@ -106,7 +115,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                             />
 
                         </Card>
-                    </Col>) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                    </Col>) :<div className='flexContainer'> <Empty /></div>
                 }
             </Row>
         );

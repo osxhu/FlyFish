@@ -32,6 +32,12 @@ const AppProjectManage = observer((props) => {
       dataIndex: "name",
       key: "name",
       disabled: true,
+      render(text, record) {
+        return <span style={{cursor:'pointer'}} onClick={() => {
+          goRoute(record.id);
+          openProjectPage(record);
+        }}>{text}</span>;
+      },
     },
     {
       title: "行业",
@@ -60,12 +66,13 @@ const AppProjectManage = observer((props) => {
       render(createTime) {
         return formatDate(createTime);
       },
-      width: 300
+      width: 200
     },
     {
       title: "创建人",
       dataIndex: "creatorName",
       key: "creatorName",
+      width: 110
     },
     {
       title: intl.formatMessage({
@@ -109,9 +116,7 @@ const AppProjectManage = observer((props) => {
                     })
                   );
                   closeEditProjectModal();
-                  getProjectList({
-                    curPage: 0,
-                  });
+                  getProjectList();
                 } else {
                   message.error(
                     intl.formatMessage({
@@ -138,7 +143,7 @@ const AppProjectManage = observer((props) => {
           id="key"
           key="key"
           style={{ width: "300px" }}
-          suffix	={<Icon type="search" />
+          suffix={<Icon type="search" />
           }
 
           placeholder={intl.formatMessage({
@@ -266,9 +271,7 @@ const AppProjectManage = observer((props) => {
                   })
                 );
                 closeEditProjectModal();
-                getProjectList({
-                  curPage: 0,
-                });
+                getProjectList();
               } else {
                 message.error(
                   res.msg || intl.formatMessage({

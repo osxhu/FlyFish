@@ -15,58 +15,71 @@ const model = {
     treeData: [],
     listData: {},
     selectedData: {
-      isLib:true,
+      isLib: true,
       category: '全部组件',
       subCategory: ''
     },
+    total: 0,
+    curPage: 1,
+    pageSize: 12,
     searchName: '',
     searchKey: '',
+    hasMore:true,
     searchStatus: 'all',
     tagsData: [],
-    industryList:[],
+    industryList: [],
     isDrawerVisible: false,
     assemlyDetail: [], listLength: 0
 
   },
   effects: {
-    *getTreeData() {
-      // 请求数据
+    *getTreeDataFirst() {
       const res = yield getTreeDataService();
-      this.setTreeData(res.data[0].categories);
+      if (res && res.data) {
+        const data = res.data[0].categories;
+        this.setTreeData(data);
+        const first = toJS(data)[0];
+        if (first) {
+          this.setSelectedData({
+            category: first.id,
+            subCategory: ''
+          });
+        }
+      }
     },
     *getTagsData() {
-      const res = yield getTagsService();
+      const res = yield getTagsService({ type: 'component' });
       if (res && res.data) {
         this.setTagsData(res.data);
       }
     },
-    *getListData(listSearch, state) {
+    *getListData(obj, state) {
+      let curPage = this.curPage - 1;
+      const pageSize = this.pageSize;
       const { category, subCategory } = toJS(this.selectedData);
-      if (category === '全部组件') {
-        const params = {
-          ...listSearch,
-          isLib:true,
-        };
-        const res = yield getListDataService(params);
-        this.setListData(res.data, state);
-      } else {
-        const params = {
-          category: category,
-          subCategory: subCategory,
-          isLib:true,
-          ...listSearch
-        };
-        const res = yield getListDataService(params);
-        this.setListData(res.data, state);
-      }
+      const searchName = this.searchName;
+      const searchKey = this.searchKey;
+      const searchStatus = this.searchStatus;
+      const params = {
+        name: searchName ? searchName : undefined,
+        key: searchKey ? searchKey : undefined,
+        developStatus: searchStatus !== 'all' ? searchStatus : undefined,
+        category: category,
+        subCategory: subCategory === '' ? undefined : subCategory,
+        curPage: curPage,
+        pageSize,
+        ...obj
+      };
+      const res = yield getListDataService(params);
+      this.setListData(res.data, state);
     },
     *getAssemlyDetail(id, callback) {
       const res = yield assemblyDetail(id);
       this.isDrawerVisible = true;
       this.setAssemlyDetail(res);
     },
-     // 行业列表
-     *getIndustrysList() {
+    // 行业列表
+    *getIndustrysList() {
       const res = yield industryList();
       this.setIndustryList(res);
     },
@@ -85,14 +98,20 @@ const model = {
       this.treeData = res;
     },
     setListData(res, state) {
+      
       if (state) {
         this.listData = res;
       } else {
-        this.listData.list&&this.listData.list.push(...res.list);
+        this.listData.list && this.listData.list.push(...res.list);
       }
-      
-      let tableData = toJS(this.listData.list);
-      this.listLength = tableData.length;
+      this.listLength=this.listData&&this.listData.list.length;
+      this.total=res&&res.total;
+      if(this.listLength>= this.total){
+        this.hasMore=false;
+      }
+    },
+    setHasMore(flag){
+      this.hasMore=flag;
     },
     setSelectedData(res) {
       this.selectedData = res;
@@ -102,6 +121,9 @@ const model = {
     },
     setSearchKey(res) {
       this.searchKey = res;
+    },
+    setCurPage(res) {
+      this.curPage = res;
     },
     setSearchStatus(res) {
       this.searchStatus = res;

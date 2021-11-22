@@ -26,6 +26,8 @@ export default flattenMessages({
     recoveryError:'恢复失败，请稍后重试！',
     addError: "新增失败，请稍后重试！",
     addSuccess: "新增成功！",
+    reductionSuccess:'还原成功！',
+    reductionError: "还原失败，请稍后重试！",
     deleteError: "删除失败，请稍后重试！",
     deleteSuccess: "删除成功！",
     changeSuccess:'编辑成功！',
