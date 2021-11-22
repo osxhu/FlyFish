@@ -7,7 +7,6 @@ const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
-const copyDir = require('copy-dir');
 const puppeteer = require('puppeteer');
 
 module.exports = {
@@ -78,9 +77,6 @@ module.exports = {
       });
 
       const page = await browser.newPage();
-      await page.setViewport({ width: 1280, height: 720 });
-      await page.goto(url, { waitUntil: 'networkidle0', timeout: 50000 });
-
       const cookieValue = ctx.cookies.get(cookieName, { signed: false });
       const cookie = {
         name: cookieName,
@@ -91,6 +87,8 @@ module.exports = {
         maxAge: 1000 * 60 * 60 * 24 * 7, // Unit : second  default Max-Age is one week
       };
       await page.setCookie(cookie); // 设置cookie
+      await page.setViewport({ width: 1280, height: 720 });
+      await page.goto(url, { waitUntil: 'networkidle0', timeout: 50000 });
 
       const fullPagePng = await page.screenshot({ type: 'png', fullPage: true });
       fs.writeFileSync(savePath, fullPagePng);
