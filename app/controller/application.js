@@ -164,7 +164,7 @@ class ApplicationController extends BaseController {
     const id = ctx.params.id;
 
     const buildPath = path.resolve(staticDir, appBuildPath, id);
-    const appUploadPath = path.resolve(staticDir, uploadPath, 'application');
+    const appPath = path.resolve(staticDir, applicationPath);
     const configPath = path.resolve(buildPath, 'config');
 
     const appInfo = await ctx.model.Application._findOne({ id });
@@ -200,8 +200,8 @@ class ApplicationController extends BaseController {
     const targetAssertPath = path.resolve(staticDir, buildPath, 'asserts');
     await fs.copy(sourceAssertPath, targetAssertPath);
 
-    const sourceFragmentPath = path.resolve(staticDir, appUploadPath, `fragment/${id}`);
-    const targetFragmentPath = path.resolve(staticDir, buildPath, `upload/screen/fragment/${id}`);
+    const sourceFragmentPath = path.resolve(staticDir, appPath, id);
+    const targetFragmentPath = path.resolve(staticDir, buildPath, 'fragment');
     const fragmentExist = await fs.pathExists(sourceFragmentPath);
     if (fragmentExist) {
       await fs.copy(sourceFragmentPath, targetFragmentPath);

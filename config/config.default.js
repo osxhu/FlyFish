@@ -87,9 +87,7 @@ module.exports = appInfo => {
 
     applicationPath: 'applications',
     appTplPath: 'application_tpl',
-
     appBuildPath: 'application_build',
-    uploadPath: 'upload',
 
     componentsPath: 'components',
     componentsTplPath: 'component_tpl',
