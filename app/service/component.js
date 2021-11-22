@@ -543,6 +543,7 @@ class ComponentService extends Service {
       fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
 
       fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${staticDir}/${componentsTplPath}/editor.html.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/index.html`, require(`${staticDir}/${componentsTplPath}/index.html.js`)(componentId));
       fs.writeFileSync(`${componentDevPath}/env.js`, require(`${staticDir}/${componentsTplPath}/env.js`)(componentId, initComponentVersion));
       fs.writeFileSync(`${componentDevPath}/options.json`, require(`${staticDir}/${componentsTplPath}/options.json.js`)(componentId));
       fs.writeFileSync(`${componentDevPath}/package.json`, require(`${staticDir}/${componentsTplPath}/package.json.js`)(componentId));
