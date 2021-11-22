@@ -14,7 +14,24 @@ import "ace-builds/src-noconflict/theme-monokai";
 import ReactMarkdown from 'react-markdown';
 
 const Detail = observer(()=>{
-  const columns = [
+  const recordColumns = [
+    {
+      title: '版本号',
+      dataIndex: 'no'
+    },
+    {
+      title: '描述',
+      dataIndex: 'desc',
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'time',
+      render:(text)=>{
+        return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss')
+      }
+    }
+  ];
+  const configColumns = [
     {
       title: '属性',
       dataIndex: 'name',
@@ -38,25 +55,74 @@ const Detail = observer(()=>{
     {
       title:'操作',
       align:'center',
-      render:()=>{
-        return <Icon type="delete" style={{color:'red'}}/>
+      render:(text,record)=>{
+        return <Popconfirm
+          title="确定要删除吗"
+          onConfirm={()=>{
+            setConfigData((state)=>{
+              return {
+                ...state,
+                options:state.options.filter(item=>{
+                  return record.name!==item.name
+                })
+              }
+            })
+          }}
+          okText="是"
+          cancelText="否"
+        >
+          <Icon type="delete" style={{color:'red',cursor:'pointer'}}/>
+        </Popconfirm>
       }
     }
   ];
-  const recordColumns = [
+  const childConfigColumns = [
     {
-      title: '版本号',
-      dataIndex: 'no'
+      title: '属性',
+      dataIndex: 'name',
+      align:'center',
     },
     {
       title: '描述',
+      align:'center',
       dataIndex: 'desc',
     },
     {
-      title: '更新时间',
-      dataIndex: 'time',
-      render:(text)=>{
-        return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss')
+      title: '类型',
+      dataIndex: 'type',
+      align:'center',
+    },
+    {
+      title: '默认值',
+      dataIndex: 'defaultValue',
+      align:'center',
+    },
+    {
+      title:'操作',
+      align:'center',
+      render:(text,record)=>{
+        return <Popconfirm
+          title="确定要删除吗"
+          onConfirm={()=>{
+            setConfigData((state)=>{
+              return {
+                ...state,
+                optionsChilds:state.optionsChilds.map(item=>{
+                  if (item.name==record.parentName) {
+                    item.datas = item.datas.filter(item2=>{
+                      return item2.name!==record.name;
+                    })
+                  }
+                  return item;
+                })
+              }
+            })
+          }}
+          okText="是"
+          cancelText="否"
+        >
+          <Icon type="delete" style={{color:'red',cursor:'pointer'}}/>
+        </Popconfirm>
       }
     }
   ];
@@ -79,8 +145,64 @@ const Detail = observer(()=>{
     {
       title:'操作',
       align:'center',
-      render:()=>{
-        return <Icon type="delete" />
+      render:(text,record)=>{
+        return <Popconfirm
+          title="确定要删除吗"
+          onConfirm={()=>{
+            setConfigData((state)=>{
+              return {
+                ...state,
+                events:state.events.filter(item=>{
+                  return record.name!==item.name
+                })
+              }
+            })
+          }}
+          okText="是"
+          cancelText="否"
+        >
+          <Icon type="delete" style={{color:'red',cursor:'pointer'}}/>
+        </Popconfirm>
+      }
+    }
+  ];
+  const listenerColumns = [
+    {
+      title: '事件名称',
+      dataIndex: 'name',
+      align:'center'
+    },
+    {
+      title: '参数',
+      align:'center',
+      dataIndex: 'param',
+    },
+    {
+      title: '描述',
+      dataIndex: 'desc',
+      align:'center',
+    },
+    {
+      title:'操作',
+      align:'center',
+      render:(text,record)=>{
+        return <Popconfirm
+          title="确定要删除吗"
+          onConfirm={()=>{
+            setConfigData((state)=>{
+              return {
+                ...state,
+                listeners:state.listeners.filter(item=>{
+                  return record.name!==item.name
+                })
+              }
+            })
+          }}
+          okText="是"
+          cancelText="否"
+        >
+          <Icon type="delete" style={{color:'red',cursor:'pointer'}}/>
+        </Popconfirm>
       }
     }
   ];
@@ -129,7 +251,8 @@ const Detail = observer(()=>{
             name:'name',
             desc:'柱状图',
             type:'string',
-            defaultValue:'-'
+            defaultValue:'-',
+            parentName:''
           }
         ]
       },
@@ -192,9 +315,11 @@ const Detail = observer(()=>{
     }
   }
   const saveInfo = async ()=>{
+    console.log(configData);
     const res = await editComponentService(viewId,{dataConfig:configData});
     if (res && res.code===0) {
       message.success('保存成功！')
+      setDetailShow(false)
     }else{
       message.error(res.msg)
     }
@@ -313,7 +438,7 @@ const Detail = observer(()=>{
             <div style={{fontWeight:800,padding:'10px 0'}}>配置：</div>
             <Table
               size='small'
-              columns={columns}
+              columns={configColumns}
               dataSource={configData.options}
               bordered
               pagination={false}
@@ -353,7 +478,7 @@ const Detail = observer(()=>{
                 </div>
                 <Table
                   size='small'
-                  columns={columns}
+                  columns={childConfigColumns}
                   dataSource={v.datas}
                   bordered
                   pagination={false}
@@ -399,6 +524,7 @@ const Detail = observer(()=>{
                     ])
                   }
                 })
+                setChildNameValue('')
               }
             }}>添加子属性描述</Button>
           </div>
@@ -425,7 +551,7 @@ const Detail = observer(()=>{
             <div style={{fontWeight:800,padding:'10px 0'}}>监听：</div>
             <Table
               size='small'
-              columns={eventColumns}
+              columns={listenerColumns}
               dataSource={configData.listeners}
               bordered
               pagination={false}
@@ -472,13 +598,20 @@ const Detail = observer(()=>{
       visible={addingOptionVisible}
       onCancel={()=>{setAddingOptionVisible(false)}}
       onOk={()=>{
-        setConfigData((state)=>{
-          return {
-            ...state,
-            options:state.options.concat([addingOption])
-          }
+        const idx = configData.options.findIndex(item=>{
+          return item.name==addingOption.name;
         })
-        setAddingOptionVisible(false);
+        if (idx>-1) {
+          message.error('属性名称已存在！')
+        }else{
+          setConfigData((state)=>{
+            return {
+              ...state,
+              options:state.options.concat([addingOption])
+            }
+          })
+          setAddingOptionVisible(false);
+        }
       }}
     >
       <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
@@ -524,18 +657,28 @@ const Detail = observer(()=>{
       visible={addingOptionChildVisible}
       onCancel={()=>{setAddingOptionChildVisible(false)}}
       onOk={()=>{
-        setConfigData((state)=>{
-          return {
-            ...state,
-            optionsChilds:state.optionsChilds.map(item=>{
-              if (item.name===addingChildName) {
-                item.datas = item.datas.concat([addingOption])
-              }
-              return item;
-            })
-          }
+        const childConfig = configData.optionsChilds.find(item=>{
+          return item.name===addingChildName
         })
-        setAddingOptionChildVisible(false);
+        const idx = childConfig.datas.findIndex(item=>{
+          return item.name===addingOption.name;
+        })
+        if (idx>-1) {
+          message.error('属性名称已存在！')
+        }else{
+          setConfigData((state)=>{
+            return {
+              ...state,
+              optionsChilds:state.optionsChilds.map(item=>{
+                if (item.name===addingChildName) {
+                  item.datas = item.datas.concat([{...addingOption,parentName:addingChildName}])
+                }
+                return item;
+              })
+            }
+          })
+          setAddingOptionChildVisible(false);
+        }
       }}
     >
       <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
@@ -581,13 +724,20 @@ const Detail = observer(()=>{
       visible={addEventVisible}
       onCancel={()=>{setAddEventVisible(false)}}
       onOk={()=>{
-        setConfigData((state)=>{
-          return {
-            ...state,
-            events:state.events.concat([addingEvent])
-          }
+        const idx = configData.events.findIndex(item=>{
+          return item.name==addingEvent.name
         })
-        setAddEventVisible(false);
+        if (idx>-1) {
+          message.error('事件名称已存在！')
+        }else{
+          setConfigData((state)=>{
+            return {
+              ...state,
+              events:state.events.concat([addingEvent])
+            }
+          })
+          setAddEventVisible(false);
+        }
       }}
     >
       <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
@@ -624,13 +774,20 @@ const Detail = observer(()=>{
       visible={addListenerVisible}
       onCancel={()=>{setAddListenerVisible(false)}}
       onOk={()=>{
-        setConfigData((state)=>{
-          return {
-            ...state,
-            listeners:state.listeners.concat([addingEvent])
-          }
+        const idx = configData.listeners.findIndex(item=>{
+          return item.name==addingEvent.name
         })
-        setAddListenerVisible(false);
+        if (idx>-1) {
+          message.error('事件名称已存在！')
+        }else{
+          setConfigData((state)=>{
+            return {
+              ...state,
+              listeners:state.listeners.concat([addingEvent])
+            }
+          })
+          setAddListenerVisible(false);
+        }
       }}
     >
       <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
