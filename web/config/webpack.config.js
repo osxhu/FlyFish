@@ -32,6 +32,13 @@ module.exports = {
     config.excludeAssets = [];
     return config;
   },
+  copyPlugin:config=>{
+    config.patterns.push({
+      from:path.resolve(__dirname,'../src/assets/diff'),
+      to:'diff'
+    })
+    return config;
+  },
   devServer: config => {
     config.port = 8000;
     config.proxy = {

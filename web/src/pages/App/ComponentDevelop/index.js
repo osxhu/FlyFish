@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-18 18:05:48
+ * @LastEditTime: 2021-11-19 11:05:56
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -427,6 +427,7 @@ const ComponentDevelop = observer((props) => {
                 columns={columns}
                 dataSource={listData?toJS(listData).list:[]}
                 rowKey="id"
+                scroll={{ x: 500 ,y:300}}
                 pagination={{
                   showSizeChanger:true,
                   total:listData?listData.total:0,

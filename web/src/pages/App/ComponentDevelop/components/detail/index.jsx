@@ -1,37 +1,184 @@
 import React, { useEffect } from 'react';
 import styles from './style.less';
-import { Button,Input,Table } from 'antd';
+import { Button,Input,Table,Icon,message,Popconfirm,Modal } from 'antd';
 import { useState } from 'react';
 import store from "../../model/index";
 import { observer } from "@chaoswise/cw-mobx";
-import { getDetailDataService } from '../../services';
+import { getDetailDataService,editComponentService } from '../../services';
+import * as CONSTANT from '../../constant';
+import moment from 'moment';
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-monokai";
+import ReactMarkdown from 'react-markdown';
 
 const Detail = observer(()=>{
   const columns = [
     {
       title: '属性',
       dataIndex: 'name',
-      render: text => <a>{text}</a>,
+      align:'center',
     },
     {
       title: '描述',
-      className: 'column-money',
-      dataIndex: 'money',
+      align:'center',
+      dataIndex: 'desc',
     },
     {
       title: '类型',
-      dataIndex: 'address',
+      dataIndex: 'type',
+      align:'center',
     },
     {
       title: '默认值',
-      dataIndex: 'defa',
+      dataIndex: 'defaultValue',
+      align:'center',
     },
+    {
+      title:'操作',
+      align:'center',
+      render:()=>{
+        return <Icon type="delete" style={{color:'red'}}/>
+      }
+    }
+  ];
+  const recordColumns = [
+    {
+      title: '版本号',
+      dataIndex: 'no'
+    },
+    {
+      title: '描述',
+      dataIndex: 'desc',
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'time',
+      render:(text)=>{
+        return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss')
+      }
+    }
+  ];
+  const eventColumns = [
+    {
+      title: '事件名称',
+      dataIndex: 'name',
+      align:'center'
+    },
+    {
+      title: '参数',
+      align:'center',
+      dataIndex: 'param',
+    },
+    {
+      title: '描述',
+      dataIndex: 'desc',
+      align:'center',
+    },
+    {
+      title:'操作',
+      align:'center',
+      render:()=>{
+        return <Icon type="delete" />
+      }
+    }
   ];
   const { detailShow,setDetailShow,viewId } = store;
 
-  const [adding, setAdding] = useState(false);
   const [detailData, setDetailData] = useState([]);
+  // const [codeValue, setCodeValue] = useState('');
+  // const [annotationValue, setAnnotationValue] = useState('');
+  // const [markValue, setMarkValue] = useState('');
+  const [marking, setMarking] = useState(false);
+  const [childNameValue, setChildNameValue] = useState('');
+  const [addingOptionVisible, setAddingOptionVisible] = useState(false);
+  const [addingOptionChildVisible, setAddingOptionChildVisible] = useState(false);
+  const [addingChildName, setAddingChildName] = useState('');
+  const [addEventVisible, setAddEventVisible] = useState(false);
+  const [addListenerVisible, setAddListenerVisible] = useState(false);
+  const [addingEvent, setAddingEvent] = useState({
+    name:'',
+    param:'',
+    desc:''
+  });
 
+  const [addingOption, setAddingOption] = useState({
+    name:'',
+    desc:'',
+    type:'',
+    defaultValue:''
+  });
+
+  const [configData, setConfigData] = useState({
+    annotationValue:'',//注释
+    codeValue:'',//代码示例文本
+    options:[
+      {
+        name:'name',
+        desc:'柱状图',
+        type:'string',
+        defaultValue:'-'
+      }
+    ],
+    optionsChilds:[
+      {
+        name:'children',
+        datas:[
+          {
+            name:'name',
+            desc:'柱状图',
+            type:'string',
+            defaultValue:'-'
+          }
+        ]
+      },
+      {
+        name:'children',
+        datas:[
+          {
+            name:'name',
+            desc:'柱状图',
+            type:'string',
+            defaultValue:'-'
+          }
+        ]
+      }
+    ],
+    events:[
+      {
+        name:'name',
+        desc:'柱状图',
+        type:'string',
+        defaultValue:'-'
+      }
+    ],
+    listeners:[
+      {
+        name:'name',
+        desc:'柱状图',
+        type:'string',
+        defaultValue:'-'
+      }
+    ],
+    markValue:''//markdown文本
+  });
+  useEffect(() => {
+    if (detailData && detailData.dataConfig) {
+      const { dataConfig } = detailData;
+      const data = {
+        annotationValue:'',//注释
+        codeValue:'',//代码示例文本
+        options:[],
+        optionsChilds:[],
+        events:[],
+        listeners:[],
+        markValue:'',//markdown文本
+        ...dataConfig
+      }
+      setConfigData(data)
+    }
+  }, [detailData]);
   useEffect(() => {
     if (viewId) {
       getDetailData();
@@ -44,11 +191,14 @@ const Detail = observer(()=>{
       setDetailData(res.data)
     }
   }
-  
-  const data = [
-
-  ];
-
+  const saveInfo = async ()=>{
+    const res = await editComponentService(viewId,{dataConfig:configData});
+    if (res && res.code===0) {
+      message.success('保存成功！')
+    }else{
+      message.error(res.msg)
+    }
+  }
   return <>
     <div 
       className={styles.shadow} 
@@ -66,77 +216,453 @@ const Detail = observer(()=>{
           <span>组件预览</span>
         </div>
         <div>
-          <Button>保存</Button>
-          <Button style={{marginLeft:20}}>更新发布</Button>
+          <Button type='primary' onClick={saveInfo}>保存</Button>
+          {/* <Button style={{marginLeft:20}}>更新发布</Button> */}
         </div>
       </div>
       <div className={styles.main}>
         <div className={styles.baseInfo}>
           <div>
-            <label>组件名称：</label>{detailData.name}
+            <label style={{fontWeight:800}}>组件名称：</label>{detailData.name}
           </div>
           <div>
-            <label>组件编号：</label>{detailData.id}
+            <label style={{fontWeight:800}}>组件编号：</label>{detailData.id}
           </div>
           <div>
-            <label>行业：</label>{
+            <label style={{fontWeight:800}}>行业：</label>{
             detailData.projects?detailData.projects.map((v,k)=>{
               return <span key={v.id}>{k===(detailData.projects.length-1)?v.name:(v.name+',')}</span>
             }):''
             }
           </div>
           <div>
-            <label>标签：</label>{
+            <label style={{fontWeight:800}}>标签：</label>{
               detailData.tags?detailData.tags.map((v,k)=>{
                 return <span key={v.id}>{k===(detailData.tags.length-1)?v.name:(v.name+',')}</span>
               }):''
             }
           </div>
           <div>
-            <label>描述：</label>{detailData.desc}
+            <label style={{fontWeight:800}}>描述：</label>{detailData.desc}
           </div>
           <div>
-            <label>开发状态：</label>{detailData.developStatus==='doing'?'开发中':'已交付'}
+            <label style={{fontWeight:800}}>开发状态：</label>{CONSTANT.componentDevelopStatus_map_ch[detailData.developStatus]}
           </div>
           <div>
-            <label>创建者信息：</label>{detailData.creatorInfo?detailData.creatorInfo.username:''}
+            <label style={{fontWeight:800}}>创建者信息：</label>{detailData.creatorInfo?detailData.creatorInfo.username:''}
           </div>
         </div>
         <div className={styles.imgWrap}>
           <div style={{height:40}}>
-            <span style={{marginRight:30}}>效果演示</span>
-            <span>提供组件标识：{detailData.charactor}</span>
+            <span style={{marginRight:30,fontWeight:800}}>效果演示</span>
+            <span style={{fontWeight:800}}>提供组件标识：{detailData.charactor}</span>
           </div>
           <div style={{backgroundColor:'#eee',height:300}}>
               
           </div>
         </div>
+        <div className={styles.reocrdWrap}>
+          <div style={{padding:'0 0 10px 0',fontWeight:800}}>组件变更记录</div>
+          <Table 
+            columns={recordColumns}
+            dataSource={detailData.versions}
+            bordered
+            pagination={false}
+            footer={null}
+            rowKey='no'
+          />
+        </div>
         <div className={styles.dataWrap}>
           <div style={{fontWeight:800,margin:'10px 0'}}>数据格式</div>
           <div>
-            <span>注释：</span>
-            <Input placeholder='输入注释' style={{margin:'10px 0'}}></Input>
+            <div style={{fontWeight:800,padding:'10px 0'}}>注释：</div>
+            <Input placeholder='输入注释'
+              value={configData.annotationValue}
+              onChange={(e)=>{
+                const txt = e.target.value;
+                setConfigData((state)=>{
+                  return {
+                    ...state,
+                    annotationValue:txt
+                  }
+                })
+              }}
+            ></Input>
           </div>
           <div>
+            <div style={{fontWeight:800,margin:'10px 0'}}>代码示例：</div>
+            <AceEditor
+              style={{width:'100%',height:200}}
+              mode="javascript"
+              theme="monokai"
+              showPrintMargin={false}
+              value={configData.codeValue}
+              onChange={(val)=>{
+                setConfigData((state)=>{
+                  return {
+                    ...state,
+                    codeValue:val
+                  }
+                })
+              }}
+              name="code"
+              editorProps={{ $blockScrolling: true }}
+            />
+          </div>
+          <div>
+            <div style={{fontWeight:800,padding:'10px 0'}}>配置：</div>
             <Table
+              size='small'
               columns={columns}
-              dataSource={data}
+              dataSource={configData.options}
               bordered
               pagination={false}
               footer={null}
+              rowKey='key'
             />
+            <Button style={{marginTop:5}} onClick={()=>{
+              setAddingOption({
+                name:'',desc:'',type:'',defaultValue:''
+              })
+              setAddingOptionVisible(true)
+            }}>向下添加行</Button>
           </div>
-          <div style={{display:adding?'flex':'none',margin:'10px 0'}}>
-              <Input style={{width:220}}></Input>
-              <Input style={{width:280}}></Input>
-              <Input style={{width:400}}></Input>
+          {
+            configData.optionsChilds.map((v,k)=>{
+              v.key = k;
+              return <div key={k}>
+                <div style={{fontWeight:800,padding:'10px 0'}}>
+                  {v.name}
+                  <Popconfirm
+                    title="确定要删除吗"
+                    onConfirm={()=>{
+                      setConfigData((state)=>{
+                        return {
+                          ...state,
+                          optionsChilds:state.optionsChilds.filter(item=>{
+                            return item.name!==v.name
+                          })
+                        }
+                      })
+                    }}
+                    okText="是"
+                    cancelText="否"
+                  >
+                    <Icon type="delete" style={{marginLeft:20,color:'red'}}/>
+                  </Popconfirm>
+                </div>
+                <Table
+                  size='small'
+                  columns={columns}
+                  dataSource={v.datas}
+                  bordered
+                  pagination={false}
+                  footer={null}
+                  rowKey='key'
+                />
+                <Button style={{marginTop:5}} onClick={()=>{
+                  setAddingOption({
+                    name:'',desc:'',type:'',defaultValue:''
+                  })
+                  setAddingChildName(v.name);
+                  setAddingOptionChildVisible(true)
+                }}>向下添加行</Button>
+              </div>
+            })
+          }
+          <div>
+          <div style={{display:'flex',alignItems:'center'}}>
+            <Input 
+              placeholder='请输入要添加的组属性名称' 
+              style={{width:300,margin:'5px 20px 0 0'}}
+              value={childNameValue}
+              onChange={(e)=>{
+                setChildNameValue(e.target.value)
+              }}
+            ></Input>
+            <Button type='primary' style={{margin:'5px 0 0'}} onClick={()=>{
+              const name = childNameValue;
+              const idx = configData.optionsChilds.findIndex(item=>{
+                return item.name===name;
+              })
+              if (idx>-1) {
+                message.error('添加失败，子属性名称重复！')
+              }else{
+                setConfigData((state)=>{
+                  return {
+                    ...state,
+                    optionsChilds:state.optionsChilds.concat([
+                      {
+                        name:name,
+                        datas:[]
+                      }
+                    ])
+                  }
+                })
+              }
+            }}>添加子属性描述</Button>
           </div>
-          <Button onClick={()=>{
-            setAdding(true)
-          }}>向下添加行</Button>
+          </div>
+          <div>
+            <div style={{fontWeight:800,padding:'10px 0'}}>事件：</div>
+            <Table
+              size='small'
+              columns={eventColumns}
+              dataSource={configData.events}
+              bordered
+              pagination={false}
+              footer={null}
+              rowKey='key'
+            />
+            <Button style={{marginTop:5}} onClick={()=>{
+              setAddingEvent({
+                name:'',param:'',desc:''
+              })
+              setAddEventVisible(true)
+            }}>向下添加行</Button>
+          </div>
+          <div>
+            <div style={{fontWeight:800,padding:'10px 0'}}>监听：</div>
+            <Table
+              size='small'
+              columns={eventColumns}
+              dataSource={configData.listeners}
+              bordered
+              pagination={false}
+              footer={null}
+              rowKey='key'
+            />
+            <Button style={{marginTop:5}} onClick={()=>{
+              setAddingEvent({
+                name:'',param:'',desc:''
+              })
+              setAddListenerVisible(true)
+            }}>向下添加行</Button>
+          </div>
+          <div>
+            <div style={{fontWeight:800,padding:'10px 0',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <span>更多信息：</span>
+        <Button type='primary' onClick={()=>{setMarking(!marking)}}>{marking?'完成':'进入编辑'}</Button>
+            </div>
+            <AceEditor
+              style={{width:'100%',height:200,display:marking?'block':'none'}}
+              mode="javascript"
+              theme="github"
+              showPrintMargin={false}
+              value={configData.markValue}
+              onChange={(val)=>{
+                setConfigData((state)=>{
+                  return {
+                    ...state,
+                    markValue:val
+                  }
+                })
+              }}
+              name="markText"
+              editorProps={{ $blockScrolling: true }}
+            />
+            <div style={{padding:20,border:'1px solid #eee',backgroundColor:'#eee',display:marking?'none':'block'}}>
+              <ReactMarkdown children={configData.markValue}></ReactMarkdown>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+    <Modal
+      visible={addingOptionVisible}
+      onCancel={()=>{setAddingOptionVisible(false)}}
+      onOk={()=>{
+        setConfigData((state)=>{
+          return {
+            ...state,
+            options:state.options.concat([addingOption])
+          }
+        })
+        setAddingOptionVisible(false);
+      }}
+    >
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>属性：</label>
+          <Input style={{width:300}} value={addingOption.name} onChange={(e)=>{
+            setAddingOption({
+              ...addingOption,
+              name:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>描述：</label>
+          <Input style={{width:300}} value={addingOption.desc} onChange={(e)=>{
+            setAddingOption({
+              ...addingOption,
+              desc:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>类型：</label>
+          <Input style={{width:300}} value={addingOption.type} onChange={(e)=>{
+            setAddingOption({
+              ...addingOption,
+              type:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label style={{marginLeft:-15}}>默认值：</label>
+          <Input style={{width:300}} value={addingOption.defaultValue} onChange={(e)=>{
+            setAddingOption({
+              ...addingOption,
+              defaultValue:e.target.value
+            })
+          }}></Input>
+        </div>
+      </div>
+    </Modal>
+    <Modal
+      visible={addingOptionChildVisible}
+      onCancel={()=>{setAddingOptionChildVisible(false)}}
+      onOk={()=>{
+        setConfigData((state)=>{
+          return {
+            ...state,
+            optionsChilds:state.optionsChilds.map(item=>{
+              if (item.name===addingChildName) {
+                item.datas = item.datas.concat([addingOption])
+              }
+              return item;
+            })
+          }
+        })
+        setAddingOptionChildVisible(false);
+      }}
+    >
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>属性：</label>
+          <Input style={{width:300}} value={addingOption.name} onChange={(e)=>{
+            setAddingOption({
+              ...addingOption,
+              name:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>描述：</label>
+          <Input style={{width:300}} value={addingOption.desc} onChange={(e)=>{
+            setAddingOption({
+              ...addingOption,
+              desc:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>类型：</label>
+          <Input style={{width:300}} value={addingOption.type} onChange={(e)=>{
+            setAddingOption({
+              ...addingOption,
+              type:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label style={{marginLeft:-15}}>默认值：</label>
+          <Input style={{width:300}} value={addingOption.defaultValue} onChange={(e)=>{
+            setAddingOption({
+              ...addingOption,
+              defaultValue:e.target.value
+            })
+          }}></Input>
+        </div>
+      </div>
+    </Modal>
+    <Modal
+      visible={addEventVisible}
+      onCancel={()=>{setAddEventVisible(false)}}
+      onOk={()=>{
+        setConfigData((state)=>{
+          return {
+            ...state,
+            events:state.events.concat([addingEvent])
+          }
+        })
+        setAddEventVisible(false);
+      }}
+    >
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label style={{marginLeft:-30}}>事件名称：</label>
+          <Input style={{width:300}} value={addingEvent.name} onChange={(e)=>{
+            setAddingEvent({
+              ...addingEvent,
+              name:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>参数：</label>
+          <Input style={{width:300}} value={addingEvent.param} onChange={(e)=>{
+            setAddingEvent({
+              ...addingEvent,
+              param:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>描述：</label>
+          <Input style={{width:300}} value={addingEvent.desc} onChange={(e)=>{
+            setAddingEvent({
+              ...addingEvent,
+              desc:e.target.value
+            })
+          }}></Input>
+        </div>
+      </div>
+    </Modal>
+    <Modal
+      visible={addListenerVisible}
+      onCancel={()=>{setAddListenerVisible(false)}}
+      onOk={()=>{
+        setConfigData((state)=>{
+          return {
+            ...state,
+            listeners:state.listeners.concat([addingEvent])
+          }
+        })
+        setAddListenerVisible(false);
+      }}
+    >
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label style={{marginLeft:-30}}>事件名称：</label>
+          <Input style={{width:300}} value={addingEvent.name} onChange={(e)=>{
+            setAddingEvent({
+              ...addingEvent,
+              name:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>参数：</label>
+          <Input style={{width:300}} value={addingEvent.param} onChange={(e)=>{
+            setAddingEvent({
+              ...addingEvent,
+              param:e.target.value
+            })
+          }}></Input>
+        </div>
+        <div style={{display:'flex',alignItems:'center',margin:10}}>
+          <label>描述：</label>
+          <Input style={{width:300}} value={addingEvent.desc} onChange={(e)=>{
+            setAddingEvent({
+              ...addingEvent,
+              desc:e.target.value
+            })
+          }}></Input>
+        </div>
+      </div>
+    </Modal>
   </>
 })
 

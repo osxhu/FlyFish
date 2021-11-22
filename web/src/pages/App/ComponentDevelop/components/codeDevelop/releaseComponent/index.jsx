@@ -15,7 +15,8 @@ const ReleaseComponent = observer((props)=>{
   const { getFieldDecorator,validateFields } = props.form;
 
   const [isCompatible, setisCompatible] = useState(true);
-  const submitClick=()=>{
+  const submitClick=(e)=>{
+    e.preventDefault();
     validateFields(async (err,values)=>{
       if (!err) {
         if (developingData.developStatus===CONSTANT.DEVELOPSTATUS_DOING) {
@@ -122,7 +123,7 @@ const ReleaseComponent = observer((props)=>{
     }
     <div style={{overflow:'hidden'}}>
       <Button htmlType='submit' type='primary' style={{marginLeft:20,float:'right'}}>确定</Button>
-      <Button style={{float:'right'}}>取消</Button>
+      <Button style={{float:'right'}} onClick={()=>{setReleaseModalVisible(false)}}>取消</Button>
     </div>
   </Form>
 })
