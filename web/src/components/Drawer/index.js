@@ -2,13 +2,16 @@ import React from "react";
 import { Drawer, List, Avatar, Divider, Col, Row, Collapse, Table } from 'antd';
 import { useIntl } from "react-intl";
 import stylus from './index.less';
+import AceEditor from "react-ace";
 import { CWTable, Input, Button, message, Popconfirm } from "@chaoswise/ui";
 const { Panel } = Collapse;
 import { observer, toJS } from '@chaoswise/cw-mobx';
+import ReactMarkdown from 'react-markdown';
+
 
 export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
   const intl = useIntl();
-  const assemlyData=toJS(assemly);
+  const assemlyData = toJS(assemly);
   const pStyle = {
     fontSize: 16,
     color: 'rgba(0,0,0,0.85)',
@@ -16,7 +19,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
     display: 'block',
     marginBottom: 16,
   };
-
+  const childTableData = assemly.dataConfig.optionsChilds ? assemly.dataConfig.optionsChilds.map(item => item.datas[0]) : [];
   const DescriptionItem = ({ title, content }) => (
     <div
       style={{
@@ -48,6 +51,23 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
     setDrawerVisible(false);
     state.visible = false;
   };
+  const eventColumns = [
+    {
+      title: '事件名称',
+      dataIndex: 'name',
+      align: 'center'
+    },
+    {
+      title: '参数',
+      align: 'center',
+      dataIndex: 'param',
+    },
+    {
+      title: '描述',
+      dataIndex: 'desc',
+      align: 'center',
+    }
+  ];
   const columns1 = [
     {
       title: "属性名",
@@ -66,8 +86,8 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
 
     }, {
       title: "默认值",
-      dataIndex: "basic",
-      key: "basic",
+      dataIndex: "defaultValue",
+      key: "defaultValue",
 
     }];
   const basicTableListData = [
@@ -98,18 +118,18 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
     }
   ];
   const showTrades = (arr) => {
-    if(arr&&arr.length>0){
-      return arr.map((item,index) => {
+    if (arr && arr.length > 0) {
+      return arr.map((item, index) => {
         if (index !== arr.length - 1) {
           return item.name + ',';
         } else {
           return item.name;
         }
-      }); 
-    }else{
-      return '-';
+      });
+    } else {
+      return '暂无';
     }
-   
+
   };
   return (
     <div >
@@ -147,19 +167,90 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           </Collapse>
         </div>
         {/* 数据格式表格 */}
-        <div className={stylus.datatable}>
-          <div>数据格式</div>
-          <div className={stylus.littleTitle}>注释：选填,可填可不填</div>
-
-          <Table
-            columns={columns1}
-            dataSource={basicTableListData}
-            bordered
-            rowKey="id"
-            pagination={false}
-            footer={null}
-          />
-        </div>
+          <div style={{ fontWeight: 800 }}>数据格式</div>
+          <div>
+            <div style={{ fontWeight: 800, padding: '10px 0' }}>注释：</div>
+            <Input disabled
+              value={assemlyData.dataConfig.annotationValue}
+            ></Input>
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, margin: '10px 0' }}>代码示例：</div>
+            <AceEditor
+              style={{ width: '100%', height: 200 }}
+              mode="javascript"
+              theme="monokai"
+              showPrintMargin={false}
+              value={assemlyData.dataConfig.codeValue}
+              name="code"
+              readOnly={true}
+            />
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, padding: '10px 0' }}>配置：</div>
+            <Table
+              size='small'
+              columns={columns1}
+              dataSource={assemlyData.dataConfig.options}
+              bordered
+              pagination={false}
+              footer={null}
+              rowKey='key'
+            />
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, padding: '10px 0' }}>option.item：</div>
+            <Table
+              size='small'
+              columns={columns1}
+              dataSource={childTableData}
+              bordered
+              pagination={false}
+              footer={null}
+              rowKey='key'
+            />
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, padding: '10px 0' }}>事件：</div>
+            <Table
+              size='small'
+              columns={eventColumns}
+              dataSource={assemlyData.dataConfig.events}
+              bordered
+              pagination={false}
+              footer={null}
+              rowKey='key'
+            />
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, padding: '10px 0' }}>监听：</div>
+            <Table
+              size='small'
+              columns={eventColumns}
+              dataSource={assemlyData.dataConfig.listeners}
+              bordered
+              pagination={false}
+              footer={null}
+              rowKey='key'
+            />
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, padding: '10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>更多信息：</span>
+            </div>
+            <AceEditor
+              style={{ width: '100%', height: 200 }}
+              mode="javascript"
+              theme="github"
+              showPrintMargin={false}
+              value={assemlyData.dataConfig.markValue}
+              name="markText"
+              readOnly={true}
+            />
+            {/* <div style={{ padding: 20, border: '1px solid #eee', backgroundColor: '#eee' }}>
+              <ReactMarkdown children={assemlyData.dataConfig.markValue}></ReactMarkdown>
+            </div> */}
+          </div>
       </Drawer>
 
     </div>

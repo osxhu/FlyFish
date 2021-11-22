@@ -46,7 +46,6 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   let [infinitKey, setInfinitKey] = useState(0);
   let [libraryFlagNum, setLibraryFlagNum] = useState(0);
   let [libraryParams, setLibraryParams] = useState({});
-  let [isShowOwn, setIsShowOwn] = useState([]);
 
   // 公共组件下滑
   const changePage = () => {
@@ -228,19 +227,14 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               >
                 <Card
                 number={6}
-                showOwn={isShowOwn}
+                projectID={ProgressId}
                   checkCard={(id) => {
                     getAssemlyDetail(id);
                   }}
                   value={libraryListData}
                   state={1}
                   canAdd={true}
-                  addOwn={(id, item) => {
-                    let result = item.filter(item => item === ProgressId);
-                    if (result.length > 0) {
-                      message.error('该组件已归属该项目');
-                      return;
-                    }
+                  addOwn={(id) => {
                     changeOneAssemly(id, { projects: [ProgressId] }, (res) => {
                       if (res.code === successCode) {
                         message.success(
@@ -249,10 +243,9 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                             defaultValue: "新增成功！",
                           })
                         );
-                        let arr=[...isShowOwn,id];
-                        setIsShowOwn(arr);
                         setHasMore(true);
                         getListData({ projectId: ProgressId }, true);
+                        getLibraryListData({}, true);
                       } else {
                         message.error(
                           res.msg || intl.formatMessage({

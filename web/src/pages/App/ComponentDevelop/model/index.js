@@ -56,7 +56,7 @@ const model = {
       // 请求数据
       const res = yield getTreeDataService();
       if (res && res.data) {
-        const data = res.data[0].categories;
+        const data = res.data;
         this.setTreeData(data);
         const first = toJS(data)[0];
         if (first) {

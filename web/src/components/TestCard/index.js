@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Popconfirm } from "@chaoswise/ui";
-import { Card, Tag, Col, Row, Icon, Avatar, Empty, Tooltip } from 'antd';
+import { Card, Tag, Col, Row, Icon, Avatar, Empty,message, Tooltip } from 'antd';
 const { Meta } = Card;
 import styles from './index.less';
 import { TAG_COLORS, APP_DEVELOP_STATUS } from '@/config/global';
@@ -13,7 +13,7 @@ const computedTagColorByStatus = (status) => {
     return TAG_COLORS.find(item => item.id === status).color;
 };
 export default Form.create({ name: "BASIC_CARD" })(
-    function BasicCard({ number, onDelete, setActiveCard, addOwn, showOwn,checkCard, value, state, showStateTag, actions, canDelete, canAdd }) {
+    function BasicCard({ number, projectID, onDelete, setActiveCard, addOwn, showOwn, checkCard, value, state, showStateTag, actions, canDelete, canAdd }) {
 
         const tradesArr = (trades) => {
             if (trades.length === 0) {
@@ -49,12 +49,14 @@ export default Form.create({ name: "BASIC_CARD" })(
                                         </Popconfirm> : null
                                     }
                                     {
-                                        canAdd ? <Tag className={styles.deleteTag } color={showOwn.includes(item.id)?"#52C41A":"#2db7f5"} onClick={() => {
-                                            if(showOwn.includes(item.id)) return;
-                                            let projects = item.projects.map(item => item.id);
-                                            addOwn && addOwn(item.id, projects);
+                                        canAdd ? <Tag className={styles.deleteTag} color={item.projects.map(item => item.id).includes(projectID) ? "#52C41A" : "#2db7f5"} onClick={() => {
+                                            if (item.projects.map(item => item.id).includes(projectID)) {
+                                                message.error('该组件已归属该项目');
+                                                return;
+                                            }
+                                            addOwn && addOwn(item.id);
                                         }}>
-                                            {showOwn.includes(item.id) ? <Icon type="check" /> : <Icon type="plus" />}
+                                            {item.projects.map(item => item.id).includes(projectID) ? <Icon type="check" /> : <Icon type="plus" />}
                                         </Tag> : null
                                     }
                                     {
