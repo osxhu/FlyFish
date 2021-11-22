@@ -31,8 +31,12 @@ class ComponentsController extends BaseController {
   }
 
   async getCategoryList() {
-    const { service } = this;
-    const result = await service.component.getCategoryList();
+    const { ctx, service, app } = this;
+    const getListSchema = app.Joi.object().keys({
+      key: app.Joi.string(),
+    });
+    const { key } = await getListSchema.validateAsync(ctx.request.body);
+    const result = await service.component.getCategoryList(key);
     this.success('获取成功', result);
   }
 

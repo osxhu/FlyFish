@@ -43,11 +43,36 @@ class ComponentService extends Service {
     return returnData;
   }
 
-  async getCategoryList() {
+  async getCategoryList(key) {
     const { ctx } = this;
 
-    const result = await ctx.model.ComponentCategory._find({}, null, { sort: '-create_time', limit: 1 });
-    return result;
+    let returnList = [];
+    const list = await ctx.model.ComponentCategory._find({}, null, { sort: '-create_time', limit: 1 });
+    const categories = _.get(list, [ 0, 'categories' ], []);
+
+    returnList = categories;
+
+    if (key) {
+      returnList = [];
+      for (const category of categories || []) {
+        const newCategory = { name: category.name, children: [] };
+        if (category.name.includes(key)) {
+          newCategory.children = category.children;
+          returnList.push(newCategory);
+          continue;
+        }
+
+        for (const children of category.children || []) {
+          if (children.name.includes(key)) {
+            newCategory.children.push(children);
+          }
+        }
+        if (_.isEmpty(newCategory.children)) continue;
+        returnList.push(newCategory);
+      }
+    }
+
+    return returnList;
   }
 
   async getList(requestData) {
