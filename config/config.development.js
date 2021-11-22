@@ -44,6 +44,12 @@ module.exports = appInfo => {
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
   };
 
+  const staticDir = '/www';
+
+  config.pathConfig = {
+    staticDir,
+  };
+
   return {
     ...config,
     ...userConfig,
