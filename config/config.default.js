@@ -80,7 +80,7 @@ module.exports = appInfo => {
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
   };
 
-  const staticDir = path.join(appInfo.baseDir, 'www');
+  const staticDir = '/www';
 
   config.pathConfig = {
     staticDir,
