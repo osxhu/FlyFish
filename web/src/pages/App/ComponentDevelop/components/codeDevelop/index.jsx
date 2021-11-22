@@ -116,7 +116,7 @@ const CodeDevelop = observer((props)=>{
         <iframe
           className={styles.vscodeFrame}
           name='vscode'
-          src={`http://${window.location.hostname}:8080/?folder=/data/app/flyfish-2.0/www/components/${developingData.id}/v-current`} 
+          src={`http://${window.location.hostname}:8080/?folder=/www/components/${developingData.id}/v-current`} 
           frameBorder={0}
         >
         </iframe>
