@@ -129,6 +129,7 @@ class ComponentService extends Service {
         versions: component.versions || [],
         creator: curUser.username,
         isLib: component.isLib || false,
+        cover: component.cover,
 
         updateTime: component.updateTime,
         createTime: component.createTime,
