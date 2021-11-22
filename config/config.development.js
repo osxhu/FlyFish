@@ -50,6 +50,15 @@ module.exports = appInfo => {
     staticDir,
   };
 
+  config.static = {
+    prefix: '/',
+    dir: staticDir,
+    // dynamic: true,
+    // preload: false,
+    // maxAge: 31536000,
+    // buffer: true,
+  };
+
   return {
     ...config,
     ...userConfig,
