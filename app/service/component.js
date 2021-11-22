@@ -126,7 +126,7 @@ class ComponentService extends Service {
             name: project.name,
           };
         }),
-        versions: component.versions || [],
+        versions: _.get(component, [ 'versions', (component.versions || []).length - 1, 'no' ], '暂未上线'),
         creator: curUser.username,
         isLib: component.isLib || false,
         cover: component.cover,
