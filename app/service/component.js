@@ -375,7 +375,7 @@ class ComponentService extends Service {
     }
 
     const componentPath = `${staticDir}/${componentsPath}/${id}`;
-    const componentDevPath = `${staticDir}/${componentPath}/${initComponentVersion}`;
+    const componentDevPath = `${componentPath}/${initComponentVersion}`;
     if (!fs.existsSync(componentDevPath)) {
       returnData.msg = 'No Exists Dir';
       return returnData;
