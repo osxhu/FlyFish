@@ -1,7 +1,6 @@
 /* eslint valid-jsdoc: "off" */
 
 'use strict';
-const path = require('path');
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -44,8 +43,8 @@ module.exports = appInfo => {
     domain: '10.2.3.56',
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
   };
-
-  const staticDir = path.join(appInfo.baseDir, 'www');
+  
+  const staticDir = '/www';
   config.pathConfig = {
     staticDir,
   };
