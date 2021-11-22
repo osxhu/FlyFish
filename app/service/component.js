@@ -310,7 +310,7 @@ class ComponentService extends Service {
 
   async copyComponent(id, componentInfo) {
     const { ctx, config, logger } = this;
-    const { pathConfig: { componentsPath, initComponentVersion } } = config;
+    const { pathConfig: { staticDir, componentsPath, initComponentVersion } } = config;
 
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
@@ -347,8 +347,8 @@ class ComponentService extends Service {
     const componentId = result.id;
     returnData.data.id = componentId;
 
-    const src = `${componentsPath}/${id}/${initComponentVersion}`;
-    const dest = `${componentsPath}/${componentId}/${initComponentVersion}`;
+    const src = `${staticDir}/${componentsPath}/${id}/${initComponentVersion}`;
+    const dest = `${staticDir}/${componentsPath}/${componentId}/${initComponentVersion}`;
     await ctx.helper.copyAndReplace(src, dest, [ 'node_modules', '.git', 'components', 'release', 'package-lock.json' ], { from: id, to: componentId });
 
     // 初始化git仓库
@@ -365,7 +365,7 @@ class ComponentService extends Service {
 
   async compileComponent(id) {
     const { ctx, config } = this;
-    const { pathConfig: { componentsPath, initComponentVersion } } = config;
+    const { pathConfig: { staticDir, componentsPath, initComponentVersion } } = config;
 
     const returnData = { msg: 'ok', data: { error: '' } };
     const existsComponent = await ctx.model.Component._findOne({ id });
@@ -374,8 +374,8 @@ class ComponentService extends Service {
       return returnData;
     }
 
-    const componentPath = `${componentsPath}/${id}`;
-    const componentDevPath = `${componentPath}/${initComponentVersion}`;
+    const componentPath = `${staticDir}/${componentsPath}/${id}`;
+    const componentDevPath = `${staticDir}/${componentPath}/${initComponentVersion}`;
     if (!fs.existsSync(componentDevPath)) {
       returnData.msg = 'No Exists Dir';
       return returnData;
@@ -432,7 +432,7 @@ class ComponentService extends Service {
 
   async installComponentDepend(id) {
     const { ctx, config } = this;
-    const { pathConfig: { componentsPath, initComponentVersion } } = config;
+    const { pathConfig: { staticDir, componentsPath, initComponentVersion } } = config;
 
     const returnData = { msg: 'ok', data: { error: '' } };
     const existsComponent = await ctx.model.Component._findOne({ id });
@@ -441,7 +441,7 @@ class ComponentService extends Service {
       return returnData;
     }
 
-    const componentPath = `${componentsPath}/${id}`;
+    const componentPath = `${staticDir}/${componentsPath}/${id}`;
     const componentDevPath = `${componentPath}/${initComponentVersion}`;
     if (!fs.existsSync(componentDevPath)) {
       returnData.msg = 'No Exists Dir';
@@ -487,12 +487,12 @@ class ComponentService extends Service {
 
   async initReleaseWorkspace(componentId, releaseVersion) {
     const { ctx, config, logger } = this;
-    const { pathConfig: { componentsPath, initComponentVersion } } = config;
+    const { pathConfig: { staticDir, componentsPath, initComponentVersion } } = config;
 
     const returnInfo = { msg: 'Success' };
 
     try {
-      const componentPath = `${componentsPath}/${componentId}`;
+      const componentPath = `${staticDir}/${componentsPath}/${componentId}`;
       const componentDevPath = `${componentPath}/${initComponentVersion}`;
       const componentReleasePath = `${componentPath}/${releaseVersion}`;
 
@@ -513,18 +513,18 @@ class ComponentService extends Service {
   // 初始化开发组件空间
   async initDevWorkspace(componentId) {
     const { config, logger } = this;
-    const { pathConfig: { componentsPath, componentsTplPath, initComponentVersion } } = config;
+    const { pathConfig: { staticDir, componentsPath, componentsTplPath, initComponentVersion } } = config;
 
     const returnInfo = { msg: 'Success' };
 
-    const componentPath = `${componentsPath}/${componentId}`;
+    const componentPath = `${staticDir}/${componentsPath}/${componentId}`;
     const componentDevPath = `${componentPath}/${initComponentVersion}`;
     try {
       fs.mkdirSync(`${componentPath}`);
       fs.mkdirSync(componentDevPath);
 
       const srcPath = `${componentDevPath}/src`;
-      const srcTplPath = `${componentsTplPath}/src`;
+      const srcTplPath = `${staticDir}/${componentsTplPath}/src`;
 
       fs.mkdirSync(srcPath);
       fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId, initComponentVersion));
@@ -537,16 +537,16 @@ class ComponentService extends Service {
       fs.writeFileSync(`${settingPath}/data.js`, require(`${srcTplPath}/data.js`)(componentId));
 
       const buildPath = `${componentDevPath}/build`;
-      const buildTplPath = `${componentsTplPath}/build`;
+      const buildTplPath = `${staticDir}/${componentsTplPath}/build`;
       fs.mkdirSync(buildPath);
       fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(componentId));
       fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
 
-      fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${componentsTplPath}/editor.html.js`)(componentId));
-      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${componentsTplPath}/env.js`)(componentId, initComponentVersion));
-      fs.writeFileSync(`${componentDevPath}/options.json`, require(`${componentsTplPath}/options.json.js`)(componentId));
-      fs.writeFileSync(`${componentDevPath}/package.json`, require(`${componentsTplPath}/package.json.js`)(componentId));
-      await fsExtra.copy(`${componentsTplPath}/.gitignore`, `${componentDevPath}/.gitignore`);
+      fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${staticDir}/${componentsTplPath}/editor.html.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${staticDir}/${componentsTplPath}/env.js`)(componentId, initComponentVersion));
+      fs.writeFileSync(`${componentDevPath}/options.json`, require(`${staticDir}/${componentsTplPath}/options.json.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/package.json`, require(`${staticDir}/${componentsTplPath}/package.json.js`)(componentId));
+      await fsExtra.copy(`${staticDir}/${componentsTplPath}/.gitignore`, `${componentDevPath}/.gitignore`);
     } catch (error) {
       returnInfo.msg = 'Fail';
       logger.error('createDevWorkspace error: ', error || error.stack);
@@ -563,8 +563,8 @@ class ComponentService extends Service {
   }
 
   async initGit(componentId) {
-    const { ctx, config: { pathConfig: { componentsPath, initComponentVersion }, componentGit }, logger } = this;
-    const componentDevPath = `${componentsPath}/${componentId}/${initComponentVersion}`;
+    const { ctx, config: { pathConfig: { staticDir, componentsPath, initComponentVersion }, componentGit }, logger } = this;
+    const componentDevPath = `${staticDir}/${componentsPath}/${componentId}/${initComponentVersion}`;
     const userInfo = ctx.userInfo;
     try {
       const git = simpleGit(componentDevPath);
@@ -591,10 +591,10 @@ class ComponentService extends Service {
   }
 
   async getComponentHistory(options) {
-    const { config: { pathConfig: { componentsPath, initComponentVersion } } } = this;
+    const { config: { pathConfig: { staticDir, componentsPath, initComponentVersion } } } = this;
     const { id, curPage, pageSize } = options;
 
-    const componentDevPath = `${componentsPath}/${id}/${initComponentVersion}`;
+    const componentDevPath = `${staticDir}/${componentsPath}/${id}/${initComponentVersion}`;
     const git = simpleGit(componentDevPath);
     const { all: totalLogs } = await git.log();
     const total = totalLogs.length;
@@ -613,10 +613,10 @@ class ComponentService extends Service {
   }
 
   async getCommitInfo(options) {
-    const { config: { pathConfig: { componentsPath, initComponentVersion } } } = this;
+    const { config: { pathConfig: { staticDir, componentsPath, initComponentVersion } } } = this;
     const { id, hash } = options;
 
-    const componentDevPath = `${componentsPath}/${id}/${initComponentVersion}`;
+    const componentDevPath = `${staticDir}/${componentsPath}/${id}/${initComponentVersion}`;
 
     const git = simpleGit(componentDevPath);
     const diffStr = await git.show(hash);

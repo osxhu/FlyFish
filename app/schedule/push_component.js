@@ -15,7 +15,7 @@ class PushComponent extends Subscription {
   }
 
   async subscribe() {
-    const { ctx, logger, config: { pathConfig: { componentsPath, initComponentVersion } } } = this;
+    const { ctx, logger, config: { pathConfig: { staticDir, componentsPath, initComponentVersion } } } = this;
     let successCount = 0;
 
     try {
@@ -33,7 +33,7 @@ class PushComponent extends Subscription {
       const updaterMap = _.keyBy(updaterInfos, 'id');
 
       await Promise.all(needPushComponents.map(async component => {
-        const componentDevPath = `${componentsPath}/${component.id}/${initComponentVersion}`;
+        const componentDevPath = `${staticDir}/${componentsPath}/${component.id}/${initComponentVersion}`;
         const updateUsername = updaterMap[component.updater] && updaterMap[component.updater].username || 'system';
 
         const git = simpleGit(componentDevPath);

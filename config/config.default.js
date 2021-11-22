@@ -83,14 +83,16 @@ module.exports = appInfo => {
   const staticDir = path.join(appInfo.baseDir, 'www');
 
   config.pathConfig = {
-    applicationPath: path.resolve(staticDir, 'applications'),
-    appTplPath: path.resolve(staticDir, 'application_tpl'),
+    staticDir,
 
-    appBuildPath: path.resolve(staticDir, 'application_build'),
-    uploadPath: path.resolve(staticDir, 'upload'),
+    applicationPath: 'applications',
+    appTplPath: 'application_tpl',
 
-    componentsPath: path.resolve(staticDir, 'components'),
-    componentsTplPath: path.resolve(staticDir, 'component_tpl'),
+    appBuildPath: 'application_build',
+    uploadPath: 'upload',
+
+    componentsPath: 'components',
+    componentsTplPath: 'component_tpl',
 
     defaultComponentCoverPath: '/component_tpl/public/cover.png',
     initComponentVersion: 'v-current',

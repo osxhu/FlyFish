@@ -74,7 +74,7 @@ class ApplicationService extends Service {
   async updateDesignInfo(id, requestData) {
     const { ctx, config } = this;
     const { pages } = requestData;
-    const { pathConfig: { applicationPath } } = config;
+    const { pathConfig: { staticDir, applicationPath } } = config;
 
     const curApplicationInfo = await ctx.model.Application._findOne({ id });
 
@@ -100,7 +100,7 @@ class ApplicationService extends Service {
     }
 
     // note: async screenshot component cover, no wait!!!!!
-    const savePath = `${applicationPath}/cover/${id}.png`;
+    const savePath = `${staticDir}/${applicationPath}/cover/${id}.png`;
     this.genCoverImage(id, savePath);
   }
 

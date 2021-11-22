@@ -4,6 +4,7 @@ const _ = require('lodash');
 const fs = require('fs-extra');
 const AdmZip = require('adm-zip');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 const BaseController = require('./base');
 const CODE = require('../lib/error');
@@ -159,11 +160,11 @@ class ApplicationController extends BaseController {
   }
 
   async export() {
-    const { ctx, config: { pathConfig: { componentsPath, appTplPath, appBuildPath, uploadPath } } } = this;
+    const { ctx, config: { pathConfig: { staticDir, componentsPath, appTplPath, appBuildPath, applicationPath } } } = this;
     const id = ctx.params.id;
 
-    const buildPath = path.resolve(appBuildPath, id);
-    const appUploadPath = path.resolve(uploadPath, 'application');
+    const buildPath = path.resolve(staticDir, appBuildPath, id);
+    const appUploadPath = path.resolve(staticDir, uploadPath, 'application');
     const configPath = path.resolve(buildPath, 'config');
 
     const appInfo = await ctx.model.Application._findOne({ id });
@@ -176,7 +177,7 @@ class ApplicationController extends BaseController {
       Object.assign(mergedGlobalOptions, page.options.ENVGlobalOptions || {});
       (page.components || []).forEach(async component => {
         await fs.copy(
-          path.resolve(componentsPath, component.id, component.version, 'release', component.id),
+          path.resolve(staticDir, componentsPath, component.id, component.version, 'release', component.id),
           path.resolve(targetComponentPath, component.id)
         );
       });
@@ -184,30 +185,30 @@ class ApplicationController extends BaseController {
 
     await fs.writeFile(
       path.resolve(configPath, 'env.production.js'),
-      require(path.resolve(appTplPath, 'config/env.js')({ globalOptions: mergedGlobalOptions }))
+      require(path.resolve(staticDir, appTplPath, 'config/env.js')({ globalOptions: mergedGlobalOptions }))
     );
 
-    const sourceIndexPath = path.resolve(appTplPath, 'index.html');
-    const targetIndexPath = path.resolve(buildPath, 'index.html');
+    const sourceIndexPath = path.resolve(staticDir, appTplPath, 'index.html');
+    const targetIndexPath = path.resolve(staticDir, buildPath, 'index.html');
     await fs.copy(sourceIndexPath, targetIndexPath);
 
-    const sourcePublicPath = path.resolve(appTplPath, 'public');
-    const targetPublicPath = path.resolve(buildPath, 'public');
+    const sourcePublicPath = path.resolve(staticDir, appTplPath, 'public');
+    const targetPublicPath = path.resolve(staticDir, buildPath, 'public');
     await fs.copy(sourcePublicPath, targetPublicPath);
 
-    const sourceAssertPath = path.resolve(appTplPath, 'asserts');
-    const targetAssertPath = path.resolve(buildPath, 'asserts');
+    const sourceAssertPath = path.resolve(staticDir, appTplPath, 'asserts');
+    const targetAssertPath = path.resolve(staticDir, buildPath, 'asserts');
     await fs.copy(sourceAssertPath, targetAssertPath);
 
-    const sourceFragmentPath = path.resolve(appUploadPath, `fragment/${id}`);
-    const targetFragmentPath = path.resolve(buildPath, `upload/screen/fragment/${id}`);
+    const sourceFragmentPath = path.resolve(staticDir, appUploadPath, `fragment/${id}`);
+    const targetFragmentPath = path.resolve(staticDir, buildPath, `upload/screen/fragment/${id}`);
     const fragmentExist = await fs.pathExists(sourceFragmentPath);
     if (fragmentExist) {
       await fs.copy(sourceFragmentPath, targetFragmentPath);
     }
 
     const zipName = `screen_${id}.zip`;
-    const destZip = `${appBuildPath}/${zipName}`;
+    const destZip = `${staticDir}/${appBuildPath}/${zipName}`;
     try {
       const zip = new AdmZip();
 
@@ -220,6 +221,25 @@ class ApplicationController extends BaseController {
     } finally {
       await fs.remove(destZip);
     }
+  }
+
+  async uploadApplicationImg() {
+    const { ctx, app: { Joi }, config: { pathConfig: { staticDir, applicationPath } } } = this;
+    const appSchema = Joi.object().keys({
+      id: Joi.string().length(24).required(),
+    });
+
+    const { id } = await appSchema.validateAsync(ctx.params);
+    const file = ctx.request.files[0];
+    const targetPath = `${staticDir}/${applicationPath}/${id}/${uuidv4()}${path.extname(file.filepath)}`;
+
+    try {
+      await fs.copy(file.filepath, targetPath);
+    } finally {
+      await fs.remove(file.filepath);
+    }
+
+    return targetPath;
   }
 }
 

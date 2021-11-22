@@ -236,11 +236,11 @@ class ComponentsController extends BaseController {
   }
 
   async uploadComponentSource() {
-    const { ctx, config: { pathConfig: { componentsPath, initComponentVersion } } } = this;
+    const { ctx, config: { pathConfig: { staticDir, componentsPath, initComponentVersion } } } = this;
     const componentId = ctx.params.componentId;
 
     const file = ctx.request.files[0];
-    const targetPath = `${componentsPath}/${componentId}/${initComponentVersion}`;
+    const targetPath = `${staticDir}/${componentsPath}/${componentId}/${initComponentVersion}`;
     try {
       await fs.copy(file.filepath, `${targetPath}/${file.filename}`);
       const zip = new AdmZip(`${targetPath}/${file.filename}`);
@@ -254,12 +254,12 @@ class ComponentsController extends BaseController {
   }
 
   async exportComponentSource() {
-    const { ctx, config: { pathConfig: { componentsPath, initComponentVersion } } } = this;
+    const { ctx, config: { pathConfig: { staticDir, componentsPath, initComponentVersion } } } = this;
     const componentId = ctx.params.componentId;
 
     const componentInfo = await ctx.model.Component._findOne({ id: componentId });
-    const sourceFolder = `${componentsPath}/${componentId}/${initComponentVersion}`;
-    const destZip = `${componentsPath}/${componentId}/${componentInfo.name}.zip`;
+    const sourceFolder = `${staticDir}/${componentsPath}/${componentId}/${initComponentVersion}`;
+    const destZip = `${staticDir}/${componentsPath}/${componentId}/${componentInfo.name}.zip`;
     try {
       const zip = new AdmZip();
       zip.addLocalFolder(sourceFolder);
