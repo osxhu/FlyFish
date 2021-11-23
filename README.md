@@ -11,16 +11,22 @@ see [egg docs][egg] for more detail.
 ### Development
 
 ```bash
-$ npm i
-$ npm run dev
+$ chmod +x startup.sh
+$ ./startup.sh
 $ open http://localhost:7001/
 ```
 
 ### Deploy
 
+修改 startup.sh:
+```
+npm run dev   =>  npm run prod
+```
+
 ```bash
-$ npm start
-$ npm stop
+$ chmod +x startup.sh
+$ ./startup.sh
+$ open http://${ip}:7001/
 ```
 
 ### npm scripts
