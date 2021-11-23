@@ -27,7 +27,9 @@ const CodeDevelop = observer((props)=>{
       if (event && event.data) {
         if ("vscode_compile" ===event.data.event) {
           //编译
-          compileComponent();
+          if (developingData.id) {
+            compileComponent();
+          }
         }
       }
     })
