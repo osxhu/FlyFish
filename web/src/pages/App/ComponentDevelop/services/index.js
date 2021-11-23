@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-19 09:53:01
+ * @LastEditTime: 2021-11-23 14:44:19
  */
 import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api/component";
@@ -64,6 +64,9 @@ export const getRecordService = (options)=>{
 };
 export const getDiffRecordService = (id,hash)=>{
   return fetchGet(API.GET_DIFFRECORD+`/${id}?hash=${hash}`);
+};
+export const addTagService = (param)=>{
+  return fetchPost(API.ADD_TAG,{body:param});
 };
 
 

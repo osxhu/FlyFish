@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-19 09:29:03
+ * @LastEditTime: 2021-11-23 11:16:51
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -70,7 +70,7 @@ const model = {
     *getTreeData() {
       // 请求数据
       const res = yield getTreeDataService();
-      this.setTreeData(res.data[0].categories);
+      this.setTreeData(res.data);
     },
     *getProjectsData() {
       const res = yield getProjectsService();
@@ -79,7 +79,7 @@ const model = {
       }
     },
     *getTagsData() {
-      const res = yield getTagsService();
+      const res = yield getTagsService({type:'component'});
       if (res && res.data) {
         this.setTagsData(res.data);
       }

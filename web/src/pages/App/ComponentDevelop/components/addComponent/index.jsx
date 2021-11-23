@@ -5,7 +5,7 @@ import store from "../../model/index";
 import { Form,Input,Select,Button,Row,Col,Icon,Popover,TreeSelect,message } from 'antd';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { getProjectsService,getTagsService,addComponentService, getListDataService } from '../../services';
+import { getProjectsService,getTagsService,addComponentService, getListDataService,addTagService } from '../../services';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -13,7 +13,7 @@ const { TextArea } = Input;
 const AddComponent = observer((props)=>{
   const { getFieldDecorator,validateFields } = props.form;
 
-  const { setAddModalvisible,treeData,projectsData,tagsData,getListData } = store;
+  const { setAddModalvisible,treeData,projectsData,tagsData,getListData,getTagsData } = store;
 
   const formItemLayout = {
     labelCol: { span:4 },
@@ -26,12 +26,15 @@ const AddComponent = observer((props)=>{
         const cateData = JSON.parse(values.category);
         values.category = cateData.one;
         values.subCategory = cateData.two;
-        values.desc=values.desc?values.desc:undefined
+        values.desc=values.desc?values.desc:undefined;
+        values.tags = values.tags.map(item=>({name:item}))
         const res = await addComponentService(values);
         if (res && res.code==0) {
           message.success('添加成功！');
           setAddModalvisible(false);
           getListData();
+          //刷新标签库
+          getTagsData();
         }else{
           message.error(res.msg)
         }
@@ -133,7 +136,7 @@ const AddComponent = observer((props)=>{
                 return {
                   title:v1.name,
                   value:JSON.stringify({one:v.id,two:v1.id}),
-                  key:k+'-'+k,
+                  key:k+'-'+k1,
                 }
               })
             }
@@ -147,11 +150,11 @@ const AddComponent = observer((props)=>{
       {getFieldDecorator('tags', {
         rules: []
       })(<Select
-        mode="multiple"
+        mode="tags"
       >
         {
           tagsData.map((v,k)=>{
-          return <Option value={v.id} key={v.id}>{v.name}</Option>
+          return <Option value={v.name} key={v.id}>{v.name}</Option>
           })
         }
       </Select>)}
@@ -172,7 +175,7 @@ const AddComponent = observer((props)=>{
         rules: []
       })(<TextArea rows={4}/>)}
     </Form.Item>
-    <Row>
+    <Row className={styles.btnWrap}>
       <Col span={2} push={18}>
         <Button onClick={()=>{
           setAddModalvisible(false)

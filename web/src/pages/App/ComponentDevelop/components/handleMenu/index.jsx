@@ -22,6 +22,7 @@ const HandleMenu = observer((props)=>{
   const addinput = useRef();
   const editInput = useRef();
   const addCateRef = useRef();
+  const [searchValue, setSearchValue] = useState('');
 
   const [addCateName, setAddCateName] = useState('');
   const [editName, setEditName] = useState('');
@@ -29,24 +30,47 @@ const HandleMenu = observer((props)=>{
   useEffect(() => {
     if (treeData) {
       const data = _.cloneDeep(toJS(treeData));
-      setData(
-        data.map(item=>{
+      let rs = data.map(item=>{
+        item.showBtn = false;
+        item.expand = defaultExpandAll;
+        item.focus = false;
+        item.adding = false;
+        item.editing = false;
+        item.children?item.children.map(item=>{
           item.showBtn = false;
-          item.expand = defaultExpandAll;
-          item.focus = false;
-          item.adding = false;
           item.editing = false;
-          item.children?item.children.map(item=>{
-            item.showBtn = false;
-            item.editing = false;
-            return item;
-          }):null;
           return item;
+        }):null;
+        return item;
+      })
+      if (searchValue) {
+        rs = rs.filter(item=>{
+          if (item.children && item.children.length) {
+            item.children = item.children.filter(item2=>{
+              return item2.name.includes(searchValue)
+            })
+          }
+          if (item.children && item.children.length) {
+            return true
+          }else{
+            return item.name.includes(searchValue)
+          }
         })
-      )
+      }
+      setData(rs)
     }
-  }, [treeData]);
+  }, [treeData,searchValue]);
   return <>
+  <div className={styles.treeTitle}>
+    组件列表
+  </div>
+  <div className={styles.searchWrap}>
+    <Input placeholder='请输入搜索关键字' value={searchValue} suffix={<Icon type="search" />}
+      onChange={(e)=>{
+        setSearchValue(e.target.value);
+      }}
+    ></Input>
+  </div>
   <div style={{position:'relative'}}>
     {
       data.map((v,k)=>{
@@ -428,7 +452,7 @@ const HandleMenu = observer((props)=>{
       }}
     ></Input>
   </div>
-  <div className={styles.leftBigTitle}
+    <div className={styles.leftBigTitle}
       onClick={()=>{
         setAddingCate(true);
         setTimeout(() => {
@@ -436,7 +460,7 @@ const HandleMenu = observer((props)=>{
         }, 0);
       }}
     >
-      <span style={{marginLeft:10}}>新增类别</span>
+      <span style={{marginLeft:10}}>新增分类</span>
     </div>
   </>
 })

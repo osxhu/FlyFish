@@ -31,14 +31,16 @@
   background-color:#fff;
 }
 .rightWraper{
-  background-color: #eee;
+  // background-color: #eee;
   height: 100%;
-  padding: 10px;
+  border-left: 1px solid #eee;
+  // padding: 10px;
 }
 .handleWrap{
   padding: 10px 20px;
   background-color: #fff;
-  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  // margin-bottom: 10px;
 }
 .handleLeft{
   display: flex;
@@ -47,9 +49,20 @@
   }
 }
 .listWraper{
+  padding: 20px;
   background-color: #fff;
-  height: calc(~"100% - 60px");
+  height: calc(~"100% - 53px");
   overflow-y: auto;
+  :global{
+    .ant-pagination-options{
+      position: absolute;
+      left: -15px;
+    }
+    .ant-pagination-total-text{
+      position: absolute;
+      left: 105px;
+    }
+  }
 }
 .btnWraper{
   color:#449CF2;
