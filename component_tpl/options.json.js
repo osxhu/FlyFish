@@ -1,7 +1,7 @@
 
 'use strict';
 
-module.exports = component_mark => `{
+module.exports = (componentId, componentName) => `{
     "options": {
         "width": 1920,
         "height": 1080,
@@ -22,7 +22,7 @@ module.exports = component_mark => `{
     ],
     "components": [
         {
-            "type": "${component_mark}",
+            "type": "${componentId}",
             "id": "UBKO-08U1-C9L4-6OJF-3OMB-3OFN",
             "config": {
                 "left": 534,
@@ -30,7 +30,7 @@ module.exports = component_mark => `{
                 "width": 883,
                 "height": 645,
                 "index": 0,
-                "name": "${component_mark}",
+                "name": "${componentName}",
                 "visible": true,
                 "class": ""
             }

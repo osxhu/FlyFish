@@ -6,7 +6,7 @@
  * @LastEditTime: 2021-07-27 11:39:20
  */
 'use strict';
-module.exports = componentId => `
+module.exports = (componentId, version) => `
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -17,7 +17,7 @@ module.exports = componentId => `
 </head>
 <body>
 <div id="container" style="height: 100%;"></div>
-<script type="text/javascript" src="/components/${componentId}/current/env.js"></script>
+<script type="text/javascript" src="/components/${componentId}/${version}/env.js"></script>
 <script type="text/javascript" src="/common/data-vi.js"></script>
 <script type="text/javascript" src="/common/editor.js"></script>
 <script type="text/javascript">
