@@ -61,6 +61,9 @@ const HandleMenu = observer((props)=>{
     }
   }, [treeData,searchValue]);
   return <>
+  <div className={styles.treeTitle}>
+    组件列表
+  </div>
   <div className={styles.searchWrap}>
     <Input placeholder='请输入搜索关键字' value={searchValue} suffix={<Icon type="search" />}
       onChange={(e)=>{
@@ -457,7 +460,7 @@ const HandleMenu = observer((props)=>{
         }, 0);
       }}
     >
-      <span style={{marginLeft:10}}>新增类别</span>
+      <span style={{marginLeft:10}}>新增分类</span>
     </div>
   </>
 })

@@ -379,8 +379,8 @@ const Detail = observer(()=>{
         </div>
         <div className={styles.imgWrap}>
           <div style={{height:40}}>
-            <span style={{marginRight:30,fontWeight:800}}>效果演示</span>
-            <span style={{fontWeight:800}}>提供组件标识：{detailData.charactor}</span>
+            <span style={{marginRight:50,fontWeight:800}}>效果演示</span>
+            <span style={{fontWeight:800}}>组件标识：{detailData.id}</span>
           </div>
           <div style={{backgroundColor:'#eee',height:300}}>
               

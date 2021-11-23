@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-22 18:23:48
+ * @LastEditTime: 2021-11-23 11:12:41
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -51,6 +51,7 @@ const ComponentDevelop = observer((props) => {
     {
       title: '组件名称',
       dataIndex: 'name',
+      width:150,
       key: 'name',
       render:(text,record)=>{
         return <a className={styles.nameLink} onClick={()=>{
@@ -62,6 +63,7 @@ const ComponentDevelop = observer((props) => {
     {
       title: '所属项目',
       dataIndex: 'projects',
+      width:200,
       key: 'projects',
       render:(text,record)=>{
         return text.map((v,k)=>{
@@ -74,6 +76,7 @@ const ComponentDevelop = observer((props) => {
     {
       title: '组件快照',
       dataIndex: 'cover',
+      width:120,
       key: 'cover',
       render:(text)=>{
         return <img src={'/api'+text} width={100} height={40}
@@ -88,6 +91,7 @@ const ComponentDevelop = observer((props) => {
     {
       title: '组件标签',
       dataIndex: 'tags',
+      width:200,
       key: 'tags',
       render:(text,record)=>{
         return text.map((v,k)=>{
@@ -100,6 +104,7 @@ const ComponentDevelop = observer((props) => {
     {
       title: '组件状态',
       dataIndex: 'developStatus',
+      width:120,
       key: 'developStatus',
       render:(text)=>{
       return <span>{CONSTANT.componentDevelopStatus_map_ch[text]}</span>;
@@ -108,11 +113,13 @@ const ComponentDevelop = observer((props) => {
     {
       title: '版本',
       dataIndex: 'version',
+      width:120,
       key: 'version',
     },
     {
       title: '组件类别',
       dataIndex: 'subCategory',
+      width:100,
       key: 'subCategory',
       render:(text)=>{
         let txt = '';
@@ -130,6 +137,7 @@ const ComponentDevelop = observer((props) => {
     {
       title: '最近更新时间',
       dataIndex: 'updateTime',
+      width:200,
       key: 'updateTime',
       render:(text)=>{
         return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss');
@@ -138,11 +146,14 @@ const ComponentDevelop = observer((props) => {
     {
       title: '创建人',
       dataIndex: 'creator',
+      width:100,
       key: 'creator',
     },
     {
       title: '操作',
       key: 'action',
+      width:100,
+      fixed: 'right',
       render: (text, record) => (
         <Popover 
           content={
@@ -416,7 +427,7 @@ const ComponentDevelop = observer((props) => {
               <Col span={2} push={4}>
                 <Button 
                   type='primary' 
-                  style={{borderRadius:'5px'}}
+                  style={{borderRadius:'3px'}}
                   onClick={()=>{
                     setAddModalvisible(true);
                   }}
@@ -428,7 +439,7 @@ const ComponentDevelop = observer((props) => {
                 columns={columns}
                 dataSource={listData?toJS(listData).list:[]}
                 rowKey="id"
-                // scroll={{ x: 500}}
+                scroll={{ x: 1560}}
                 pagination={{
                   showSizeChanger:true,
                   showTotal:(total)=>{

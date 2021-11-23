@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-22 17:58:28
+ * @LastEditTime: 2021-11-23 11:16:51
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -79,7 +79,7 @@ const model = {
       }
     },
     *getTagsData() {
-      const res = yield getTagsService();
+      const res = yield getTagsService({type:'component'});
       if (res && res.data) {
         this.setTagsData(res.data);
       }
