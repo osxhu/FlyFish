@@ -19,7 +19,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
     display: 'block',
     marginBottom: 16,
   };
-  const childTableData = assemly.dataConfig.optionsChilds ? assemly.dataConfig.optionsChilds.map(item => item.datas[0]) : [];
+  const childTableData =assemly.dataConfig&& assemly.dataConfig.optionsChilds ? assemly.dataConfig.optionsChilds.map(item => item.datas[0]) : [];
   const DescriptionItem = ({ title, content }) => (
     <div
       style={{
@@ -142,11 +142,21 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
         className={stylus.drawerContainer}
       >
         <p className={stylus.title}>组件预览</p>
-        <div className={stylus.firstTitle}>组件名称:{assemlyData.name}</div>
-        <div className={stylus.firstTitle}>组件编号:{assemlyData.id}</div>
-        <div className={stylus.firstTitle}>行业:{showTrades(assemly.trades)}</div>
-        <div className={stylus.firstTitle}>标签:{showTrades(assemlyData.tags)}</div>
-        <div className={stylus.firstTitle}>描述:{assemlyData.desc}</div>
+        <div className={stylus.firstTitle}>组件名称:
+          <span>{assemlyData.name}</span>
+        </div>
+        <div className={stylus.firstTitle}>组件编号:
+          <span>{assemlyData.id}</span>
+        </div>
+        <div className={stylus.firstTitle}>行业:
+          <span>{assemly.trades ? showTrades(assemly.trades) : '暂无'}</span>
+        </div>
+        <div className={stylus.firstTitle}>标签:
+        <span>{assemly.tags ? showTrades(assemly.tags) : '暂无'}</span>
+        </div>
+        <div className={stylus.firstTitle}>描述:
+        <span>{assemlyData.desc}</span>
+        </div>
         <Row className={stylus.effectTitle}>
           <Col span={6}>
             <span>效果演示</span>
@@ -167,90 +177,90 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           </Collapse>
         </div>
         {/* 数据格式表格 */}
-          <div style={{ fontWeight: 800 }}>数据格式</div>
-          <div>
-            <div style={{ fontWeight: 800, padding: '10px 0' }}>注释：</div>
-            <Input disabled
-              value={assemlyData.dataConfig.annotationValue}
-            ></Input>
+        <div style={{ fontWeight: 800 }}>数据格式</div>
+        <div>
+          <div style={{ fontWeight: 800, padding: '10px 0' }}>注释：</div>
+          <Input disabled
+            value={assemlyData.dataConfig.annotationValue}
+          ></Input>
+        </div>
+        <div>
+          <div style={{ fontWeight: 800, margin: '10px 0' }}>代码示例：</div>
+          <AceEditor
+            style={{ width: '100%', height: 200 }}
+            mode="javascript"
+            theme="monokai"
+            showPrintMargin={false}
+            value={assemlyData.dataConfig.codeValue}
+            name="code"
+            readOnly={true}
+          />
+        </div>
+        <div>
+          <div style={{ fontWeight: 800, padding: '10px 0' }}>配置：</div>
+          <Table
+            size='small'
+            columns={columns1}
+            dataSource={assemlyData.dataConfig.options}
+            bordered
+            pagination={false}
+            footer={null}
+            rowKey='key'
+          />
+        </div>
+        <div>
+          <div style={{ fontWeight: 800, padding: '10px 0' }}>option.item：</div>
+          <Table
+            size='small'
+            columns={columns1}
+            dataSource={childTableData}
+            bordered
+            pagination={false}
+            footer={null}
+            rowKey='key'
+          />
+        </div>
+        <div>
+          <div style={{ fontWeight: 800, padding: '10px 0' }}>事件：</div>
+          <Table
+            size='small'
+            columns={eventColumns}
+            dataSource={assemlyData.dataConfig.events}
+            bordered
+            pagination={false}
+            footer={null}
+            rowKey='key'
+          />
+        </div>
+        <div>
+          <div style={{ fontWeight: 800, padding: '10px 0' }}>监听：</div>
+          <Table
+            size='small'
+            columns={eventColumns}
+            dataSource={assemlyData.dataConfig.listeners}
+            bordered
+            pagination={false}
+            footer={null}
+            rowKey='key'
+          />
+        </div>
+        <div>
+          <div style={{ fontWeight: 800, padding: '10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>更多信息：</span>
           </div>
-          <div>
-            <div style={{ fontWeight: 800, margin: '10px 0' }}>代码示例：</div>
-            <AceEditor
-              style={{ width: '100%', height: 200 }}
-              mode="javascript"
-              theme="monokai"
-              showPrintMargin={false}
-              value={assemlyData.dataConfig.codeValue}
-              name="code"
-              readOnly={true}
-            />
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, padding: '10px 0' }}>配置：</div>
-            <Table
-              size='small'
-              columns={columns1}
-              dataSource={assemlyData.dataConfig.options}
-              bordered
-              pagination={false}
-              footer={null}
-              rowKey='key'
-            />
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, padding: '10px 0' }}>option.item：</div>
-            <Table
-              size='small'
-              columns={columns1}
-              dataSource={childTableData}
-              bordered
-              pagination={false}
-              footer={null}
-              rowKey='key'
-            />
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, padding: '10px 0' }}>事件：</div>
-            <Table
-              size='small'
-              columns={eventColumns}
-              dataSource={assemlyData.dataConfig.events}
-              bordered
-              pagination={false}
-              footer={null}
-              rowKey='key'
-            />
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, padding: '10px 0' }}>监听：</div>
-            <Table
-              size='small'
-              columns={eventColumns}
-              dataSource={assemlyData.dataConfig.listeners}
-              bordered
-              pagination={false}
-              footer={null}
-              rowKey='key'
-            />
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, padding: '10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>更多信息：</span>
-            </div>
-            <AceEditor
-              style={{ width: '100%', height: 200 }}
-              mode="javascript"
-              theme="github"
-              showPrintMargin={false}
-              value={assemlyData.dataConfig.markValue}
-              name="markText"
-              readOnly={true}
-            />
-            {/* <div style={{ padding: 20, border: '1px solid #eee', backgroundColor: '#eee' }}>
+          <AceEditor
+            style={{ width: '100%', height: 200 }}
+            mode="javascript"
+            theme="github"
+            showPrintMargin={false}
+            value={assemlyData.dataConfig.markValue}
+            name="markText"
+            readOnly={true}
+          />
+          {/* <div style={{ padding: 20, border: '1px solid #eee', backgroundColor: '#eee' }}>
               <ReactMarkdown children={assemlyData.dataConfig.markValue}></ReactMarkdown>
             </div> */}
-          </div>
+        </div>
       </Drawer>
 
     </div>

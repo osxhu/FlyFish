@@ -30,7 +30,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                       return { name: item };
                     })
                   })
-                  : null;
+                  : 
                 onChange &&
                   onChange(project.id, {
                     ...values,

@@ -21,7 +21,6 @@ const { Option } = Select;
 const ComponentDevelop = observer(() => {
   const intl = useIntl();
   let [flagNum, setFlagNum] = useState(0);
-  let [infinitKey, setInfinitKey] = useState(0);
   const {
     getTreeDataFirst,
     getListData,
@@ -152,7 +151,6 @@ const ComponentDevelop = observer(() => {
           next={changePage}
           hasMore={hasMore}
           scrollableTarget="scrollableDiv"
-          key={infinitKey}
         >
           <Card number={6} value={cardDate} checkCard={(id) => {
             getAssemlyDetail(id);

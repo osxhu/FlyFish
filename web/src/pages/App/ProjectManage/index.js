@@ -247,9 +247,7 @@ const AppProjectManage = observer((props) => {
                   })
                 );
                 closeEditProjectModal();
-                getProjectList({
-                  curPage: 0,
-                });
+                getProjectList();
               } else {
                 message.error(
                   res.msg || intl.formatMessage({

@@ -1,13 +1,5 @@
-/*
- * @Descripttion: 
- * @Author: zhangzhiyong
- * @Date: 2021-11-09 10:45:26
- * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-12 16:54:14
- */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from "react";
-import { AbreastLayout, SearchBar, Icon,Pagination } from "@chaoswise/ui";
+import { AbreastLayout, SearchBar, Icon, Pagination } from "@chaoswise/ui";
 import { Select, Input, Button, Modal, message, Collapse } from 'antd';
 import { observer, toJS } from "@chaoswise/cw-mobx";
 const { Panel } = Collapse;
@@ -41,12 +33,12 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     setSelectedData, setProjectId,
     setHasMore
   } = store;
-  const { total,curPage,pageSize,tagsList, hasMore, libraryListLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
+  const { total, curPage, pageSize, tagsList, hasMore, libraryListLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
   const [changeFlga, setchangeFlga] = useState(false); //编辑完成
   let [infinitKey, setInfinitKey] = useState(0);
   let [libraryFlagNum, setLibraryFlagNum] = useState(0);
   let [libraryParams, setLibraryParams] = useState({});
-
+  let [cantShow, setCantShow] = useState(false);
   // 公共组件下滑
   const changePage = () => {
     setLibraryFlagNum(libraryFlagNum += 1);
@@ -170,16 +162,20 @@ const ComponentDevelop = observer(({ ProgressId }) => {
             }>
             <div id="scrollableDiv" style={{ height: '470px', overflow: 'auto' }} >
               <Card
-              number={6}
-              
+                number={6}
                 checkCard={(id) => {
                   setDrawerVisible(true);
                   getAssemlyDetail(id);
                 }}
                 onDelete={(params) => {
-                  deleteAssembly(params, (res) => {
+                  let newParams = {
+                    projects: params.projects.length > 1 ? params.projects.map(item => item.id !== ProgressId) : []
+                  };
+                  // 删除组件默认组件库一起清除，使用修改组件
+                  changeOneAssemly(params.id, newParams, (res) => {
                     if (res.code === successCode) {
                       getListData({ projectId: ProgressId }, true);
+                      getLibraryListData({}, true);
                       message.success(
                         intl.formatMessage({
                           id: "common.deleteSuccess",
@@ -187,12 +183,13 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                         })
                       );
                     } else {
-                      message.error(
-                        res.msg || intl.formatMessage({
-                          id: "common.deleteError",
-                          defaultValue: "删除失败，请稍后重试！",
-                        })
-                      );
+                      // message.error(
+                      //   res.msg || intl.formatMessage({
+                      //     id: "common.deleteError",
+                      //     defaultValue: "删除失败，请稍后重试！",
+                      //   })
+                      // );
+                      setCantShow(true);
                     }
                   });
                 }}
@@ -226,16 +223,16 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                 scrollableTarget="scrollableDivTwo"
               >
                 <Card
-                number={6}
-                projectID={ProgressId}
+                  number={6}
+                  projectID={ProgressId}
                   checkCard={(id) => {
                     getAssemlyDetail(id);
                   }}
                   value={libraryListData}
                   state={1}
                   canAdd={true}
-                  addOwn={(id) => {
-                    changeOneAssemly(id, { projects: [ProgressId] }, (res) => {
+                  addOwn={(id, projectsArr) => {
+                    changeOneAssemly(id, { projects: [...projectsArr, ProgressId] }, (res) => {
                       if (res.code === successCode) {
                         message.success(
                           intl.formatMessage({
@@ -269,6 +266,31 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     </AbreastLayout>
     {
       isDrawerVisible ? <Drawer assemly={assemlyDetail} setDrawerVisible={setDrawerVisible} /> : null
+    }
+    {
+    cantShow? <Modal
+        width='400'
+        draggable
+        centered={true}
+        onCancel={() => { setCantShow(false);}}
+        onOk={() => {
+          setCantShow(false);
+        }}
+        size="middle"
+        footer={[
+          <div style={{ textAlign: 'center' }} key='btn'>
+            <Button type="primary" >确定</Button>
+          </div>
+
+        ]}
+        visible={true}
+      >
+        <div style={{ textAlign: 'center', margin: '40px' }}>
+          <p>该组件已被项目应用使用，无法删除！</p>
+          <p>如仍需删除，请现在应用内取消使用该组件。</p>
+        </div>
+
+      </Modal>:null
     }
   </>;
 });

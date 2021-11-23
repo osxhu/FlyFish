@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Popconfirm } from "@chaoswise/ui";
-import { Card, Tag, Col, Row, Icon, Avatar, Empty,message, Tooltip } from 'antd';
+import { Card, Tag, Col, Row, Icon, Avatar, Empty, message, Tooltip } from 'antd';
 const { Meta } = Card;
 import styles from './index.less';
 import { TAG_COLORS, APP_DEVELOP_STATUS } from '@/config/global';
@@ -42,10 +42,12 @@ export default Form.create({ name: "BASIC_CARD" })(
                             cover={
                                 <>
                                     {
-                                        canDelete ? <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+                                        canDelete&&item.isLib ? <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
                                             onDelete && onDelete(item);
                                         }}>
-                                            <Tag className={styles.deleteTag} color='red' >-</Tag>
+                                            <Tag className={styles.deleteTag} color='red' >
+                                                 <Icon type="minus" />
+                                            </Tag>
                                         </Popconfirm> : null
                                     }
                                     {
@@ -54,7 +56,8 @@ export default Form.create({ name: "BASIC_CARD" })(
                                                 message.error('该组件已归属该项目');
                                                 return;
                                             }
-                                            addOwn && addOwn(item.id);
+                                            let projectsArr = item.projects.map(item => item.id);
+                                            addOwn && addOwn(item.id, projectsArr);
                                         }}>
                                             {item.projects.map(item => item.id).includes(projectID) ? <Icon type="check" /> : <Icon type="plus" />}
                                         </Tag> : null
@@ -67,8 +70,9 @@ export default Form.create({ name: "BASIC_CARD" })(
                                             checkCard && checkCard(item.id);
                                             setCheckId(item.id);
                                         }}
-                                        alt="example"
+                                        alt="暂无照片"
                                         src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                                        // src={'/api/'+item.cover}
                                     />
                                 </>
                             }
@@ -80,30 +84,43 @@ export default Form.create({ name: "BASIC_CARD" })(
                                     setCheckId(item.id);
                                 }}
                                 title={(() => {
-                                    if (!actions) return `组件名称:${item.name || '暂无'}`;
+                                    let title;
+                                    if (!actions) title = `组件名称:${item.name || '暂无'}`;
                                     if (state) {
-                                        return `模板名称:${item.name || '暂无'}`;
+                                        title = `模板名称:${item.name || '暂无'}`;
                                     } else {
-                                        return `应用名称:${item.name || '暂无'}`;
+                                        title = `应用名称:${item.name || '暂无'}`;
                                     }
+                                    return <Tooltip title={item.name}>
+                                        <span>{title}</span>
+                                    </Tooltip>;
+
                                 })()}
                                 description={(() => {
                                     const apply = [
                                         <div key='apply'>
-                                            <p >当前开发人：{item.updater || '暂无'}</p>
-                                            <p >创建人：{item.creator || '暂无'}</p>
-                                            <p >标签：{item.tags && tradesArr(item.tags)}</p>
+                                            <Tooltip title={item.updater}>
+                                                <p >当前开发人：{item.updater || '暂无'}</p>
+                                            </Tooltip>
+                                            <Tooltip title={item.creator}>
+                                                <p >创建人：{item.creator || '暂无'}</p>
+                                            </Tooltip>
+                                            <Tooltip title={item.tags &&tradesArr(item.tags)}>
+                                                <p >标签：{item.tags && tradesArr(item.tags)}</p>
+                                            </Tooltip>
                                         </div>
                                     ];
                                     const actionsOk = [
                                         <div key='template'>
-                                            <p className='titleOverflow'>模板编号：{item.id || '暂无'}</p>
-                                            <p >行业：{item.trades && tradesArr(item.trades)}</p>
+                                            <Tooltip title={item.id}><p className='titleOverflow'>模板编号：{item.id || '暂无'}</p>  </Tooltip>
+                                            <Tooltip title={item.trades && tradesArr(item.trades)}> <p >行业：{item.trades && tradesArr(item.trades)}</p>  </Tooltip>
                                         </div>
                                     ];
                                     const applyList = [
                                         <div key='apply'>
-                                            <p className='titleOverflow'>组件编号：{item.id || '暂无'}</p>
+                                            <Tooltip title={item.id}>
+                                                <p className='titleOverflow'>组件编号：{item.id || '暂无'}</p>
+                                            </Tooltip>
                                             <Tooltip title={item.desc}>
                                                 <p className='titleOverflow'>描述：{item.desc || '暂无'}</p>
                                             </Tooltip>

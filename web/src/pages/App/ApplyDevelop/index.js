@@ -20,7 +20,7 @@ const ApplyDevelop = observer(() => {
   let [checkFlag, setCheckFlag] = useState(null);
   const intl = useIntl(); const {
     getApplicationList,
-    setSearchParams, setActiveCard,
+    setSearchParams, setActiveCard, exportApplicationOne,
     setCurPage, addApplicationOne, deleteApplicationOne, getApplicationListDelete,
     saveProject, getTagsList, getProjectList, changeApplicationOne,
     openAddProjectModal, closeDeleteApplyListModal, copyApplicationOne,
@@ -37,7 +37,7 @@ const ApplyDevelop = observer(() => {
         <Select
           id="projectId"
           key="projectId"
-          mode="multiple"
+          showSearch
           allowClear
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -232,7 +232,28 @@ const ApplyDevelop = observer(() => {
                     openAddProjectModal();
                   }}><Icon type="copy" style={{ color: '#333' }} /></a>
                 </Tooltip>
-                <Tooltip key="export" title="导出">
+                <Tooltip key="export" title="导出"
+                  onClick={() => {
+                    exportApplicationOne(item.id, (res) => {
+                      if (res.code === successCode) {
+                        // message.success(
+                        //   intl.formatMessage({
+                        //     id: "common.deleteSuccess",
+                        //     defaultValue: "删除成功！",
+                        //   })
+                        // );
+                        // getApplicationList();
+                      } else {
+                        message.error(
+                          res.msg || intl.formatMessage({
+                            id: "common.exportError",
+                            defaultValue: "导出失败，请稍后重试！",
+                          })
+                        );
+                      }
+                    });
+                  }}
+                >
                   <a title="导出" target="_blank" ><Icon type="export" style={{ color: '#333' }} /></a>
                 </Tooltip>
                 <Tooltip key="edit" title="编辑">

@@ -8,7 +8,6 @@ import Router from '@/config/router.config';
 import zh_antd from 'antd/es/locale/zh_CN';
 import en_antd from 'antd/es/locale/en_US';
 import zh from './locales/zh-ch';
-
 import darkTheme from '../config/themes/dark';
 // import lightTheme from '../config/themes/light';
 
@@ -39,6 +38,7 @@ const locales = {
 
 const defaultTheme = 'dark';
 const defaultLocale = 'zh';
+
 
 const App = ({
   getAuth

@@ -85,7 +85,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
     ];
     const handleChange = (value) => {
       setType(value);
-      getApplicationList();
+      getApplicationList({curPage:0});
     };
     // 请求列表数据
     useEffect(() => {

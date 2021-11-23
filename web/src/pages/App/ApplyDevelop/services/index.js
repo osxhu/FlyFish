@@ -24,7 +24,7 @@ export const copyApplication = (id,options) => {
   return fetchPost(API.COPY_APPLICATION+id,{ body: options });
 };
 export const exportApplication = (id) => {
-  return fetchPost(API.EXPORT_APPLICATION+id);
+  return fetchGet(API.EXPORT_APPLICATION+id);
 };
 export const reqProjectList = () => {
   return fetchGet(APIII.GET_PROJECT_MANAGELIST_API );

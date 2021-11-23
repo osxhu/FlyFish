@@ -34,6 +34,7 @@ export default flattenMessages({
     changeError:"编辑失败，请稍后重试！",
     copySuccess:'复制成功!',
     copyError:"复制失败，请稍后重试！",
+    exportError:"导出失败，请稍后重试！",
     loadDataError: "加载{name}失败，请稍后重试！",
   },
   business: {},
