@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = component_mark => `
+module.exports = () => `
 /**
  * @description 大屏配置
  */
