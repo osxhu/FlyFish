@@ -11,29 +11,11 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const EditComponent = observer((props)=>{
+  
   const { getFieldDecorator,validateFields } = props.form;
 
-  const { setEditModalvisible,treeData,editData,getListData } = store;
+  const { setEditModalvisible,treeData,editData,getListData,tagsData,projectsData } = store;
 
-  const [projectsData, setProjectsData] = useState([]);
-  const [tags, setTags] = useState([]);
-
-  useEffect(() => {
-    getProjects();
-    getTags();
-  }, []);
-  const getProjects = async ()=>{
-    const res = await getProjectsService();
-    if (res && res.data) {
-      setProjectsData(res.data.list)
-    }
-  }
-  const getTags = async ()=>{
-    const res = await getTagsService();
-    if (res && res.data) {
-      setTags(res.data)
-    }
-  } 
   const formItemLayout = {
     labelCol: { span:4 },
     wrapperCol: { span:18 }
@@ -137,7 +119,7 @@ const EditComponent = observer((props)=>{
     </Form.Item>
     <Form.Item label="组件分类">
       {getFieldDecorator('category', {
-        initialValue:editData.subCategory,
+        initialValue:JSON.stringify({one:editData.category,two:editData.subCategory}),
         rules: [
           {
             required: true,
@@ -151,14 +133,14 @@ const EditComponent = observer((props)=>{
           treeData.map((v,k)=>{
             return {
               title:v.name,
-              value:v.name,
+              value:v.id,
               key:k+'',
               disabled:true,
               children:v.children.map((v1,k1)=>{
                 return {
                   title:v1.name,
-                  value:JSON.stringify({one:v.name,two:v1.name}),
-                  key:k+'-'+k,
+                  value:JSON.stringify({one:v.id,two:v1.id}),
+                  key:k+'-'+k1,
                 }
               })
             }
@@ -176,7 +158,7 @@ const EditComponent = observer((props)=>{
         mode="multiple"
       >
         {
-          tags.map((v,k)=>{
+          tagsData.map((v,k)=>{
           return <Option value={v.id} key={v.id}>{v.name}</Option>
           })
         }
@@ -199,7 +181,7 @@ const EditComponent = observer((props)=>{
         rules: []
       })(<TextArea rows={4}/>)}
     </Form.Item>
-    <Row>
+    <Row className={styles.btnWrap}>
       <Col span={2} push={18}>
         <Button onClick={()=>{
           setAddModalvisible(false)

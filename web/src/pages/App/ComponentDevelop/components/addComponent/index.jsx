@@ -13,7 +13,7 @@ const { TextArea } = Input;
 const AddComponent = observer((props)=>{
   const { getFieldDecorator,validateFields } = props.form;
 
-  const { setAddModalvisible,treeData,projectsData,tagsData,getListData,setTagsData } = store;
+  const { setAddModalvisible,treeData,projectsData,tagsData,getListData,getTagsData } = store;
 
   const formItemLayout = {
     labelCol: { span:4 },
@@ -33,6 +33,8 @@ const AddComponent = observer((props)=>{
           message.success('添加成功！');
           setAddModalvisible(false);
           getListData();
+          //刷新标签库
+          getTagsData();
         }else{
           message.error(res.msg)
         }
@@ -173,7 +175,7 @@ const AddComponent = observer((props)=>{
         rules: []
       })(<TextArea rows={4}/>)}
     </Form.Item>
-    <Row>
+    <Row className={styles.btnWrap}>
       <Col span={2} push={18}>
         <Button onClick={()=>{
           setAddModalvisible(false)

@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-23 11:12:41
+ * @LastEditTime: 2021-11-23 15:59:20
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -202,11 +202,14 @@ const ComponentDevelop = observer((props) => {
                   setEditModalvisible(true);
                 }}
               >编辑信息</div>
-              <div
-                onClick={()=>{
-                  deleteComponet(record.id);
-                }}
-              >删除</div>
+              <Popconfirm  
+                title='确定要删除吗？'
+                cancelText='否' 
+                okText='是' 
+                onConfirm={()=>{deleteComponet(record.id);}}
+              >
+                <div>删除</div>
+              </Popconfirm>
             </div>
           }
           placement="right"
@@ -515,7 +518,7 @@ const ComponentDevelop = observer((props) => {
             width={500}
             onCancel={()=>{setImportModalvisible(false);}}
           >
-            <div style={{display:'flex',justifyContent:'center'}}>
+            <div style={{display:'flex',justifyContent:'center',height:60}}>
             <Upload
               accept=".zip"
               // fileList={[]}
