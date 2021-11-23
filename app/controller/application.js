@@ -169,6 +169,7 @@ class ApplicationController extends BaseController {
 
     const appInfo = await ctx.model.Application._findOne({ id });
 
+    await fs.outputFile(path.resolve(configPath, 'env.conf.json'), '');
     await fs.writeJson(path.resolve(configPath, 'env.conf.json'), appInfo.pages);
 
     const mergedGlobalOptions = {};
@@ -177,15 +178,15 @@ class ApplicationController extends BaseController {
       Object.assign(mergedGlobalOptions, page.options.ENVGlobalOptions || {});
       (page.components || []).forEach(async component => {
         await fs.copy(
-          path.resolve(staticDir, componentsPath, component.id, component.version, 'release', component.id),
-          path.resolve(targetComponentPath, component.id)
+          path.resolve(staticDir, componentsPath, component.type, component.version, 'release'),
+          path.resolve(targetComponentPath, component.type)
         );
       });
     });
 
-    await fs.writeFile(
+    await fs.outputFile(
       path.resolve(configPath, 'env.production.js'),
-      require(path.resolve(staticDir, appTplPath, 'config/env.js')({ globalOptions: mergedGlobalOptions }))
+      require(path.resolve(staticDir, appTplPath, 'config/env.js'))({ globalOptions: mergedGlobalOptions })
     );
 
     const sourceIndexPath = path.resolve(staticDir, appTplPath, 'index.html');
@@ -196,15 +197,11 @@ class ApplicationController extends BaseController {
     const targetPublicPath = path.resolve(staticDir, buildPath, 'public');
     await fs.copy(sourcePublicPath, targetPublicPath);
 
-    const sourceAssertPath = path.resolve(staticDir, appTplPath, 'asserts');
-    const targetAssertPath = path.resolve(staticDir, buildPath, 'asserts');
-    await fs.copy(sourceAssertPath, targetAssertPath);
-
-    const sourceFragmentPath = path.resolve(staticDir, appPath, id);
-    const targetFragmentPath = path.resolve(staticDir, buildPath, 'fragment');
-    const fragmentExist = await fs.pathExists(sourceFragmentPath);
-    if (fragmentExist) {
-      await fs.copy(sourceFragmentPath, targetFragmentPath);
+    const sourceImgPath = path.resolve(staticDir, appPath, id);
+    const targetImgPath = path.resolve(staticDir, buildPath, 'applications');
+    const appExist = await fs.pathExists(sourceImgPath);
+    if (appExist) {
+      await fs.copy(sourceImgPath, targetImgPath);
     }
 
     const zipName = `screen_${id}.zip`;
