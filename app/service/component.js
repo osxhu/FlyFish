@@ -263,7 +263,7 @@ class ComponentService extends Service {
     const componentId = result.id;
     returnData.data.id = componentId;
 
-    const createResult = await this.initDevWorkspace(componentId);
+    const createResult = await this.initDevWorkspace(componentId, createComponentInfo.name);
     if (createResult.msg !== 'success') returnData.msg = createResult.msg;
 
     try {
@@ -546,7 +546,7 @@ class ComponentService extends Service {
   }
 
   // 初始化开发组件空间
-  async initDevWorkspace(componentId) {
+  async initDevWorkspace(componentId, componentName) {
     const { config, logger } = this;
     const { pathConfig: { staticDir, componentsPath, componentsTplPath, initComponentVersion } } = config;
 
@@ -577,10 +577,10 @@ class ComponentService extends Service {
       fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(componentId));
       fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
 
-      fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${staticDir}/${componentsTplPath}/editor.html.js`)(componentId));
-      fs.writeFileSync(`${componentDevPath}/index.html`, require(`${staticDir}/${componentsTplPath}/index.html.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${staticDir}/${componentsTplPath}/editor.html.js`)(componentId, initComponentVersion));
+      fs.writeFileSync(`${componentDevPath}/index.html`, require(`${staticDir}/${componentsTplPath}/index.html.js`)(componentId, initComponentVersion));
       fs.writeFileSync(`${componentDevPath}/env.js`, require(`${staticDir}/${componentsTplPath}/env.js`)(componentId, initComponentVersion));
-      fs.writeFileSync(`${componentDevPath}/options.json`, require(`${staticDir}/${componentsTplPath}/options.json.js`)(componentId));
+      fs.writeFileSync(`${componentDevPath}/options.json`, require(`${staticDir}/${componentsTplPath}/options.json.js`)(componentId, componentName));
       fs.writeFileSync(`${componentDevPath}/package.json`, require(`${staticDir}/${componentsTplPath}/package.json.js`)(componentId));
       await fsExtra.copy(`${staticDir}/${componentsTplPath}/.gitignore`, `${componentDevPath}/.gitignore`);
     } catch (error) {
