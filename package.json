@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
+    "config": "^3.3.6",
     "cookie": "^0.4.1",
     "crypto": "^1.0.1",
     "diff2html": "^3.4.13",
