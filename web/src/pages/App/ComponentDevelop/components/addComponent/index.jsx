@@ -27,7 +27,9 @@ const AddComponent = observer((props)=>{
         values.category = cateData.one;
         values.subCategory = cateData.two;
         values.desc=values.desc?values.desc:undefined;
-        values.tags = values.tags.map(item=>({name:item}))
+        if (values.tags) { 
+          values.tags = values.tags.map(item=>({name:item}))
+        }
         const res = await addComponentService(values);
         if (res && res.code==0) {
           message.success('添加成功！');
