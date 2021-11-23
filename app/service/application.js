@@ -84,8 +84,8 @@ class ApplicationService extends Service {
 
     const curApplicationUseComponents = _.flatten((curApplicationInfo.pages || []).map(page => (page.components || []).map(component => component.type)));
     const updateApplicationUseComponents = _.flatten((pages || []).map(page => (page.components || []).map(component => component.type)));
-    const deleteComponentIds = _.difference(curApplicationUseComponents, updateApplicationUseComponents);
-    const addComponentIds = _.difference(updateApplicationUseComponents, curApplicationUseComponents);
+    const deleteComponentIds = _.difference(curApplicationUseComponents, updateApplicationUseComponents).filter(id => id.length === 24);
+    const addComponentIds = _.difference(updateApplicationUseComponents, curApplicationUseComponents).filter(id => id.length === 24);
 
     if (!_.isEmpty(deleteComponentIds)) {
       for (const deleteComponentId of deleteComponentIds) {

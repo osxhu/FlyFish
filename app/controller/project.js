@@ -46,7 +46,7 @@ class ProjectController extends BaseController {
         id: Joi.string().length(24),
         name: Joi.string().required(),
       })).required(),
-      desc: Joi.string(),
+      desc: Joi.string().allow(''),
     });
 
     const { projectId } = await editParamSchema.validateAsync(ctx.params);
