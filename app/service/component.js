@@ -231,7 +231,7 @@ class ComponentService extends Service {
 
   async addComponent(createComponentInfo) {
     const { ctx, config } = this;
-    const { pathConfig: { defaultComponentCoverPath } } = config;
+    const { pathConfig: { staticDir, componentsPath, initComponentVersion, defaultComponentCoverPath } } = config;
 
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
@@ -265,6 +265,16 @@ class ComponentService extends Service {
 
     const createResult = await this.initDevWorkspace(componentId);
     if (createResult.msg !== 'success') returnData.msg = createResult.msg;
+
+    try {
+      const componentPath = `${staticDir}/${componentsPath}/${componentId}`;
+      const componentDevPath = `${componentPath}/${initComponentVersion}`;
+      await exec(`cd ${componentDevPath} && npm run build-dev`);
+    } catch (error) {
+      returnData.msg = 'Compile Fail';
+      returnData.data.error = error.message || error.stack;
+      return returnData;
+    }
 
     return returnData;
   }

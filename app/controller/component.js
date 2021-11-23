@@ -90,10 +90,13 @@ class ComponentsController extends BaseController {
 
     const componentInfo = await service.component.addComponent(requestData);
 
+    const errInfo = componentInfo.data.error || null;
     if (componentInfo.msg === 'Exists Already') {
       this.fail('创建失败, 组件名称已存在', null, CODE.FAIL);
     } else if (componentInfo.msg === 'Fail') {
       this.fail('创建失败, 初始化开发空间失败', null, CODE.FAIL);
+    } else if (componentInfo.msg === 'Compile Fail') {
+      this.fail('编译失败', errInfo, CODE.FAIL);
     } else {
       this.success('创建成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
     }
