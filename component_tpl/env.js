@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = (component_mark, version) => `
+module.exports = component_mark => `
 /**
  * @description 大屏配置
  */
@@ -14,7 +14,7 @@ window.DATAVI_ENV = (function() {
     return {
         debug: true,
         apiDomain: 'http://127.0.0.1:9090',
-        componentsDir: 'components/${component_mark}/${version}/components',
+        componentsDir: 'components',
 
         // 大屏编辑器组件菜单枚举
         componentsMenuForEditor: [
