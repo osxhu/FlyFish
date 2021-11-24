@@ -1,10 +1,3 @@
-/*
- * @Descripttion:
- * @Author: zhangzhiyong
- * @Date: 2021-06-04 10:27:43
- * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-07-27 11:39:20
- */
 'use strict';
 module.exports = (componentId, version) => `
 <!DOCTYPE html>
@@ -24,7 +17,7 @@ module.exports = (componentId, version) => `
     window.onload = function () {
 
         require(['json!./options.json','data-vi/helpers', 'data-vi/start'], function (settings, _, start) {
-            start.initializeBySetting(settings);
+            start.initializeBySetting(document.getElementById('container'), settings);
         });
     };
 </script>
