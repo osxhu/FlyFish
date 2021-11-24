@@ -4,7 +4,7 @@ const { Logger, FileTransport, ConsoleTransport } = require('egg-logger');
 const logger = new Logger(); // 声明一个新的日志记录器
 // 配置文件输出/存储
 logger.set('file', new FileTransport({
-  file: 'logs/access.log',
+  file: 'logs/FlyFish/access.log',
   level: 'INFO',
 }));
 // 配置控制台输出
