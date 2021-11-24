@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState,useEffect, useRef } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import {
   BasicLayout,
@@ -9,7 +9,7 @@ import {
 import logo from './assets/logo.svg';
 import { Button } from 'antd';
 import actions from '@/shared/mainActions';
-import { loginout } from './services';
+import { loginout,getUserInfoService } from './services';
 import { connect } from '@chaoswise/cw-mobx';
 
 // import styles from './index.less';
@@ -28,6 +28,11 @@ const Layout = ({
   const { currentTheme } = ThemeProvider.useThemeSwitcher();
   const { locale } = ConfigProvider.useLocale();
 
+  const [authMenuData, setAuthMenuData] = useState([]);
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
   useEffect(() => {
     // 更新全局状态通知子应用
     actions.setGlobalState({
@@ -42,6 +47,24 @@ const Layout = ({
     });
   }, [locale]);
 
+  const getUserInfo = async ()=>{
+    const id = localStorage.getItem('id');
+    const res = await getUserInfoService(id);
+    if (res && res.data) {
+      const menu = res.data.menus.map(item=>item.name);
+      let routeData = route.routes.filter(item=>{
+        if (item.routes) {
+          item.routes = item.routes.filter(item2=>{
+            return menu.includes(item2.name);
+          });
+        }
+        return menu.includes(item.name);
+      });
+      
+      const authMenu = getMenuData(routeData || []);
+      setAuthMenuData(authMenu);
+    }
+  };
   /**
    * 通过路由配置文件生成menuData
    * @param {Arrary} routeData 路由配置
@@ -136,7 +159,7 @@ const check=(a)=>{
       onClickTopNavigation={check}
       onClickBack={goBack}
       menuOptions={{
-        menuData: getMenuData(route.routes || [], []),
+        menuData: authMenuData,
         selectedKeys: [getActiveMenuKey()],
         onClick: onPathChange
       }}
