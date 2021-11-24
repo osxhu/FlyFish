@@ -12,6 +12,11 @@ const computedTagWordByStatus = (status) => {
 const computedTagColorByStatus = (status) => {
     return TAG_COLORS.find(item => item.id === status).color;
 };
+// import logo from '../../assets/images/logo.svg';
+
+
+
+
 export default Form.create({ name: "BASIC_CARD" })(
     function BasicCard({ number, projectID, onDelete, setActiveCard, addOwn, showOwn, checkCard, value, state, showStateTag, actions, canDelete, canAdd }) {
 
@@ -66,13 +71,14 @@ export default Form.create({ name: "BASIC_CARD" })(
                                         !showStateTag ? null : <Tag className={styles.tag} color={computedTagColorByStatus(item.developStatus)}>{computedTagWordByStatus(item.developStatus)}</Tag>
                                     }
                                     <img
+                                    style={{height:item.cover?'':'179.34px'}}
                                         onClick={() => {
                                             checkCard && checkCard(item.id);
                                             setCheckId(item.id);
                                         }}
                                         alt="暂无照片"
-                                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                                        // src={'/api/'+item.cover}
+                                        // src={logo}
+                                        src={'/api/'+item.cover}
                                     />
                                 </>
                             }
@@ -100,13 +106,13 @@ export default Form.create({ name: "BASIC_CARD" })(
                                     const apply = [
                                         <div key='apply'>
                                             <Tooltip title={item.updater}>
-                                                <p >当前开发人：{item.updater || '暂无'}</p>
+                                                <p className='titleOverflow'>当前开发人：{item.updater || '暂无'}</p>
                                             </Tooltip>
                                             <Tooltip title={item.creator}>
-                                                <p >创建人：{item.creator || '暂无'}</p>
+                                                <p className='titleOverflow' >创建人：{item.creator || '暂无'}</p>
                                             </Tooltip>
                                             <Tooltip title={item.tags &&tradesArr(item.tags)}>
-                                                <p >标签：{item.tags && tradesArr(item.tags)}</p>
+                                                <p className='titleOverflow'>标签：{item.tags && tradesArr(item.tags)}</p>
                                             </Tooltip>
                                         </div>
                                     ];

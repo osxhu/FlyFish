@@ -320,23 +320,24 @@ const ApplyDevelop = observer(() => {
       }
       <Pagination
         total={total}
-        // showSizeChanger={true}
-        // showTotal={(total) => {
-        //   return `共${total}条记录`;
-        // }}
+        showSizeChanger={true}
+        showTotal={(total) => {
+          return `共${total}条记录`;
+        }}
+        pageSizeOptions={['9','18','45','90']}
         current={curPage + 1}
         pageSize={pageSize}
         onChange={(current) => {
           setCurPage(current - 1);
           getApplicationList();
         }}
-      // onShowSizeChange={
-      //   (page, pageSize) => {
-      //     setCurPage(0);
-      //     setPageSize(pageSize);
-      //     getApplicationList();
-      //   }
-      // }
+      onShowSizeChange={
+        (page, pageSize) => {
+          setCurPage(0);
+          setPageSize(pageSize);
+          getApplicationList();
+        }
+      }
       />
       {isAddModalVisible && (
         <AppProjectModal

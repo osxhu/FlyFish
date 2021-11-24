@@ -164,7 +164,6 @@ const UserList = observer(() => {
             defaultValue: "输入状态进行查询",
           })}
         >
-          <Option value="">全部</Option>
           <Option value="valid">正常</Option>
           <Option value="invalid">禁用</Option>
         </Select>
