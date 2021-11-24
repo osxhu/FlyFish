@@ -114,6 +114,10 @@ module.exports = appInfo => {
     // myAppName: 'egg',
   };
 
+  config.logger = {
+    dir: `${appInfo.root}/logs/${appInfo.name}`,
+  };
+
 
   return {
     ...config,
