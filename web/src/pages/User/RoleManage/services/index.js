@@ -29,3 +29,7 @@ export const saveRoleAuth = (id,options) => {
 export const saveRoleMenu = (id,options) => {
   return fetchPut(API.ROLE_AUTH + id + '/' + 'auth', { body: options });
 };
+// 获取全部菜单
+export const getMenuService = () => {
+  return fetchGet(API.MENU_LIST);
+};

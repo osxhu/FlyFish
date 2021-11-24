@@ -25,10 +25,10 @@ const RoleList = observer(() => {
     closeEditRoleModal, changeRoleAuth,
     openRoleJurisdictionModal,
     closeRoleJurisdictionModal, getRoleDetail,
-    addNewRole
+    addNewRole,getAllMenuList
   } = store;
 
-  const { total, projectList, pageSize, current, userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
+  const { total,menuList, projectList, pageSize, current, userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
     store;
   const [saveOrChangeFlag, setSaveOrChangeFlag] = useState(false);
   // 成员列表的值
@@ -159,6 +159,7 @@ const RoleList = observer(() => {
   // 请求列表数据
   useEffect(() => {
     getUserList();
+    getAllMenuList();
   }, []);
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
@@ -269,6 +270,7 @@ const RoleList = observer(() => {
       {/* 修改用户角色 */}
       {isRoleModalVisible && (
         <ChangeRoleModal
+       
           id={activeUser.id}
           project={userList}
           checkProject={oneRoleDetail}
@@ -304,6 +306,7 @@ const RoleList = observer(() => {
       {/* 修改菜单 */}
       {isRoleJurisdictionModalVisible && (
         <ChangeRoleJurisdiction
+        menuList={menuList}
           project={activeUser}
           close={closeRoleJurisdictionModal}
           onSave={(project) => {

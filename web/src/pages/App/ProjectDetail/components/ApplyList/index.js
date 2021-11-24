@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Input, Form, Button, SearchBar,Tooltip, Collapse, message, Popconfirm, Pagination } from "@chaoswise/ui";
+import { Modal, Input, Form, Button, SearchBar, Tooltip, Collapse, message, Popconfirm, Pagination } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 import styles from "./index.less";
 import store from "../../model";
@@ -9,7 +9,7 @@ import { Icon, Select } from 'antd';
 const { Option } = Select;
 const { Panel } = Collapse;
 import { successCode } from "@/config/global";
-
+import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ApplyModal from '@/pages/App/ApplyDevelop/components/AddProjectModal';
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
@@ -30,7 +30,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
     const searchContent = [
       {
         components: (
-          <Select 
+          <Select
             id="name"
             key="name"
             mode="multiple"
@@ -85,7 +85,25 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
     ];
     const handleChange = (value) => {
       setType(value);
-      getApplicationList({curPage:0});
+      getApplicationList({ curPage: 0 });
+    };
+    const exportCode = async (id)=>{
+      axios.get(`/api/applications/export/${id}`,{
+        responseType:'blob'
+      },
+      ).then((res)=>{
+        const $link = document.createElement("a");
+        const url = window.URL.createObjectURL(res.data);
+        $link.href = url;
+  
+        const disposition = res.headers['content-disposition'];
+        $link.download = decodeURI(disposition.replace('attachment;filename=',''));
+        
+        document.body.appendChild($link);
+        $link.click();
+        document.body.removeChild($link); // 下载完成移除元素
+        window.URL.revokeObjectURL($link.href); // 释放掉blob对象
+      });
     };
     // 请求列表数据
     useEffect(() => {
@@ -140,7 +158,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     <>
                       <a title="开发应用" target="_blank" href={window.APP_CONFIG.screen + '/screen/editor.html' + '?id=' + item.id} rel="noreferrer">
                         <Button value="small" type="primary">开发</Button>
-      
+
                       </a>
                       <a title="预览应用" target="_blank" href={window.APP_CONFIG.screen + '/screen/index.html' + '?id=' + item.id} rel="noreferrer">
                         <Button value="small" type="primary">预览</Button>
@@ -151,7 +169,9 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                           openAddProjectModal();
                         }}><Icon type="copy" style={{ color: '#333' }} /></a>
                       </Tooltip>
-                      <Tooltip key="export" title="导出">
+                      <Tooltip key="export" title="导出" onClick={() => {
+                        exportCode(item.id);
+                      }}>
                         <a title="导出" target="_blank" ><Icon type="export" style={{ color: '#333' }} /></a>
                       </Tooltip>
                       <Tooltip key="edit" title="编辑">

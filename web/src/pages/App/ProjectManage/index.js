@@ -142,6 +142,7 @@ const AppProjectManage = observer((props) => {
         <Input
           id="key"
           key="key"
+          allowClear
           style={{ width: "300px" }}
           suffix={<Icon type="search" />
           }

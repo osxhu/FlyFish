@@ -12,6 +12,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
     return (
       <Modal
         draggable
+        okText='保存'
         onCancel={() => onCancel && onCancel()}
         onOk={() => {
           if (form) {
@@ -22,6 +23,8 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     delete values[i];
                   }
                 }
+                let changeObj=values.desc?values:{...values,desc:''};
+
                 flag ?
                   onSave &&
                   onSave({
@@ -33,7 +36,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                   : 
                 onChange &&
                   onChange(project.id, {
-                    ...values,
+                    ...changeObj,
                     trades: values.trades.map(item => {
                       return { name: item };
                     })

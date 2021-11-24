@@ -13,13 +13,13 @@ import styles from "./assets/style.less";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Select } from 'antd';
 import { APP_DEVELOP_STATUS } from '@/config/global';
-
+import axios from 'axios';
 const { Option } = Select;
 import DeleteApplyListModal from './components/DeleteApplyListModal';
 const ApplyDevelop = observer(() => {
   let [checkFlag, setCheckFlag] = useState(null);
   const intl = useIntl(); const {
-    getApplicationList,
+    getApplicationList,setPageSize,
     setSearchParams, setActiveCard, exportApplicationOne,
     setCurPage, addApplicationOne, deleteApplicationOne, getApplicationListDelete,
     saveProject, getTagsList, getProjectList, changeApplicationOne,
@@ -30,6 +30,27 @@ const ApplyDevelop = observer(() => {
     store;
   const onShowSizeChange = (row) => {
     console.log('凤凰网', row);
+  };
+  const exportCode = async (id) => {
+    axios.get(`/api/applications/export/${id}`, {
+      responseType: 'blob'
+    },
+    ).then((res) => {
+      const $link = document.createElement("a");
+
+      // let blob = new Blob([res.data],{type:'application/octet-stream'});
+      // let blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(res.data);
+      $link.href = url;
+
+      const disposition = res.headers['content-disposition'];
+      $link.download = decodeURI(disposition.replace('attachment;filename=', ''));
+
+      document.body.appendChild($link);
+      $link.click();
+      document.body.removeChild($link); // 下载完成移除元素
+      window.URL.revokeObjectURL($link.href); // 释放掉blob对象
+    });
   };
   const searchContent = [
     {
@@ -234,24 +255,25 @@ const ApplyDevelop = observer(() => {
                 </Tooltip>
                 <Tooltip key="export" title="导出"
                   onClick={() => {
-                    exportApplicationOne(item.id, (res) => {
-                      if (res.code === successCode) {
-                        // message.success(
-                        //   intl.formatMessage({
-                        //     id: "common.deleteSuccess",
-                        //     defaultValue: "删除成功！",
-                        //   })
-                        // );
-                        // getApplicationList();
-                      } else {
-                        message.error(
-                          res.msg || intl.formatMessage({
-                            id: "common.exportError",
-                            defaultValue: "导出失败，请稍后重试！",
-                          })
-                        );
-                      }
-                    });
+                    exportCode(item.id);
+                    // exportApplicationOne('6198f02666d35702ac933fb8', (res) => {
+                    //   if (res.code === successCode) {
+                    //     // message.success(
+                    //     //   intl.formatMessage({
+                    //     //     id: "common.deleteSuccess",
+                    //     //     defaultValue: "删除成功！",
+                    //     //   })
+                    //     // );
+                    //     // getApplicationList();
+                    //   } else {
+                    //     message.error(
+                    //       res.msg || intl.formatMessage({
+                    //         id: "common.exportError",
+                    //         defaultValue: "导出失败，请稍后重试！",
+                    //       })
+                    //     );
+                    //   }
+                    // });
                   }}
                 >
                   <a title="导出" target="_blank" ><Icon type="export" style={{ color: '#333' }} /></a>
@@ -293,13 +315,24 @@ const ApplyDevelop = observer(() => {
       }
       <Pagination
         total={total}
+        // showSizeChanger={true}
+        // showTotal={(total) => {
+        //   return `共${total}条记录`;
+        // }}
         current={curPage + 1}
         pageSize={pageSize}
         onChange={(current) => {
           setCurPage(current - 1);
           getApplicationList();
         }}
-        onShowSizeChange={onShowSizeChange} />
+        // onShowSizeChange={
+        //   (page, pageSize) => {
+        //     setCurPage(0);
+        //     setPageSize(pageSize);
+        //     getApplicationList();
+        //   }
+        // }
+         />
       {isAddModalVisible && (
         <AppProjectModal
           addOrChangeFlag={checkFlag}

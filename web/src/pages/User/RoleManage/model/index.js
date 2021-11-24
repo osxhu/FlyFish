@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getUserListService, changeRole,saveRoleMenu, addNewRole, saveRoleAuth, deleteOneRole, roleDetail } from "../services";
+import { getUserListService, getMenuService, changeRole, saveRoleMenu, addNewRole, saveRoleAuth, deleteOneRole, roleDetail } from "../services";
 import { getUsertManageListService } from "../../UserManage/services";
 
 import _ from "lodash";
@@ -21,9 +21,10 @@ const model = {
     deleteId: null,
     curPage: 0,
     pageSize: 10,
+    menuList: [],//菜单列表
     oneRoleDetail: [], //单个角色详情
-    userList: [] ,//角色列表需要的所有用户信息
-    oneRoleMenu:[]
+    userList: [],//角色列表需要的所有用户信息
+    oneRoleMenu: []
   },
   effects: {
     // 获取所有用户信息
@@ -70,26 +71,34 @@ const model = {
     // 获取角色详情
     *getRoleDetail(id) {
       const res = yield roleDetail(id);
-       this.setUserDetail(res);
+      this.setUserDetail(res);
     },
     // 修改角色权限
     * changeRoleAuth(id, params = {}, callback) {
       const res = yield saveRoleAuth(id, params);
       callback && callback(res);
     },
+    // 获取所有菜单
+    * getAllMenuList() {
+      const res = yield getMenuService();
+      this.setMenuList(res);
+    },
     //修改角色菜单
     * changeRoleMenu(id, params = {}, callback) {
-    const res = yield saveRoleMenu(id, params);
-    callback && callback(res);
-  }
+      const res = yield saveRoleMenu(id, params);
+      callback && callback(res);
+    }
   },
   reducers: {
-    setUserMenu(res){
+    setMenuList(res) {
+      this.menuList = res.data;
+    },
+    setUserMenu(res) {
       this.oneRoleMenu = res.data.menus;
     },
     setUserDetail(res) {
-     
-      this.oneRoleDetail = res.data.members.map(item=>item.id);
+
+      this.oneRoleDetail = res.data.members.map(item => item.id);
     },
     setUserList(res) {
       this.userList = res.data.list;

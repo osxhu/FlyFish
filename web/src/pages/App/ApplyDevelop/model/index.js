@@ -75,6 +75,9 @@ const model = {
     },
   },
   reducers: {
+    setPageSize(page){
+      this.pageSize=page;
+    },
     setActiveCard(item) {
       if (item) {
         this.activeCard = {

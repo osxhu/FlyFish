@@ -16,4 +16,5 @@ export default {
   ROLE_DETAIL:`${baseUrl}/roles/info/`,
   // 修改角色权限
   ROLE_AUTH:`${baseUrl}/roles/`,
+  MENU_LIST:`${baseUrl}/menus/list`,
 };
