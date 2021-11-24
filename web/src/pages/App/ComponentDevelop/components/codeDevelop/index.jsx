@@ -14,6 +14,10 @@ const CodeDevelop = observer((props)=>{
     getListData
   } = store;
   const { developingData } = store;
+  console.log('developingData',developingData);
+  if (!developingData.id) {
+    props.history.push('/app/component-develop')
+  }
 
   const [previewRandom, setPreviewRandom] = useState(0);
   const [layout, setLayout] = useState('row');
