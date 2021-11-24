@@ -115,7 +115,7 @@ module.exports = appInfo => {
   };
 
   config.logger = {
-    dir: `${appInfo.root}/logs/${appInfo.name}`,
+    dir: `${appInfo.baseDir}/logs/${appInfo.name}`,
   };
 
 
