@@ -40,12 +40,11 @@ module.exports = appInfo => {
 
   config.cookieConfig = {
     name: 'FLY_FISH_V2.0',
-    domain: '0.0.0.0',
+    domain: '10.2.3.56',
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
   };
 
   const staticDir = '/www';
-
   config.pathConfig = {
     staticDir,
   };
@@ -53,10 +52,6 @@ module.exports = appInfo => {
   config.static = {
     prefix: '/',
     dir: staticDir,
-    // dynamic: true,
-    // preload: false,
-    // maxAge: 31536000,
-    // buffer: true,
   };
 
   return {

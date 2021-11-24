@@ -25,7 +25,7 @@ module.exports = appInfo => {
   };
 
   config.mongoose = {
-    url: 'mongodb://10.2.3.56:27017/flyfish',
+    url: 'mongodb://10.2.3.247:27017/flyfish',
     options: {
       useUnifiedTopology: true,
     },
@@ -34,16 +34,16 @@ module.exports = appInfo => {
   config.cluster = {
     listen: {
       port: 7001,
-      hostname: '10.2.3.56',
+      hostname: '10.2.3.247',
     },
   };
 
   config.cookieConfig = {
     name: 'FLY_FISH_V2.0',
-    domain: '10.2.3.56',
+    domain: '10.2.3.247',
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
   };
-  
+
   const staticDir = '/www';
   config.pathConfig = {
     staticDir,
@@ -52,10 +52,6 @@ module.exports = appInfo => {
   config.static = {
     prefix: '/',
     dir: staticDir,
-    // dynamic: true,
-    // preload: false,
-    // maxAge: 31536000,
-    // buffer: true,
   };
 
   return {
