@@ -450,11 +450,11 @@ class ComponentService extends Service {
   }
 
   async genCoverImage(id, savePath) {
-    const { ctx, logger } = this;
+    const { ctx, logger, config } = this;
     try {
-      const url = 'http://10.2.3.56:8089/#/app/component-develop';
       const [ version, buildPath, coverFileName ] = savePath.split('/').slice(-3);
 
+      const url = `http://${config.cluster.listen.hostname}:${config.cluster.listen.port}/components/${id}/${version}/index.html`;
       const result = await ctx.helper.screenshot(url, savePath);
       if (result === 'success') {
         await ctx.model.Component._updateOne({ id }, { cover: `/components/${id}/${version}/${buildPath}/${coverFileName}` });
