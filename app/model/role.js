@@ -23,7 +23,11 @@ module.exports = app => {
     desc: {
       type: String,
     },
-    menus: [ String ],
+    menus: [{
+      _id: false,
+      name: String,
+      url: String,
+    }],
     status: {
       type: String,
       default: Enum.COMMON_STATUS.VALID,
