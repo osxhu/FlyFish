@@ -88,6 +88,7 @@ module.exports = appInfo => {
     applicationPath: 'applications',
     appTplPath: 'application_tpl',
     appBuildPath: 'application_build',
+    defaultApplicationCoverPath: '/application_tpl/public/cover.png',
 
     componentsPath: 'components',
     componentsTplPath: 'component_tpl',

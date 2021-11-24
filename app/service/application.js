@@ -1,12 +1,13 @@
 'use strict';
 const Service = require('egg').Service;
 const _ = require('lodash');
+const fs = require('fs');
 
 const Enum = require('../lib/enum');
 
 class ApplicationService extends Service {
   async create(params) {
-    const { ctx } = this;
+    const { ctx, config: { pathConfig: { defaultApplicationCoverPath } } } = this;
     const userInfo = ctx.userInfo;
 
     const returnData = { msg: 'ok', data: {} };
@@ -22,6 +23,7 @@ class ApplicationService extends Service {
       params,
       tagData,
       {
+        cover: defaultApplicationCoverPath,
         creator: userInfo.userId,
         updater: userInfo.userId,
       }
@@ -100,7 +102,7 @@ class ApplicationService extends Service {
     }
 
     // note: async screenshot component cover, no wait!!!!!
-    const savePath = `${staticDir}/${applicationPath}/cover/${id}.png`;
+    const savePath = `${staticDir}/${applicationPath}/${id}/cover.png`;
     this.genCoverImage(id, savePath);
   }
 
@@ -304,13 +306,15 @@ class ApplicationService extends Service {
   }
 
   async genCoverImage(id, savePath) {
-    const { ctx, logger } = this;
+    const { ctx, logger, config } = this;
 
     try {
-      const url = 'http://www.baidu.com';
+      const url = `http://${config.cluster.listen.hostname}:${config.cluster.listen.port}/web/screen/index.html?id=${id}`;
+      const prePath = `/applications/${id}`;
+      if (!fs.existsSync(prePath)) fs.mkdirSync(prePath);
       const result = await ctx.helper.screenshot(url, savePath);
       if (result === 'success') {
-        await ctx.model.Application._updateOne({ id }, { cover: `/applications/cover/${id}.png` });
+        await ctx.model.Application._updateOne({ id }, { cover: `${prePath}/cover.png` });
       }
       logger.info(`${id} gen cover success!`);
     } catch (error) {
