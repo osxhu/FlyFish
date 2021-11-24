@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = component_mark => `
+module.exports = (component_mark, version) => `
 'use strict';
 
 /**
@@ -15,6 +15,6 @@ import {
 // import DataSetting from "./settings/data";
 // import OptionsSetting from "./settings/options";
 
-// registerComponentOptionsSetting("${component_mark}", OptionsSetting);
-// registerComponentDataSetting("${component_mark}", DataSetting);
+// registerComponentOptionsSetting("${component_mark}", "${version}", OptionsSetting);
+// registerComponentDataSetting("${component_mark}", "${version}", DataSetting);
 `;
