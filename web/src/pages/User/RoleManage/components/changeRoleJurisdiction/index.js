@@ -10,15 +10,24 @@ import styles from './style.less';
 export default Form.create({ name: "FORM_IN_USER_MODAL" })(
     function ChangeRoleJurisdiction({ close, checkProject, menuList, form, project = {}, onSave, onCancel }) {
         let menuListData = toJS(menuList);
-        const new1 = project.menus.map(item => item);
+        // 默认选中的节点url
+        const new1 = project.menus.map(item => item.url);
         const onSelect = (selectedKeys, info) => {
             onSave && onSave(selectedKeys);
         };
         let sendarr = [];
-        sendarr = { menus: menuListData };
-        const onCheck = (checkedKeys, info) => {
-            sendarr = { menus: checkedKeys };
+        sendarr = { menus: project.menus };
+        // 选中组合数据
+        const onCheck = (checkedKeys, event) => {
+            let sendMenuArr = event.checkedNodes.map(item => {
+                return {
+                    name: item.props.title,
+                    url: item.key
+                };
+            });
+            sendarr = { menus: sendMenuArr };
         };
+        // 默认展开所有一级
         let checkarr = [];
         let arr1 = menuListData && menuListData.map((item, index) => {
             checkarr.push(item.url);

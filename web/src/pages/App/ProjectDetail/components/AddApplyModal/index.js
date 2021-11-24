@@ -26,7 +26,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                       type: type || '2D',
                       ...project,
                       ...values,
-                      tags: values.tags.map(item => {
+                      tags:values.tags&& values.tags.map(item => {
                         return { name: item };
                       })
                     });
@@ -36,7 +36,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     onChange(project.id, {
                       type: type || '2D',
                       ...values,
-                      tags: values.tags.map(item => {
+                      tags:values.tags&& values.tags.map(item => {
                         return { name: item };
                       })
                     });

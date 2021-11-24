@@ -157,7 +157,7 @@ const AppProjectManage = observer((props) => {
   ];
   // 请求列表数据
   useEffect(() => {
-    getProjectList();
+    getProjectList({curPage:0});
     getIndustrysList();
   }, []);
   const goRoute = (id) => {
