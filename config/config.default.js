@@ -17,7 +17,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1635235048156_3836';
 
   // add your middleware config here
-  config.middleware = [ 'errorHandler', 'notfoundHandler' ];
+  config.middleware = [ 'errorHandler', 'notfoundHandler', 'accessLogger' ];
 
   config.bodyParser = {
     jsonLimit: '10mb',
@@ -117,6 +117,25 @@ module.exports = appInfo => {
 
   config.logger = {
     dir: `${appInfo.baseDir}/logs/${appInfo.name}`,
+  };
+
+  config.customLogger = {
+    // 请求响应日志
+    accessLogger: {
+      file: path.join(appInfo.baseDir, `logs/${appInfo.name}/access.log`),
+      format: meta => {
+        return '[' + meta.date + '] '
+                + meta.level + ' '
+                + meta.pid + ' '
+                + meta.message;
+      },
+      formatter: meta => {
+        return '[' + meta.date + '] '
+                + meta.level + ' '
+                + meta.pid + ' '
+                + meta.message;
+      },
+    },
   };
 
 

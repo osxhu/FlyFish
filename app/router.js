@@ -14,6 +14,7 @@ module.exports = app => {
   const { router, controller } = app;
 
   router.use(app.middleware.authCheck(app.config));
+  router.use(app.middleware.accessLogger());
 
   // users
   router.post('/users/register', controller.user.register);
