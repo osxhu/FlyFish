@@ -564,7 +564,7 @@ class ComponentService extends Service {
       fs.mkdirSync(srcPath);
       fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId, initComponentVersion));
       fs.writeFileSync(`${srcPath}/Component.js`, require(`${srcTplPath}/ComponentJs.js`)());
-      fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(componentId));
+      fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(componentId, initComponentVersion));
 
       const settingPath = `${srcPath}/settings`;
       fs.mkdirSync(settingPath);
