@@ -383,7 +383,14 @@ const Detail = observer(()=>{
             <span style={{fontWeight:800}}>组件标识：{detailData.id}</span>
           </div>
           <div style={{backgroundColor:'#eee',height:300}}>
-              
+          <iframe 
+            width='100%'
+            height='100%'
+            name='detailPreview' 
+            src={`http://${window.location.hostname}:7001/components/${viewId}/v-current/index.html`} 
+            frameBorder={0}
+          >
+          </iframe>
           </div>
         </div>
         <div className={styles.reocrdWrap}>
