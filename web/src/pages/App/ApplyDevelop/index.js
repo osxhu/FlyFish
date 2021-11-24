@@ -19,7 +19,7 @@ import DeleteApplyListModal from './components/DeleteApplyListModal';
 const ApplyDevelop = observer(() => {
   let [checkFlag, setCheckFlag] = useState(null);
   const intl = useIntl(); const {
-    getApplicationList,setPageSize,
+    getApplicationList, setPageSize,
     setSearchParams, setActiveCard, exportApplicationOne,
     setCurPage, addApplicationOne, deleteApplicationOne, getApplicationListDelete,
     saveProject, getTagsList, getProjectList, changeApplicationOne,
@@ -92,7 +92,6 @@ const ApplyDevelop = observer(() => {
             defaultValue: "选择开发状态进行查询",
           })}
         >
-          {<Option value=''>全部</Option>}
           {
             APP_DEVELOP_STATUS.map(item => {
               return <Option key={item.id} value={item.id}>{item.name}</Option>;
@@ -100,7 +99,6 @@ const ApplyDevelop = observer(() => {
           }
         </Select>
       ),
-      formAttribute: { initialValue: '' }
     },
     {
       components: (
@@ -123,6 +121,13 @@ const ApplyDevelop = observer(() => {
         <Select id="tags"
           key="tags"
           allowClear
+          onChange={(arr) => {
+            if (arr.length > 10) {
+              arr.pop();
+              message.error('最多只能选择十条标签！');
+            }
+
+          }}
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           name='应用标签' style={{ width: 200 }}
@@ -244,7 +249,7 @@ const ApplyDevelop = observer(() => {
                   <Button value="small" type="primary">开发</Button>
 
                 </a>
-                <a title="预览应用" target="_blank" href={window.APP_CONFIG.screen + '/screen/index.html' + '?id=6198f02666d35702ac933fb8'} rel="noreferrer">
+                <a title="预览应用" target="_blank" href={window.APP_CONFIG.screen + '/screen/index.html' + '?id=' + item.id} rel="noreferrer">
                   <Button value="small" type="primary">预览</Button>
                 </a>
                 <Tooltip key="copy" title="复制">
@@ -325,14 +330,14 @@ const ApplyDevelop = observer(() => {
           setCurPage(current - 1);
           getApplicationList();
         }}
-        // onShowSizeChange={
-        //   (page, pageSize) => {
-        //     setCurPage(0);
-        //     setPageSize(pageSize);
-        //     getApplicationList();
-        //   }
-        // }
-         />
+      // onShowSizeChange={
+      //   (page, pageSize) => {
+      //     setCurPage(0);
+      //     setPageSize(pageSize);
+      //     getApplicationList();
+      //   }
+      // }
+      />
       {isAddModalVisible && (
         <AppProjectModal
           addOrChangeFlag={checkFlag}

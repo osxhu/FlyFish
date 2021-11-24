@@ -10,11 +10,11 @@ import styles from './style.less';
 export default Form.create({ name: "FORM_IN_USER_MODAL" })(
     function ChangeRoleJurisdiction({ close, checkProject, menuList, form, project = {}, onSave, onCancel }) {
         let menuListData = toJS(menuList);
+        let oldData = toJS(project);
         // 默认选中的节点url
-        const new1 = project.menus.map(item => item.url);
-        const onSelect = (selectedKeys, info) => {
-            onSave && onSave(selectedKeys);
-        };
+        let new1 = oldData.menus.map(item=>item.url);
+        let end=new1.filter(item=>item!=='/path/1'&&item!=='/path/2'&&item!=='/path/3');
+      
         let sendarr = [];
         sendarr = { menus: project.menus };
         // 选中组合数据
@@ -25,7 +25,13 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                     url: item.key
                 };
             });
-            sendarr = { menus: sendMenuArr };
+            let fatherObjArr = [];
+            event.halfCheckedKeys.forEach(item => {
+                let father=toJS(menuList.find(item1 => item1.url === item));
+                delete father.children;
+                fatherObjArr.push(father);
+            });
+            sendarr = { menus: sendMenuArr.concat(...fatherObjArr) };
         };
         // 默认展开所有一级
         let checkarr = [];
@@ -58,8 +64,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                     className={styles.roleModal}
                     checkable
                     defaultExpandedKeys={checkarr}
-                    defaultCheckedKeys={new1}
-                    onSelect={onSelect}
+                    defaultCheckedKeys={end}
                     onCheck={onCheck}
                 >
                     {arr1}

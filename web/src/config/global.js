@@ -59,7 +59,7 @@ export const COMPONENT_TYPE = {
         name:'已交付'
       },{
         id:'demo',
-        name:'demo'
+        name:'Demo'
       }
   ];
   
