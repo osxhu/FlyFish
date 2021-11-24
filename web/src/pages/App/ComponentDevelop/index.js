@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-23 15:59:20
+ * @LastEditTime: 2021-11-24 16:08:07
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -366,7 +366,7 @@ const ComponentDevelop = observer((props) => {
               <Col span={5}>
                 <span>组件名称：</span>
                 <Input placeholder='请输入'
-                style={{width:150}}
+                style={{width:'calc(100% - 70px)'}}
                   value={searchName}
                   onChange={(e)=>{
                     setSearchName(e.target.value);
@@ -381,7 +381,7 @@ const ComponentDevelop = observer((props) => {
                   // }}
                 ></Input>
               </Col>
-              <Col span={8}>
+              <Col span={8} offset={1}>
                 <Input style={{width:'90%'}} placeholder='输入项目名称/描述/标签/创建人查找组件'
                   value={searchKey}
                   onChange={(e)=>{
@@ -400,7 +400,7 @@ const ComponentDevelop = observer((props) => {
                 <span>开发状态：</span>
                 <Select
                   placeholder='请选择'
-                  style={{ width: 150 }}
+                  style={{ width: 'calc(100% - 70px)' }}
                   value={searchStatus}
                   onChange={(val)=>{
                     setSearchStatus(val);
@@ -412,22 +412,7 @@ const ComponentDevelop = observer((props) => {
                   <Option value="online">已上线</Option>
                 </Select>
               </Col>
-              {/* <Col span={5}>
-                <span>组件类别：</span>
-                <Select
-                  placeholder='请选择'
-                  style={{ width: 150 }}
-                  value={searchCate}
-                  onChange={(val)=>{
-                    setSearchCate(val);
-                    getListData();
-                  }}
-                >
-                  <Option value="1">全部</Option>
-                  <Option value="2">基础组件</Option>
-                </Select>
-              </Col> */}
-              <Col span={2} push={4}>
+              <Col span={2} push={3}>
                 <Button 
                   type='primary' 
                   style={{borderRadius:'3px'}}
