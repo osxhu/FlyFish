@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './style.less';
-import { Button,message,Modal,Popover } from 'antd';
+import { Button,message,Modal,Popover,Spin } from 'antd';
 import store from "../../model/index";
 import { observer } from "@chaoswise/cw-mobx";
 import { installPackagesService,compileComponentService } from '../../services';
@@ -14,7 +14,7 @@ const CodeDevelop = observer((props)=>{
     getListData
   } = store;
   const { developingData } = store;
-  console.log('developingData',developingData);
+
   if (!developingData.id) {
     props.history.push('/app/component-develop')
   }
@@ -25,6 +25,7 @@ const CodeDevelop = observer((props)=>{
   const [layerX, setLayerX] = useState(0);
   const [layerY, setLayerY] = useState(405);
   const mainDiv = useRef();
+  const [compileSping, setCompileSping] = useState(false);
 
   useEffect(() => {
     window.addEventListener('message',function(event){
@@ -48,12 +49,15 @@ const CodeDevelop = observer((props)=>{
     }
   }
   const compileComponent = async ()=>{
+    setCompileSping(true)
     const res  = await compileComponentService(developingData.id);
     if (res && res.code===0) {
       message.success('编译成功!');
       setPreviewRandom(Math.random());
+      setCompileSping(false)
     }else{
       message.error(res.msg);
+      setCompileSping(false)
     }
   }
   const LayoutRowIcon = ()=>(
@@ -121,14 +125,16 @@ const CodeDevelop = observer((props)=>{
           marginBottom:layout=='row'?10:0
         }}>
         <div style={{padding:'5px 15px'}}>编辑区</div>
-        <iframe
-          className={styles.vscodeFrame}
-          name='vscode'
-          // src={`http://${window.location.hostname}:8080/?folder=/www/components/${developingData.id}/v-current`} 
-          src={`http://${window.location.hostname}:8080/?folder=/data/app/flyfish-2.0/www/components/${developingData.id}/v-current`} 
-          frameBorder={0}
-        >
-        </iframe>
+        <Spin tip='正在进行编译...' spinning={compileSping} wrapperClassName='vscodeSpinWrap'>
+          <iframe
+            className={styles.vscodeFrame}
+            name='vscode'
+            // src={`http://${window.location.hostname}:8080/?folder=/www/components/${developingData.id}/v-current`} 
+            src={`http://${window.location.hostname}:8080/?folder=/www/components/${developingData.id}/v-current`} 
+            frameBorder={0}
+          >
+          </iframe>
+        </Spin>
       </div>
       <div className={layout=='row'?styles.rowBar:styles.colBar}
         onMouseDown={(e)=>{

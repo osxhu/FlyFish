@@ -30,6 +30,7 @@ module.exports = {
   },
   htmlPlugin: config => {
     config.excludeAssets = [];
+    config.title = 'LCAP';
     return config;
   },
   copyPlugin:config=>{
