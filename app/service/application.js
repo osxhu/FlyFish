@@ -307,14 +307,17 @@ class ApplicationService extends Service {
 
   async genCoverImage(id, savePath) {
     const { ctx, logger, config } = this;
+    const { pathConfig: { staticDir, applicationPath } } = config;
 
     try {
       const url = `http://${config.cluster.listen.hostname}:${config.cluster.listen.port}/web/screen/index.html?id=${id}`;
-      const prePath = `/applications/${id}`;
+
+      const prePath = `${staticDir}/${applicationPath}/${id}`;
       if (!fs.existsSync(prePath)) fs.mkdirSync(prePath);
+
       const result = await ctx.helper.screenshot(url, savePath);
       if (result === 'success') {
-        await ctx.model.Application._updateOne({ id }, { cover: `${prePath}/cover.png` });
+        await ctx.model.Application._updateOne({ id }, { cover: `/${applicationPath}/${id}/cover.png` });
       }
       logger.info(`${id} gen cover success!`);
     } catch (error) {
