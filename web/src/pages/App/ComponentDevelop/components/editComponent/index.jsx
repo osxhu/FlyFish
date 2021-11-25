@@ -32,6 +32,9 @@ const EditComponent = observer((props)=>{
           values.category = cateData.one;
           values.subCategory = cateData.two;
         }
+        if (values.tags) { 
+          values.tags = values.tags.map(item=>({name:item}))
+        }
         values.desc=values.desc?values.desc:undefined;
         // values.name=undefined;
         const res = await editComponentService(editData.id,values);
@@ -142,14 +145,14 @@ const EditComponent = observer((props)=>{
     </Form.Item>
     <Form.Item label="标签">
       {getFieldDecorator('tags', {
-        initialValue:editData.tags.map(item=>item.id),
+        initialValue:editData.tags.map(item=>item.name),
         rules: []
       })(<Select
         mode="multiple"
       >
         {
           tagsData.map((v,k)=>{
-          return <Option value={v.id} key={v.id}>{v.name}</Option>
+          return <Option value={v.name} key={v.id}>{v.name}</Option>
           })
         }
       </Select>)}
