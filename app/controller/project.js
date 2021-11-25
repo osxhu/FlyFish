@@ -68,6 +68,7 @@ class ProjectController extends BaseController {
     let options = {};
     if (!_.isNil(curPage) && !_.isNil(pageSize)) {
       options = {
+        sort: '-update_time',
         skip: curPage * pageSize,
         limit: pageSize,
       };

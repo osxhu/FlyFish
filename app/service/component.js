@@ -236,7 +236,7 @@ class ComponentService extends Service {
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
 
-    const existsComponents = await ctx.model.Component._findOne({ name: createComponentInfo.name });
+    const existsComponents = await ctx.model.Component._findOne({ name: createComponentInfo.name, status: Enum.COMMON_STATUS.VALID });
     if (!_.isEmpty(existsComponents)) {
       returnData.msg = 'Exists Already';
       return returnData;

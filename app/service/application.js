@@ -12,7 +12,7 @@ class ApplicationService extends Service {
 
     const returnData = { msg: 'ok', data: {} };
 
-    const existsApplications = await ctx.model.Application._findOne({ name: params.name });
+    const existsApplications = await ctx.model.Application._findOne({ name: params.name, status: Enum.COMMON_STATUS.VALID });
     if (!_.isEmpty(existsApplications)) {
       returnData.msg = 'Exists Already';
       return returnData;
