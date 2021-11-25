@@ -169,7 +169,10 @@ class ComponentsController extends BaseController {
       name: app.Joi.string(),
       type: app.Joi.string(),
       projects: app.Joi.array().items(app.Joi.string()),
-      tags: app.Joi.array().items(app.Joi.string()),
+      tags: app.Joi.array().items(app.Joi.object().keys({
+        id: app.Joi.string().length(24),
+        name: app.Joi.string().required(),
+      })),
       category: app.Joi.number(),
       subCategory: app.Joi.number(),
       desc: app.Joi.string(),
