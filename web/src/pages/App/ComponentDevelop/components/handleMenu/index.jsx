@@ -71,7 +71,7 @@ const HandleMenu = observer((props)=>{
       }}
     ></Input>
   </div>
-  <div style={{position:'relative'}}>
+  <div style={{position:'relative',height:'calc(100% - 105px)',overflowX:'hidden',overflowY:'auto'}}>
     {
       data.map((v,k)=>{
         return <div key={k+''}>
