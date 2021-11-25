@@ -65,6 +65,9 @@ const model = {
       this.curPage = res.data.curPage;
       this.pageSize = res.data.pageSize;
     },
+    setCurPage(page){
+      this.curPage=page;
+    },
     setSearchParams(searchParams) {
       let sendParams = {};
       for (let i in searchParams) {

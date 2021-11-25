@@ -26,7 +26,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     getIndustrysList,
     getTagsList,
     deleteAssembly,
-    getTreeDataFirst,
+    getTreeDataFirst,setCurPage,
     changeOneAssemly,
     getListData, setDrawerVisible,
     getAssemlyDetail,
@@ -200,10 +200,11 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               <Pagination
                 hideOnSinglePage={true}
                 total={total}
-                current={curPage + 1}
+                current={curPage +1}
                 pageSize={pageSize}
                 onChange={(page) => {
-                  getListData(({ curPage: page - 1 }));
+                  setCurPage(page-1);
+                  getListData(({ curPage: page-1 }));
                 }}
               />
             </div>

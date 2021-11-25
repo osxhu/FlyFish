@@ -40,7 +40,7 @@ const model = {
     searchStatus: 'all',
     projectId: '',
     total: 0,
-    curPage: 1,
+    curPage: 0,
     pageSize: 20,
     hasMore: true,
     tagsList: [],
@@ -87,7 +87,8 @@ const model = {
         category: category,
         subCategory: subCategory === '' ? undefined : subCategory,
         curPage: curPage,
-        pageSize
+        pageSize,
+        ...obj
       };
       const res = yield getListDataService(params);
       this.setListData(res.data);

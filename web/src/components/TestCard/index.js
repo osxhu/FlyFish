@@ -71,7 +71,7 @@ export default Form.create({ name: "BASIC_CARD" })(
                                         !showStateTag ? null : <Tag className={styles.tag} color={computedTagColorByStatus(item.developStatus)}>{computedTagWordByStatus(item.developStatus)}</Tag>
                                     }
                                     <img
-                                    style={{height:item.cover?'':'179.34px'}}
+                                    style={{height:number?'157px':'240px'}}
                                         onClick={() => {
                                             checkCard && checkCard(item.id);
                                             setCheckId(item.id);
@@ -90,15 +90,15 @@ export default Form.create({ name: "BASIC_CARD" })(
                                     setCheckId(item.id);
                                 }}
                                 title={(() => {
-                                    let title;
-                                    if (!actions) title = `组件名称:${item.name || '暂无'}`;
-                                    if (state) {
-                                        title = `模板名称:${item.name || '暂无'}`;
-                                    } else {
-                                        title = `应用名称:${item.name || '暂无'}`;
-                                    }
+                                    // let title;
+                                    // if (!actions) title = `${item.name || '暂无'}`;
+                                    // if (state) {
+                                    //     title = `${item.name || '暂无'}`;
+                                    // } else {
+                                    //     title = `${item.name || '暂无'}`;
+                                    // }
                                     return <Tooltip title={item.name}>
-                                        <span>{title}</span>
+                                        <span>{`${item.name || '暂无'}`}</span>
                                     </Tooltip>;
 
                                 })()}

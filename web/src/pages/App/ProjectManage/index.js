@@ -16,10 +16,10 @@ const AppProjectManage = observer((props) => {
     getProjectList,
     setSearchParams,
     saveProject, changeProject, getIndustrysList,
-    openEditProjectModal, openProjectPage,
+    openEditProjectModal, openProjectPage, setCurPage,
     closeEditProjectModal, deleteProject, addNewIndustrys
   } = store;
-  const { total, industryList, current, pageSize, projectList, isEditProjectModalVisible, activeProject } =
+  const { total, industryList, curPage, pageSize, projectList, isEditProjectModalVisible, activeProject } =
     store;
   let [checkFlag, setCheckFlag] = useState(false);
   const loading = loadingStore.loading["AppProjectManage/getProjectList"];
@@ -33,7 +33,7 @@ const AppProjectManage = observer((props) => {
       key: "name",
       disabled: true,
       render(text, record) {
-        return <span style={{cursor:'pointer'}} onClick={() => {
+        return <span style={{ cursor: 'pointer' }} onClick={() => {
           goRoute(record.id);
           openProjectPage(record);
         }}>{text}</span>;
@@ -157,7 +157,8 @@ const AppProjectManage = observer((props) => {
   ];
   // 请求列表数据
   useEffect(() => {
-    getProjectList({curPage:0});
+    setSearchParams({});
+    getProjectList({ curPage: 0 });
     getIndustrysList();
   }, []);
   const goRoute = (id) => {
@@ -169,10 +170,8 @@ const AppProjectManage = observer((props) => {
   };
   const onSearch = (params) => {
     setSearchParams(params);
-    getProjectList({
-      curPage: 0,
-      pageSize: 10
-    });
+    setCurPage(0);
+    getProjectList();
   };
 
   return (
@@ -185,7 +184,7 @@ const AppProjectManage = observer((props) => {
         pagination={{
           showTotal: true,
           total: total,
-          current: current,
+          current: curPage + 1,
           pageSize: pageSize,
           onChange: onPageChange,
           onShowSizeChange: onPageChange,

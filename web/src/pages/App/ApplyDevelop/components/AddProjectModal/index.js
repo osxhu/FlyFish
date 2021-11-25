@@ -31,7 +31,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     });
                 }
                 if (addOrChangeFlag === 1) {
-                  onChange && delete values.name &&
+                  onChange &&
                     onChange(project.id, {
                       type: type || '2D',
                       ...values,
@@ -98,7 +98,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Input
-                disabled={addOrChangeFlag === 1}
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseInput",

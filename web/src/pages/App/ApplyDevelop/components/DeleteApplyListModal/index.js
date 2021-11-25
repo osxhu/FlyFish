@@ -1,24 +1,36 @@
 import React from "react";
-import { Modal, Input, Select, CWTable, Form, Button } from "@chaoswise/ui";
+import { Modal, Form, Button, Input } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 import { formatDate } from '@/config/global';
 
-import { observer, toJS } from '@chaoswise/cw-mobx';
+import { toJS } from '@chaoswise/cw-mobx';
 import { Table } from 'antd';
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
   function EditProjectModal({ total, curPage, form, deleteApplyList = [], onChange, getDeleteApplyList, onCancel }) {
     // let basicTableListData = toJS(deleteApplyList);
     const intl = useIntl();
+    let [backFlag, setBackFlag] = React.useState(false);
+    let [checkId, setCheckId] = React.useState('');
+
+    let [changeName, setChangeName] = React.useState('');
     let tableData = toJS(deleteApplyList);
     const columns = [
       {
         title: '序号',
+        width: 60,
         render: (text, record, index) => `${(index + 1) + curPage * 10}`,
       },
       {
-        title: '姓名',
+        title: '名称',
         dataIndex: 'name',
         key: 'name',
+        render: (text, record) => (
+          backFlag && checkId === record.id ? <Input style={{ width: '100px' }} onChange={(event) => { setChangeName(event.target.value); }}
+            onPressEnter={() => { onChange && onChange(record.id, { name: changeName, status: 'valid' }); }}
+            onBlur={() => { onChange && onChange(record.id, { name: changeName, status: 'valid' }); }}
+            defaultValue={changeName} /> :
+            <span> {text}</span>
+        ),
       },
       {
         title: '创建时间',
@@ -40,7 +52,16 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         title: '操作',
         key: 'action',
         render: (text, record) => (
-          <a onClick={() => { onChange && onChange(record.id, { status: 'valid' }); }}>还原</a>
+          <a onClick={() => {
+            if (record.id != checkId) {
+              setBackFlag(true);
+            } else {
+              setBackFlag(!backFlag);
+            }
+            setChangeName(record.name);
+
+            setCheckId(record.id);
+          }}>还原</a>
         ),
       },
     ];
@@ -66,7 +87,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         ]}
       >
         <Table
-        scroll={{y:'450px'}}
+          scroll={{ y: '450px' }}
           pagination={{
             current: curPage + 1,
             pageSize: 10,
