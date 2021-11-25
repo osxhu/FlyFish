@@ -116,13 +116,13 @@ module.exports = appInfo => {
   };
 
   config.logger = {
-    dir: `${appInfo.baseDir}/logs/${appInfo.name}`,
+    dir: path.join(__dirname, `../logs/${appInfo.name}`),
   };
 
   config.customLogger = {
     // 请求响应日志
     accessLogger: {
-      file: path.join(appInfo.baseDir, `logs/${appInfo.name}/access.log`),
+      file: path.join(__dirname, `../logs/${appInfo.name}/access.log`),
       format: meta => {
         return '[' + meta.date + '] '
                 + meta.level + ' '
