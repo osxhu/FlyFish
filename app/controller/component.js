@@ -181,7 +181,7 @@ class ComponentsController extends BaseController {
     const updateResult = await service.component.updateInfo(id, requestData);
     const errInfo = updateResult.data.error || null;
     if (updateResult.msg === 'Exists Already') {
-      this.fail('复制失败, 组件名称已存在', errInfo, CODE.FAIL);
+      this.fail('更新失败, 组件名称已存在', errInfo, CODE.FAIL);
     } else {
       this.success('更新成功', { id });
     }

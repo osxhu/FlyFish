@@ -309,7 +309,7 @@ class ComponentService extends Service {
 
     const updateData = {};
     if (name) {
-      const existsComponents = await ctx.model.Component._findOne({ name, status: Enum.COMMON_STATUS.VALID });
+      const existsComponents = await ctx.model.Component._findOne({ id: { $ne: id }, name, status: Enum.COMMON_STATUS.VALID });
       if (!_.isEmpty(existsComponents)) {
         returnData.msg = 'Exists Already';
         return returnData;
