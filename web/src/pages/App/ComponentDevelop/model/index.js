@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-23 11:16:51
+ * @LastEditTime: 2021-11-25 16:35:44
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -34,6 +34,8 @@ const model = {
     searchName:'',
     searchKey:'',
     searchStatus:'all',
+    searchProject:undefined,
+    searchType:'all',
     viewId:'',
     editData:{},
     projectsData:[],
@@ -85,48 +87,20 @@ const model = {
       }
     },
     *getListData(){
-      // const { category,subCategory } = toJS(this.selectedData);
-      // let curPage = this.curPage-1;
-      // const pageSize = this.pageSize;
-      // const params = {
-      //   category:category,
-      //   subCategory:subCategory===''?undefined:subCategory,
-      //   curPage:curPage,
-      //   pageSize
-      // };
-      // const res = yield getListDataService(params);
-      // this.setListData(res.data);
       let curPage = this.curPage-1;
       const pageSize = this.pageSize;
       const { category,subCategory } = toJS(this.selectedData);
       const searchName = this.searchName;
       const searchKey = this.searchKey;
       const searchStatus = this.searchStatus;
+      const searchProject = this.searchProject;
+      const searchType = this.searchType;
       const params = {
         name:searchName?searchName:undefined,
         key:searchKey?searchKey:undefined,
         developStatus:searchStatus!=='all'?searchStatus:undefined,
-
-        category:category,
-        subCategory:subCategory===''?undefined:subCategory,
-        curPage:curPage,
-        pageSize
-      };
-      const res = yield getListDataService(params);
-      this.setListData(res.data);
-    },
-    *getListDataWithCate(){
-      let curPage = this.curPage-1;
-      const pageSize = this.pageSize;
-      const { category,subCategory } = toJS(this.selectedData);
-      const searchName = this.searchName;
-      const searchKey = this.searchKey;
-      const searchStatus = this.searchStatus;
-      const params = {
-        name:searchName?searchName:undefined,
-        key:searchKey?searchKey:undefined,
-        developStatus:searchStatus!=='all'?searchStatus:undefined,
-
+        type:searchType==='all'?undefined:searchType,
+        projectId:searchProject,
         category:category,
         subCategory:subCategory===''?undefined:subCategory,
         curPage:curPage,
@@ -169,6 +143,12 @@ const model = {
     },
     setSearchStatus(res){
       this.searchStatus = res;
+    },
+    setSearchProject(res){
+      this.searchProject = res;
+    },
+    setSearchType(res){
+      this.searchType = res;
     },
     setViewId(res){
       this.viewId = res;

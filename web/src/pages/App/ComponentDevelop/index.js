@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-24 16:08:07
+ * @LastEditTime: 2021-11-25 16:57:51
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -232,7 +232,8 @@ const ComponentDevelop = observer((props) => {
     setSearchName,
     setSearchKey,
     setSearchStatus,
-    getListDataWithCate,
+    setSearchProject,
+    setSearchType,
     setViewId,
     setEditData,
     getProjectsData,
@@ -245,8 +246,8 @@ const ComponentDevelop = observer((props) => {
   } = store;
   const { 
     addModalvisible,editModalvisible,importModalvisible,treeData,
-    listData,selectedData,searchName,searchKey,searchStatus,userInfo,developing,
-    curPage,pageSize
+    listData,selectedData,searchName,searchKey,searchStatus,searchType,searchProject,projectsData,
+    userInfo,developing,curPage,pageSize
   } = store;
 
   const [addCateName, setAddCateName] = useState('');
@@ -362,8 +363,8 @@ const ComponentDevelop = observer((props) => {
       </Sider>
       <Content>
           <div className={styles.rightWraper}>
-            <Row className={styles.handleWrap}>
-              <Col span={5}>
+            <Row className={styles.handleWrap} gutter={10}>
+              <Col span={4}>
                 <span>组件名称：</span>
                 <Input placeholder='请输入'
                 style={{width:'calc(100% - 70px)'}}
@@ -372,31 +373,43 @@ const ComponentDevelop = observer((props) => {
                     setSearchName(e.target.value);
                     // setSearchKey('');
                     setCurPage(0);
-                    getListDataWithCate();
+                    getListData();
                   }}
-                  // onPressEnter={()=>{
-                  //   setSearchKey('');
-                  //   setCurPage(1);
-                  //   getListDataWithCate();
-                  // }}
                 ></Input>
               </Col>
-              <Col span={8} offset={1}>
-                <Input style={{width:'90%'}} placeholder='输入项目名称/描述/标签/创建人查找组件'
+              <Col span={6}>
+                <Input style={{width:'100%'}} placeholder='输入描述/标签/创建人查找组件'
                   value={searchKey}
                   onChange={(e)=>{
                     setSearchKey(e.target.value);
-                    // setSearchName('');
                     setCurPage(0);
-                    getListDataWithCate();
+                    getListData();
                   }}
-                  // onPressEnter={()=>{
-                  //   setSearchName('');
-                  //   getListDataWithCate();
-                  // }}
                 ></Input>
               </Col>
-              <Col span={5}>
+              <Col span={4}>
+                <span>项目名称：</span>
+                <Select
+                  showSearch
+                  placeholder='请选择'
+                  style={{ width: 'calc(100% - 70px)' }}
+                  value={searchProject}
+                  onChange={(val)=>{
+                    setSearchProject(val);
+                    getListData();
+                  }}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {
+                    projectsData.map(item=>{
+                      return <Option value={item.id} key={item.id}>{item.name}</Option>;
+                    })
+                  }
+                </Select>
+              </Col>
+              <Col span={4}>
                 <span>开发状态：</span>
                 <Select
                   placeholder='请选择'
@@ -404,7 +417,7 @@ const ComponentDevelop = observer((props) => {
                   value={searchStatus}
                   onChange={(val)=>{
                     setSearchStatus(val);
-                    getListDataWithCate();
+                    getListData();
                   }}
                 >
                   <Option value='all'>全部</Option>
@@ -412,7 +425,23 @@ const ComponentDevelop = observer((props) => {
                   <Option value="online">已上线</Option>
                 </Select>
               </Col>
-              <Col span={2} push={3}>
+              <Col span={4}>
+                <span>组件类别：</span>
+                <Select
+                  placeholder='请选择'
+                  style={{ width: 'calc(100% - 70px)' }}
+                  value={searchType}
+                  onChange={(val)=>{
+                    setSearchType(val);
+                    getListData();
+                  }}
+                >
+                  <Option value='all'>全部</Option>
+                  <Option value="common">公共组件</Option>
+                  <Option value="project">项目组件</Option>
+                </Select>
+              </Col>
+              <Col span={2}>
                 <Button 
                   type='primary' 
                   style={{borderRadius:'3px'}}
