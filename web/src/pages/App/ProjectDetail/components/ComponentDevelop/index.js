@@ -83,7 +83,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
           }
           placeholder={intl.formatMessage({
             id: "pages.projectDetailDevelop.searchInputKey",
-            defaultValue: "输入组件名称/组件编号/描述查找组件",
+            defaultValue: "输入组件名称/描述查找组件",
           })}
         />
       ),
@@ -147,12 +147,12 @@ const ComponentDevelop = observer(({ ProgressId }) => {
       )}
     >
       <div className={styles.container}>
-        <Collapse defaultActiveKey={['1', '2']} ghost={true} bordered={false} >
+        <Collapse defaultActiveKey={['1', '2']} ghost={true} bordered={false} > 
           <Panel header={
             <>
               <span>{activeProject}</span>
               <span className={styles.title}>共</span>
-              <span>{listData && listData.total}个应用</span>
+              <span>{listData && listData.total}个组件</span>
             </>
           } key="1"
             extra={<Button onClick={(e) => {

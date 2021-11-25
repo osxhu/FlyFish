@@ -103,7 +103,6 @@ const model = {
       this.treeData = res;
     },
     setListData(res, state) {
-
       if (state) {
         this.listData = res;
       } else {
@@ -130,6 +129,9 @@ const model = {
     },
     setCurPage(res) {
       this.curPage = res;
+    },
+    addCurpage(){
+      this.curPage = this.curPage+=1;
     },
     setSearchStatus(res) {
       this.searchStatus = res;

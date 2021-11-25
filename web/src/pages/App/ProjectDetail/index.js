@@ -7,7 +7,7 @@ import AssemblyList from "./components/ComponentDevelop";
 import ApplyList from './components/ApplyList';
 import { FormattedMessage, useIntl } from "react-intl";
 import { Menu } from 'antd';
-
+import styles from "./assets/style.less";
 const ProjectDetail = observer((props) => {
   const intl = useIntl();
   const { setCheckPageFLag

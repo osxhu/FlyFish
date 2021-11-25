@@ -22,7 +22,7 @@ const ComponentDevelop = observer(() => {
   const intl = useIntl();
   let [flagNum, setFlagNum] = useState(0);
   const {
-    getTreeDataFirst,
+    getTreeDataFirst,setCurPage,addCurpage,
     getListData,
     setDrawerVisible,
     getIndustrysList,
@@ -38,14 +38,12 @@ const ComponentDevelop = observer(() => {
       }
     }
     setSelectedOptions(params);
-    setFlagNum(0);
+    setCurPage(1);
   };
   let cardDate = toJS(listData);
   const changePage = () => {
-    setFlagNum(flagNum += 1);
-    getListData({
-      curPage: flagNum
-    });
+    addCurpage();
+    getListData();
   };
   const searchContent = [
     {
@@ -128,7 +126,7 @@ const ComponentDevelop = observer(() => {
   }, []);
   useEffect(() => {
     Number(selectedData.category) ? getListData({}, true) : null;
-    setFlagNum(0);
+    setCurPage(1);
   }, [selectedData,selectedOptions]);
   return <div className={styles.templateComponent}>
     <AbreastLayout

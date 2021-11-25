@@ -60,7 +60,7 @@ export default flattenMessages({
       searchInputApplyLabel:'选择应用标签进行查询'
     },
     projectDetailDevelop:{
-      searchInputKey:'输入组件名称/组件编号/描述查找组件',
+      searchInputKey:'输入组件名称/描述查找组件',
       selectTags:'输入组件标签进行查询',
       search:'搜索'
     },

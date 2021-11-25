@@ -121,6 +121,7 @@ const ApplyDevelop = observer(() => {
         <Select id="tags"
           key="tags"
           allowClear
+          maxTagCount={4}
           onChange={(arr) => {
             if (arr.length > 10) {
               arr.pop();

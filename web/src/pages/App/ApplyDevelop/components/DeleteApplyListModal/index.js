@@ -25,18 +25,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         width: 150,
         dataIndex: 'name',
         key: 'name',
-        render: (text, record) => (
-          backFlag && checkId === record.id ? <Input style={{ width: '100px' }} onChange={(event) => { setChangeName(event.target.value); }}
-            onPressEnter={() => { onChange && onChange(record.id, { name: changeName, status: 'valid' });setBackFlag(false); }}
-            onBlur={() => {
-              setBackFlag(false);
-              if (text !== changeName) {
-                onChange && onChange(record.id, { name: changeName, status: 'valid' });
-              }
-            }}
-            defaultValue={changeName} /> :
-            <span> {text}</span>
-        ),
       },
       {
         title: '创建时间',
@@ -59,14 +47,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
         key: 'action',
         render: (text, record) => (
           <a onClick={() => {
-            if (record.id != checkId) {
-              setBackFlag(true);
-            } else {
-              setBackFlag(!backFlag);
-            }
-            setChangeName(record.name);
-
-            setCheckId(record.id);
+            onChange && onChange(record.id, { name: `${record.name}_已还原应用`, status: 'valid' });
           }}>还原</a>
         ),
       },

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { CWTable, Input, Button, message, Popconfirm, Icon } from "@chaoswise/ui";
+import { CWTable, Input, Button, message, Popconfirm, Icon, Empty, Tooltip } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import { formatDate } from '@/config/global';
@@ -33,15 +33,17 @@ const AppProjectManage = observer((props) => {
       key: "name",
       disabled: true,
       render(text, record) {
-        return <span style={{ cursor: 'pointer' }} onClick={() => {
+        return (<span style={{ cursor: 'pointer' }} onClick={() => {
           goRoute(record.id);
           openProjectPage(record);
-        }}>{text}</span>;
+        }}>{text}</span>
+
+        );
+
       },
     },
     {
       title: "行业",
-      width: 150,
       dataIndex: "trades",
       key: "trades",
       render(trades) {
@@ -56,23 +58,33 @@ const AppProjectManage = observer((props) => {
     },
     {
       title: "描述",
+      width: '20%',
+      ellipsis: true,
       dataIndex: "desc",
       key: "desc",
     },
     {
+      title: "最新更新时间",
+      dataIndex: "updateTime",
+      key: "updateTime",
+      width: 200,
+      render(updateTime) {
+        return formatDate(updateTime);
+      },
+    },
+    {
       title: "创建时间",
+      width: 200,
       dataIndex: "createTime",
       key: "createTime",
       render(createTime) {
         return formatDate(createTime);
       },
-      width: 200
     },
     {
       title: "创建人",
       dataIndex: "creatorName",
       key: "creatorName",
-      width: 110
     },
     {
       title: intl.formatMessage({
@@ -189,6 +201,9 @@ const AppProjectManage = observer((props) => {
           onChange: onPageChange,
           onShowSizeChange: onPageChange,
           showSizeChanger: true
+        }}
+        locale={{
+          emptyText: <Empty />,
         }}
         searchBar={{
           onSearch: onSearch,

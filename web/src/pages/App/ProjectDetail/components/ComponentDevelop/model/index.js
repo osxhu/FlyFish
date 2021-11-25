@@ -40,7 +40,7 @@ const model = {
     searchStatus: 'all',
     projectId: '',
     total: 0,
-    curPage: 0,
+    curPage: 1,
     pageSize: 20,
     hasMore: true,
     tagsList: [],
