@@ -33,7 +33,7 @@ const EditComponent = observer((props)=>{
           values.subCategory = cateData.two;
         }
         values.desc=values.desc?values.desc:undefined;
-        values.name=undefined;
+        // values.name=undefined;
         const res = await editComponentService(editData.id,values);
         if (res && res.code==0) {
           message.success('修改成功！');
@@ -56,18 +56,8 @@ const EditComponent = observer((props)=>{
             message: '组件名称不能为空！'
           }
         ]
-      })(<Input disabled/>)}
+      })(<Input/>)}
     </Form.Item>
-    {/* <Form.Item label="组件标识">
-      {getFieldDecorator('logo', {
-        rules: [
-          {
-            required: true,
-            message: '组件标识不能为空！'
-          }
-        ]
-      })(<Input />)}
-    </Form.Item> */}
     <Form.Item label={<>
       <Popover 
         placement='left' 
