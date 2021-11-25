@@ -204,11 +204,11 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               <Pagination
                 hideOnSinglePage={true}
                 total={total}
-                current={curPage + 1}
+                current={curPage }
                 pageSize={pageSize}
                 onChange={(page) => {
-                  setCurPage(page - 1);
-                  getListData(({ curPage: page - 1 }));
+                  setCurPage(page );
+                  getListData();
                 }}
               />
             </div>
