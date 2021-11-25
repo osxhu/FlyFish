@@ -65,22 +65,15 @@ class ApplicationService extends Service {
       updater: userInfo.userId,
     };
 
-    let existsApplication = {};
     if (name) {
-      existsApplication = await ctx.model.Application._findOne({ name, status: Enum.COMMON_STATUS.VALID });
+      const existsApplication = await ctx.model.Application._findOne({ name, status: Enum.COMMON_STATUS.VALID });
+      if (!_.isEmpty(existsApplication)) {
+        returnData.msg = 'Exists Already';
+        return returnData;
+      }
       updateData.name = name;
     }
-    if (status) {
-      if (status === Enum.COMMON_STATUS.VALID && name) {
-        existsApplication = await ctx.model.Application._findOne({ name, status: Enum.COMMON_STATUS.VALID });
-      }
-      updateData.status = status;
-    }
-    if (!_.isEmpty(existsApplication)) {
-      returnData.msg = 'Exists Already';
-      return returnData;
-    }
-
+    if (status) updateData.status = status;
     if (type) updateData.type = type;
     if (projectId) updateData.projectId = projectId;
     if (developStatus) updateData.developStatus = developStatus;
