@@ -127,7 +127,7 @@ class ComponentService extends Service {
     const componentList = await ctx.model.Component._find(queryCond);
 
     const total = componentList.length || 0;
-    const data = (componentList || []).splice(curPage * pageSize, pageSize).map(component => {
+    const data = _.orderBy(componentList, [ 'updateTime' ], [ 'desc' ]).splice(curPage * pageSize, pageSize).map(component => {
       const curUser = (users || []).find(user => user.id === component.creator) || {};
       const curProjects = (projectList || []).filter(project => (component.projects || []).includes(project.id));
       const curTags = (tagList || []).filter(tag => (component.tags || []).includes(tag.id));
@@ -304,9 +304,19 @@ class ComponentService extends Service {
   async updateInfo(id, requestData) {
     const { ctx } = this;
 
-    const { status, type, projects, category, subCategory, isLib, desc, dataConfig } = requestData;
+    const { name, status, type, projects, category, subCategory, isLib, desc, dataConfig } = requestData;
+    const returnData = { msg: 'ok', data: {} };
 
     const updateData = {};
+    if (name) {
+      const existsComponents = await ctx.model.Component._findOne({ name, status: Enum.COMMON_STATUS.VALID });
+      if (!_.isEmpty(existsComponents)) {
+        returnData.msg = 'Exists Already';
+        return returnData;
+      }
+      updateData.name = name;
+    }
+
     if (status) updateData.status = status;
     if (type) updateData.type = type;
     if (_.isBoolean(isLib)) updateData.isLib = isLib;
@@ -321,6 +331,8 @@ class ComponentService extends Service {
     Object.assign(updateData, tagInfo);
 
     await ctx.model.Component._updateOne({ id }, updateData);
+
+    return returnData;
   }
 
   async delete(id) {

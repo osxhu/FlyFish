@@ -37,6 +37,7 @@ class ApplicationController extends BaseController {
     const { ctx, app: { Joi }, service } = this;
 
     const editSchema = Joi.object().keys({
+      name: Joi.string(),
       type: Joi.string().valid(...Object.values(Enum.APP_TYPE)),
       tags: Joi.array().items(Joi.object().keys({
         id: Joi.string().length(24),
@@ -49,9 +50,17 @@ class ApplicationController extends BaseController {
 
     const { value: id } = ctx.validate(Joi.string().length(24).required(), ctx.params.id);
     const body = await editSchema.validateAsync(ctx.request.body);
-    await service.application.updateBasicInfo(id, body);
 
-    this.success('编辑基础信息成功', { id });
+    if (body.status === Enum.COMMON_STATUS.VALID && !body.name) {
+      return this.fail('还原失败, 请重新填写应用名称', null, CODE.FAIL);
+    }
+
+    const updateResult = await service.application.updateBasicInfo(id, body);
+    if (updateResult.msg === 'Exists Already') {
+      this.fail('更新失败, 应用名称已存在', null, CODE.FAIL);
+    } else {
+      this.success('编辑基础信息成功', { id });
+    }
   }
 
   async editDesignInfo() {

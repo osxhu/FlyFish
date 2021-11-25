@@ -166,6 +166,7 @@ class ComponentsController extends BaseController {
     const { ctx, app, service } = this;
 
     const updateInfoSchema = app.Joi.object().keys({
+      name: app.Joi.string(),
       type: app.Joi.string(),
       projects: app.Joi.array().items(app.Joi.string()),
       tags: app.Joi.array().items(app.Joi.string()),
@@ -177,9 +178,13 @@ class ComponentsController extends BaseController {
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
     const { value: requestData } = ctx.validate(updateInfoSchema, ctx.request.body);
 
-    await service.component.updateInfo(id, requestData);
-
-    this.success('更新成功', { id });
+    const updateResult = await service.component.updateInfo(id, requestData);
+    const errInfo = updateResult.data.error || null;
+    if (updateResult.msg === 'Exists Already') {
+      this.fail('复制失败, 组件名称已存在', errInfo, CODE.FAIL);
+    } else {
+      this.success('更新成功', { id });
+    }
   }
 
   async upToLib() {

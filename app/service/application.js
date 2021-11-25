@@ -58,19 +58,38 @@ class ApplicationService extends Service {
     const { ctx } = this;
 
     const userInfo = ctx.userInfo;
-    const { type, developStatus, projectId, isLib, status } = requestData;
+    const { type, name, developStatus, projectId, isLib, status } = requestData;
+    const returnData = { msg: 'ok', data: {} };
 
     const updateData = {
       updater: userInfo.userId,
     };
+
+    let existsApplication = {};
+    if (name) {
+      existsApplication = await ctx.model.Application._findOne({ name, status: Enum.COMMON_STATUS.VALID });
+      updateData.name = name;
+    }
+    if (status) {
+      if (status === Enum.COMMON_STATUS.VALID && name) {
+        existsApplication = await ctx.model.Application._findOne({ name, status: Enum.COMMON_STATUS.VALID });
+      }
+      updateData.status = status;
+    }
+    if (!_.isEmpty(existsApplication)) {
+      returnData.msg = 'Exists Already';
+      return returnData;
+    }
+
     if (type) updateData.type = type;
     if (projectId) updateData.projectId = projectId;
     if (developStatus) updateData.developStatus = developStatus;
     if (_.isBoolean(isLib)) updateData.isLib = isLib;
-    if (status) updateData.status = status;
     const tagData = await this.getTagData(requestData);
 
     await ctx.model.Application._updateOne({ id }, Object.assign(updateData, tagData));
+
+    return returnData;
   }
 
   async updateDesignInfo(id, requestData) {
@@ -224,7 +243,7 @@ class ApplicationService extends Service {
     const applicationList = await ctx.model.Application._find(queryCond, { pages: 0 });
 
     const total = applicationList.length || 0;
-    const data = (applicationList || []).splice(curPage * pageSize, pageSize).map(application => {
+    const data = _.orderBy(applicationList, [ 'updateTime' ], [ 'desc' ]).splice(curPage * pageSize, pageSize).map(application => {
       const curCreatorUser = (users || []).find(user => user.id === application.creator) || {};
       const curUpdaterUser = (users || []).find(user => user.id === application.updater) || {};
       const curProjectInfo = (projectList || []).find(project => project.id === application.projectId) || {};
@@ -279,7 +298,7 @@ class ApplicationService extends Service {
 
     const returnList = [];
     const componentCategories = await ctx.model.ComponentCategory._find({}, null, { sort: '-create_time', limit: 1 }) || [];
-    const components = await ctx.model.Component._find(queryCond) || [];
+    const components = await ctx.model.Component._find(queryCond, null, { sort: '-update_time' }) || [];
 
     for (const category of _.get(componentCategories, [ 0, 'categories' ], [])) {
       const categoryInfo = { id: category.id, name: category.name, subCategories: [] };
