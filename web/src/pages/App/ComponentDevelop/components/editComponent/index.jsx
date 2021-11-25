@@ -174,7 +174,7 @@ const EditComponent = observer((props)=>{
     <Row className={styles.btnWrap}>
       <Col span={2} push={18}>
         <Button onClick={()=>{
-          setAddModalvisible(false)
+          setEditModalvisible(false)
         }}>取消</Button>
       </Col>
       <Col span={2} push={18}>
