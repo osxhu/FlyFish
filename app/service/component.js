@@ -335,6 +335,11 @@ class ComponentService extends Service {
     return returnData;
   }
 
+  async upToLib(id) {
+    const { ctx } = this;
+    await ctx.model.Component._updateOne({ id }, { isLib: true });
+  }
+
   async delete(id) {
     const { ctx } = this;
 

@@ -194,7 +194,7 @@ class ComponentsController extends BaseController {
     const { ctx, app, service } = this;
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
 
-    await service.component.updateInfo(id, { isLib: true });
+    await service.component.upToLib(id);
 
     this.success('更新成功', { id });
   }
