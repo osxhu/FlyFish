@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-25 16:36:26
+ * @LastEditTime: 2021-11-25 16:57:51
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -404,7 +404,7 @@ const ComponentDevelop = observer((props) => {
                 >
                   {
                     projectsData.map(item=>{
-                      return <Option value={item.id}>{item.name}</Option>;
+                      return <Option value={item.id} key={item.id}>{item.name}</Option>;
                     })
                   }
                 </Select>
