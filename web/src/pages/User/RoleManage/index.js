@@ -158,6 +158,7 @@ const RoleList = observer(() => {
   }
   // 请求列表数据
   useEffect(() => {
+    setSearchParams();
     getUserList();
     getAllMenuList();
   }, []);

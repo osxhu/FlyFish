@@ -175,6 +175,7 @@ const UserList = observer(() => {
   }
   // 请求列表数据
   useEffect(() => {
+    setSearchParams();
     getProjectList();
   }, []);
   // 分页、排序、筛选变化时触发

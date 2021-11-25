@@ -26,7 +26,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     getIndustrysList,
     getTagsList,
     deleteAssembly,
-    getTreeDataFirst,setCurPage,
+    getTreeDataFirst, setCurPage,
     changeOneAssemly,
     getListData, setDrawerVisible,
     getAssemlyDetail,
@@ -83,7 +83,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
           }
           placeholder={intl.formatMessage({
             id: "pages.projectDetailDevelop.searchInputKey",
-            defaultValue: "输入组件名称/项目名称/描述/标签/创建人查找组件",
+            defaultValue: "输入组件名称/组件编号/描述查找组件",
           })}
         />
       ),
@@ -168,8 +168,12 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                   getAssemlyDetail(id);
                 }}
                 onDelete={(params) => {
+                  let filterArr = params.projects.filter(item => {
+                    return item.id !== ProgressId;
+                  });
+                  let endData = filterArr.map(item => item.id);
                   let newParams = {
-                    projects: params.projects.length > 1 ? params.projects.map(item => item.id !== ProgressId) : []
+                    projects: params.projects.length > 1 ? endData : []
                   };
                   // 删除组件默认组件库一起清除，使用修改组件
                   changeOneAssemly(params.id, newParams, (res) => {
@@ -200,11 +204,11 @@ const ComponentDevelop = observer(({ ProgressId }) => {
               <Pagination
                 hideOnSinglePage={true}
                 total={total}
-                current={curPage +1}
+                current={curPage + 1}
                 pageSize={pageSize}
                 onChange={(page) => {
-                  setCurPage(page-1);
-                  getListData(({ curPage: page-1 }));
+                  setCurPage(page - 1);
+                  getListData(({ curPage: page - 1 }));
                 }}
               />
             </div>
@@ -258,8 +262,6 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                 </Card>
               </InfiniteScroll>
             </div>
-
-
           </Panel>
         </Collapse>
       </div>
@@ -269,20 +271,18 @@ const ComponentDevelop = observer(({ ProgressId }) => {
       isDrawerVisible ? <Drawer assemly={assemlyDetail} setDrawerVisible={setDrawerVisible} /> : null
     }
     {
-    cantShow? <Modal
+      cantShow ? <Modal
         width='400'
         draggable
         centered={true}
-        onCancel={() => { setCantShow(false);}}
-        onOk={() => {
-          setCantShow(false);
-        }}
+        onCancel={() => { setCantShow(false); }}
         size="middle"
         footer={[
           <div style={{ textAlign: 'center' }} key='btn'>
-            <Button type="primary" >确定</Button>
+            <Button type="primary" onClick={() => {
+              setCantShow(false);
+            }}>确定</Button>
           </div>
-
         ]}
         visible={true}
       >
@@ -291,7 +291,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
           <p>如仍需删除，请现在应用内取消使用该组件。</p>
         </div>
 
-      </Modal>:null
+      </Modal> : null
     }
   </>;
 });

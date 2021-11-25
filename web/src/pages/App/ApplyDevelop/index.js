@@ -169,9 +169,11 @@ const ApplyDevelop = observer(() => {
   ];
   // 请求列表数据
   useEffect(() => {
+    setSearchParams();
     getProjectList();
     getApplicationList();
     getTagsList();
+    
   }, []);
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
@@ -324,7 +326,7 @@ const ApplyDevelop = observer(() => {
         showTotal={(total) => {
           return `共${total}条记录`;
         }}
-        pageSizeOptions={['9','18','45','90']}
+        pageSizeOptions={['15','45','75','150']}
         current={curPage + 1}
         pageSize={pageSize}
         onChange={(current) => {

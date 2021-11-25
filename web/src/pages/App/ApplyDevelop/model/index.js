@@ -16,7 +16,7 @@ const model = {
     totalDelete:0,
     curPage: 0,
     deleteCurPage:0,
-    pageSize: 9,
+    pageSize: 15,
     applicationListDelete:{},
     activeCard: {},
     activeProject: null,
@@ -109,6 +109,7 @@ const model = {
     },
     setSearchParams(searchParams) {
       this.searchParams = searchParams || {};
+      console.log('fewg ',this.searchParams);
     },
     openAddProjectModal(project) {
       this.activeProject = _.clone(project);
