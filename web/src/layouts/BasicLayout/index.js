@@ -1,15 +1,15 @@
-import React, { useState,useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import {
   BasicLayout,
   Icon,
-  ThemeProvider,
-  ConfigProvider,
+  ThemeProvider, Menu,
+  ConfigProvider, Dropdown
 } from '@chaoswise/ui';
 import logo from './assets/logo.svg';
 import { Button } from 'antd';
 import actions from '@/shared/mainActions';
-import { loginout,getUserInfoService } from './services';
+import { loginout, getUserInfoService } from './services';
 import { connect } from '@chaoswise/cw-mobx';
 
 // import styles from './index.less';
@@ -46,21 +46,22 @@ const Layout = ({
       locale
     });
   }, [locale]);
-
-  const getUserInfo = async ()=>{
+ 
+  const getUserInfo = async () => {
     const id = localStorage.getItem('id');
     const res = await getUserInfoService(id);
     if (res && res.data) {
-      const menu = res.data.menus.map(item=>item.name);
-      let routeData = route.routes.filter(item=>{
+      const menu = res.data.menus.map(item => item.name);
+      localStorage.setItem('username', res.data.username);
+      let routeData = route.routes.filter(item => {
         if (item.routes) {
-          item.routes = item.routes.filter(item2=>{
+          item.routes = item.routes.filter(item2 => {
             return menu.includes(item2.name);
           });
         }
         return menu.includes(item.name);
       });
-      
+
       const authMenu = getMenuData(routeData || []);
       setAuthMenuData(authMenu);
     }
@@ -100,9 +101,9 @@ const Layout = ({
     }
     history.push(e.key);
   };
-const check=(a)=>{
-  console.log('惦记了',a);
-};
+  const check = (a) => {
+    console.log('惦记了', a);
+  };
   /**
    * 获取高亮菜单
    */
@@ -117,16 +118,16 @@ const check=(a)=>{
   };
 
   // 获取当前路由下的配置，根据配置可进行一些定制化操作
-  const { showBack ,backTitle,name} = currentRoute;
+  const { showBack, backTitle, name } = currentRoute;
   const goBack = () => {
     history.goBack();
   };
   // 动态的返回文字
-  const routeBackName=()=>{
-    if(name==='项目详情'){
+  const routeBackName = () => {
+    if (name === '项目详情') {
       return `项目管理/${JSON.parse(sessionStorage.getItem('activeProject')).name}`;
     }
-    if(name==='开发组件'){
+    if (name === '开发组件') {
       if (location.state && location.state.name) {
         return `开发组件/${location.state.name}`;
       }
@@ -137,13 +138,19 @@ const check=(a)=>{
     loginout();
     history.replace('/login');
   };
+  const rightMenu = (<Menu>
+    <Menu.Item key="0">
+    <Icon type="logout" />
+    <span style={{textAlign:'center' }} onClick={clearCookies}>退出</span>
+    </Menu.Item>
+  </Menu>);
   return (
     <BasicLayout
       logo={<img src={logo} />}
       headerTitle='LCAP'
       showTopNavigation={false}
-      showBack={showBack} 
-      backNavigationTitle={backTitle||routeBackName()}
+      showBack={showBack}
+      backNavigationTitle={backTitle || routeBackName()}
       showBreadcrumb={true}
       breadcrumbOptions={{
         // 格式化面包屑数据
@@ -153,10 +160,11 @@ const check=(a)=>{
         },
       }}
       headerExtra={ // 可以放置其它功能按钮
-        <div style={{ color: 'white' ,cursor:'pointer'}} onClick={clearCookies}>退出</div>
-  
+        <Dropdown overlay={rightMenu} placement="bottomLeft" >
+          <span style={{cursor: 'pointer'}}>{localStorage.getItem('username')}</span>
+        </Dropdown>
       }
-      onClickTopNavigation={check}
+      // onClickTopNavigation={check}
       onClickBack={goBack}
       menuOptions={{
         menuData: authMenuData,

@@ -103,6 +103,8 @@ const model = {
       this.templateapplicationLength = tableData.length;
       if (tableData.length >= res.data.total) {
         this.templatehasMore = false;
+      }else{
+        this.templatehasMore = true;
       }
     },
     setApplicationList(res,) {

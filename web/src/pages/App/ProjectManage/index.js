@@ -31,7 +31,6 @@ const AppProjectManage = observer((props) => {
       title: "项目名称",
       dataIndex: "name",
       key: "name",
-      disabled: true,
       render(text, record) {
         return (<span style={{ cursor: 'pointer' }} onClick={() => {
           goRoute(record.id);
@@ -58,7 +57,7 @@ const AppProjectManage = observer((props) => {
     },
     {
       title: "描述",
-      width: '20%',
+      width: '15%',
       ellipsis: true,
       dataIndex: "desc",
       key: "desc",

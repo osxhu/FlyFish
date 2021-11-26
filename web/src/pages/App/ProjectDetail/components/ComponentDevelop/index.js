@@ -30,15 +30,13 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     changeOneAssemly,
     getListData, setDrawerVisible,
     getAssemlyDetail,
-    setSelectedData, setProjectId,
-    setHasMore
+    setSelectedData, setProjectId
   } = store;
   const { total, curPage, pageSize, tagsList, hasMore, libraryListLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
   const [changeFlga, setchangeFlga] = useState(false); //编辑完成
   let [infinitKey, setInfinitKey] = useState(0);
   let [libraryFlagNum, setLibraryFlagNum] = useState(0);
   let [libraryParams, setLibraryParams] = useState({});
-  let [cantShow, setCantShow] = useState(false);
   // 公共组件下滑
   const changePage = () => {
     setLibraryFlagNum(libraryFlagNum += 1);
@@ -187,13 +185,12 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                         })
                       );
                     } else {
-                      // message.error(
-                      //   res.msg || intl.formatMessage({
-                      //     id: "common.deleteError",
-                      //     defaultValue: "删除失败，请稍后重试！",
-                      //   })
-                      // );
-                      setCantShow(true);
+                      message.error(
+                        res.msg || intl.formatMessage({
+                          id: "common.deleteError",
+                          defaultValue: "删除失败，请稍后重试！",
+                        })
+                      );
                     }
                   });
                 }}
@@ -231,6 +228,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                   number={6}
                   projectID={ProgressId}
                   checkCard={(id) => {
+                    setDrawerVisible(true);
                     getAssemlyDetail(id);
                   }}
                   value={libraryListData}
@@ -245,7 +243,6 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                             defaultValue: "新增成功！",
                           })
                         );
-                        setHasMore(true);
                         getListData({ projectId: ProgressId }, true);
                         getLibraryListData({}, true);
                       } else {
@@ -269,29 +266,6 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     </AbreastLayout>
     {
       isDrawerVisible ? <Drawer assemly={assemlyDetail} setDrawerVisible={setDrawerVisible} /> : null
-    }
-    {
-      cantShow ? <Modal
-        width='400'
-        draggable
-        centered={true}
-        onCancel={() => { setCantShow(false); }}
-        size="middle"
-        footer={[
-          <div style={{ textAlign: 'center' }} key='btn'>
-            <Button type="primary" onClick={() => {
-              setCantShow(false);
-            }}>确定</Button>
-          </div>
-        ]}
-        visible={true}
-      >
-        <div style={{ textAlign: 'center', margin: '40px' }}>
-          <p>该组件已被项目应用使用，无法删除！</p>
-          <p>如仍需删除，请现在应用内取消使用该组件。</p>
-        </div>
-
-      </Modal> : null
     }
   </>;
 });

@@ -181,7 +181,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
         <div>
           <div style={{ fontWeight: 800, padding: '10px 0' }}>注释：</div>
           <Input disabled
-            value={assemlyData.dataConfig.annotationValue}
+            value={assemlyData.dataConfig&&assemlyData.dataConfig.annotationValue}
           ></Input>
         </div>
         <div>
@@ -191,7 +191,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
             mode="javascript"
             theme="monokai"
             showPrintMargin={false}
-            value={assemlyData.dataConfig.codeValue}
+            value={assemlyData.dataConfig&&assemlyData.dataConfig.codeValue}
             name="code"
             readOnly={true}
           />
@@ -201,7 +201,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           <Table
             size='small'
             columns={columns1}
-            dataSource={assemlyData.dataConfig.options}
+            dataSource={assemlyData.dataConfig&&assemlyData.dataConfig.options}
             bordered
             pagination={false}
             footer={null}
@@ -225,7 +225,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           <Table
             size='small'
             columns={eventColumns}
-            dataSource={assemlyData.dataConfig.events}
+            dataSource={assemlyData.dataConfig&&assemlyData.dataConfig.events}
             bordered
             pagination={false}
             footer={null}
@@ -237,7 +237,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           <Table
             size='small'
             columns={eventColumns}
-            dataSource={assemlyData.dataConfig.listeners}
+            dataSource={assemlyData.dataConfig&&assemlyData.dataConfig.listeners}
             bordered
             pagination={false}
             footer={null}
@@ -253,7 +253,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
             mode="javascript"
             theme="github"
             showPrintMargin={false}
-            value={assemlyData.dataConfig.markValue}
+            value={assemlyData.dataConfig&&assemlyData.dataConfig.markValue}
             name="markText"
             readOnly={true}
           />

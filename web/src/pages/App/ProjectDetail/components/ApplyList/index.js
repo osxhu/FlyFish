@@ -13,11 +13,11 @@ import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ApplyModal from '@/pages/App/ApplyDevelop/components/AddProjectModal';
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
-  function EditProjectModal({ templateapplicationList, industryList, curPage, pageSize, ProgressId, total, hasMore, applicationList, activeProject, type, isAddModalVisible, applicationLength }) {
+  function EditProjectModal({ templateapplicationList, industryList, curPage, pageSize, ProgressId, total, applicationList, activeProject, type, isAddModalVisible, applicationLength }) {
     let [checkFlag, setCheckFlag] = useState(null);
     let [projectName, setProjectName] = useState('');
     const {
-      setProjectId, getIndustrysList, getApplicationList, getTemplateApplicationList, setTemplateActiveProject, setHasMore, setActiveProject, setType, openAddProjectModal, closeAppProjectModal
+      setProjectId, getIndustrysList, getApplicationList, getTemplateApplicationList, setTemplateActiveProject, setActiveProject, setType, openAddProjectModal, closeAppProjectModal
     } = store;
     // 应用的请求store
     const {

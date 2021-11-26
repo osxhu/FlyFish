@@ -264,24 +264,6 @@ const ApplyDevelop = observer(() => {
                 <Tooltip key="export" title="导出"
                   onClick={() => {
                     exportCode(item.id);
-                    // exportApplicationOne('6198f02666d35702ac933fb8', (res) => {
-                    //   if (res.code === successCode) {
-                    //     // message.success(
-                    //     //   intl.formatMessage({
-                    //     //     id: "common.deleteSuccess",
-                    //     //     defaultValue: "删除成功！",
-                    //     //   })
-                    //     // );
-                    //     // getApplicationList();
-                    //   } else {
-                    //     message.error(
-                    //       res.msg || intl.formatMessage({
-                    //         id: "common.exportError",
-                    //         defaultValue: "导出失败，请稍后重试！",
-                    //       })
-                    //     );
-                    //   }
-                    // });
                   }}
                 >
                   <a title="导出" target="_blank" ><Icon type="export" style={{ color: '#333' }} /></a>

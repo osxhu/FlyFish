@@ -112,6 +112,8 @@ const model = {
       this.total = res && res.total;
       if (this.listLength >= this.total) {
         this.hasMore = false;
+      }else{
+        this.hasMore = true;
       }
     },
     setHasMore(flag) {

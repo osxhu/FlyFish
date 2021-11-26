@@ -109,7 +109,6 @@ const model = {
     },
     setSearchParams(searchParams) {
       this.searchParams = searchParams || {};
-      console.log('fewg ',this.searchParams);
     },
     openAddProjectModal(project) {
       this.activeProject = _.clone(project);

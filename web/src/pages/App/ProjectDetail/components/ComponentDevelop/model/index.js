@@ -125,7 +125,6 @@ const model = {
     },
     *getAssemlyDetail(id, callback) {
       const res = yield assemblyDetail(id);
-      this.isDrawerVisible = true;
       this.setAssemlyDetail(res);
     },
   },
@@ -158,6 +157,8 @@ const model = {
       this.libraryListLength = libraryListData.length;
       if(this.libraryListLength>=res.total){
         this.hasMore=false;
+      }else{
+        this.hasMore=true;
       }
     },
     setDetailShow(res) {
