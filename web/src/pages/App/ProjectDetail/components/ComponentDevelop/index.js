@@ -123,13 +123,13 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   useEffect(() => {
     setProjectId(ProgressId);
     getTreeDataFirst();
-    getLibraryListData({}, true);
     getIndustrysList(); //行业
     getTagsList();
     setActiveProject(JSON.parse(sessionStorage.getItem('activeProject')).name);
   }, []);
   useEffect(() => {
-    getListData();
+    Number(selectedData.category) ?getListData():null;
+    Number(selectedData.category) ?getLibraryListData({}, true):null;
   }, [selectedData]);
   return < >
     <AbreastLayout

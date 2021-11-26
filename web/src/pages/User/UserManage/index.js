@@ -40,6 +40,7 @@ const UserList = observer(() => {
     {
       title: "用户邮箱",
       dataIndex: "email",
+      width:200,
       key: "email",
       disabled: true,
     },
@@ -48,7 +49,15 @@ const UserList = observer(() => {
       dataIndex: "phone",
       key: "phone"
     },
-
+    {
+      title: '最近更新时间',
+      dataIndex: 'updateTime',
+      width:200,
+      key: 'updateTime',
+      render:(updateTime)=>{
+        return formatDate(updateTime);
+      }
+    },
     {
       title: "创建时间",
       dataIndex: "createTime",

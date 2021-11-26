@@ -41,8 +41,11 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     });
                 }
                 if (addOrChangeFlag === 2) {
-                  onCopy && onCopy(project.id, {
-                    name: values.name
+                  onCopy &&delete values.developStatus&& onCopy(project.id,{
+                    ...values,
+                    tags:values.tags&& values.tags.map(item => {
+                      return { name: item };
+                    })
                   });
                 }
               }
@@ -122,7 +125,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
               ],
             })(
               <Select
-                disabled={addOrChangeFlag === 2}
                 placeholder={
                   intl.formatMessage({
                     id: "common.pleaseSelect",
@@ -144,7 +146,6 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
 
             })(
               <Select
-                disabled={addOrChangeFlag === 2}
                 mode='tags'
                 placeholder={
                   intl.formatMessage({

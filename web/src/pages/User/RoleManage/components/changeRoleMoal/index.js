@@ -2,15 +2,15 @@ import React from "react";
 import { Modal, Form } from "@chaoswise/ui";
 import { useIntl } from "react-intl";
 import { Transfer, Row, Col } from 'antd';
-import { observer, loadingStore, toJS} from '@chaoswise/cw-mobx';
+import { observer, loadingStore, toJS } from '@chaoswise/cw-mobx';
 
 import store from "../../model/index";
 
 export default Form.create({ name: "FORM_IN_USER_MODAL" })(
-    function ChangeRoleModal({ id,form, project = {},checkProject={}, onSave, onCancel }) {
+    function ChangeRoleModal({ id, form, project = {}, checkProject = {}, onSave, onCancel }) {
         // let new1=toJS(checkProject);
-        let [new1,setnew1]=React.useState(toJS(checkProject));
-        let flag=false;
+        let [new1, setnew1] = React.useState(toJS(checkProject));
+        let flag = false;
         const endData = project.map(item => {
             return {
                 key: item.id,
@@ -19,7 +19,6 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                 userEmail: item.email
             };
         });
-        const filterOption = (inputValue, option) => option.userEmail && option.userEmail.indexOf(inputValue) > -1;
         const handleChange = (nextTargetKeys) => {
             setnew1(nextTargetKeys);
         };
@@ -30,7 +29,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                 onCancel={() => onCancel && onCancel()}
                 onOk={() => {
 
-                    onSave && onSave( id, {members:new1});
+                    onSave && onSave(id, { members: new1 });
                 }}
                 size="middle"
                 title='管理成员'
@@ -48,7 +47,6 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
                             titles={['待添加成员', '已添加成员']}
                             searchPlaceholder="搜索成员"
                             operations={['添加', '移除']}
-                            filterOption={filterOption}
                             targetKeys={new1}
                             onChange={handleChange}
                             render={item => `${item.userName}-${item.userEmail}`}

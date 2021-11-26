@@ -95,8 +95,12 @@ const model = {
     },
     // 组件库列表数据
     *getLibraryListData(options, state) {
+      const { category, subCategory } = toJS(this.selectedData);
       const params = {
         isLib: true,
+        type:'project',
+          category: category,
+        subCategory: subCategory === '' ? undefined : subCategory,
         pageSize: 20,
         ...options
       };

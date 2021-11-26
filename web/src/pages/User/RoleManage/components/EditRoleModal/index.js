@@ -88,7 +88,7 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
               ],
             })(
               <Input.TextArea
-              autoSize={{minRows:4}}
+              row={3}
               />
             )}
           </Form.Item>

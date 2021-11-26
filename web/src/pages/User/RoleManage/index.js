@@ -10,6 +10,7 @@ import styles from "./assets/style.less";
 import { Popconfirm } from 'antd';
 import ChangeRoleJurisdiction from './components/changeRoleJurisdiction';
 import { formatDate } from '@/config/global';
+
 import { FormattedMessage, useIntl } from "react-intl";
 const RoleList = observer(() => {
   const intl = useIntl();
@@ -41,13 +42,20 @@ const RoleList = observer(() => {
       dataIndex: "name",
       key: "name",
       disabled: true,
-      width: 150
     },
     {
       title: "描述",
       dataIndex: "desc",
       key: "desc",
       disabled: true,
+    },
+    {
+      title: '最近更新时间',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      render:(updateTime)=>{
+        return formatDate(updateTime);
+      }
     },
     {
       title: "创建时间",
@@ -63,6 +71,7 @@ const RoleList = observer(() => {
         id: "common.actions",
         defaultValue: "操作",
       }),
+      width:270,
       dataIndex: "actions",
       key: "actions",
       render(text, record, index) {
