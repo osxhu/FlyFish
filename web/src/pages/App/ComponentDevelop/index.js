@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-26 11:40:03
+ * @LastEditTime: 2021-11-26 16:41:38
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -401,6 +401,7 @@ const ComponentDevelop = observer((props) => {
                 <span>项目名称：</span>
                 <Select
                   showSearch
+                  allowClear
                   placeholder='请选择'
                   style={{ width: 'calc(100% - 70px)' }}
                   value={searchProject}
