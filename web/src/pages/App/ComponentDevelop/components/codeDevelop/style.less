@@ -4,7 +4,7 @@
   :global{
     .vscodeSpinWrap{
       position: relative;
-      height: 100%;
+      height: calc(~'100% - 30px');
     }
     .ant-spin-container{
       position: relative;
@@ -36,7 +36,11 @@
 .btnwrap{
   display: flex;
 }
-.vscodeFrame ,.previewFrame{
+.vscodeFrame{
+  height: 100%;
+  width: 100%;
+}
+.previewFrame{
   height: calc(~'100% - 30px');
   width: 100%;
 }
