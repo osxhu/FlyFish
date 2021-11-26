@@ -88,6 +88,11 @@ class ApplicationController extends BaseController {
 
     const copyApplicationSchema = app.Joi.object().keys({
       name: app.Joi.string(),
+      tags: app.Joi.array().items(app.Joi.object().keys({
+        id: app.Joi.string().length(24),
+        name: app.Joi.string().required(),
+      })),
+      projectId: app.Joi.string().length(24),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
     const { value: requestData } = ctx.validate(copyApplicationSchema, ctx.request.body);

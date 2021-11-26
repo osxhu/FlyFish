@@ -136,13 +136,14 @@ class ApplicationService extends Service {
       return returnData;
     }
 
+    const tagData = await this.getTagData(applicationInfo);
     const createInfo = {
       name: applicationInfo.name,
+      projectId: applicationInfo.projectId,
+      tags: tagData,
 
       type: copyApplication.type,
       category: copyApplication.category,
-      projectId: copyApplication.projectId,
-      tags: copyApplication.tags || [],
       cover: copyApplication.cover,
       developStatus: copyApplication.developStatus,
       pages: copyApplication.pages,
