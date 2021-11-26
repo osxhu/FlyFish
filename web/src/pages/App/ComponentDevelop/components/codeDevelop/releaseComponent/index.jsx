@@ -114,7 +114,14 @@ const ReleaseComponent = observer((props)=>{
         }
         <Form.Item label='描述'>
           {
-            getFieldDecorator('desc')(
+            getFieldDecorator('desc',{
+              rules:[
+                {
+                  required:true,
+                  message:'描述不能为空'
+                }
+              ]
+            })(
               <TextArea placeholder='请输入描述' cols={4}/>
             )
           }
