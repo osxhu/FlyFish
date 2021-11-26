@@ -12,9 +12,9 @@ const { TextArea } = Input;
 
 const EditComponent = observer((props)=>{
   
-  const { getFieldDecorator,validateFields } = props.form;
+  const { getFieldDecorator,validateFields,getFieldValue } = props.form;
 
-  const { setEditModalvisible,treeData,editData,getListData,tagsData,projectsData } = store;
+  const { setEditModalvisible,treeData,editData,getListData,tagsData,projectsData,userInfo } = store;
 
   const formItemLayout = {
     labelCol: { span:4 },
@@ -24,14 +24,9 @@ const EditComponent = observer((props)=>{
     e.preventDefault();
     validateFields(async (err, values) => {
       if (!err) {
-        if (typeof(values.category)==='string') {
-          values.category = editData.category;
-          values.subCategory = editData.subCategory;
-        }else{
-          const cateData = JSON.parse(values.category);
-          values.category = cateData.one;
-          values.subCategory = cateData.two;
-        }
+        const cateData = JSON.parse(values.category);
+        values.category = cateData.one;
+        values.subCategory = cateData.two;
         if (values.tags) { 
           values.tags = values.tags.map(item=>({name:item}))
         }
@@ -42,6 +37,8 @@ const EditComponent = observer((props)=>{
           message.success('修改成功！');
           setEditModalvisible(false);
           getListData()
+        }else{
+          message.error(res.msg)
         }
       }
     });
@@ -67,7 +64,7 @@ const EditComponent = observer((props)=>{
         content={
           <>
             <p style={{width:200}}>
-              组件类别用于区分项目组件或基础组件，默认选择"项目组件"，即特地昂项目可以使用的组件。
+              组件类别用于区分项目组件或基础组件，默认选择"项目组件"，即特定项目可以使用的组件。
             </p>
             <p style={{width:200}}>
               基础组件默认所有项目都可以使用；只有管理员才能将组件修改为基础组件。
@@ -91,25 +88,29 @@ const EditComponent = observer((props)=>{
         <Option value='common'>基础组件</Option>
       </Select>)}
     </Form.Item>
-    <Form.Item label="所属项目">
-      {getFieldDecorator('projects', {
-        initialValue:editData.projects.map(item=>item.id),
-        rules: [
+    {
+      getFieldValue('type')=='common'?null:
+      <Form.Item label="所属项目">
+        {getFieldDecorator('projects', {
+          initialValue:editData.projects.map(item=>item.id),
+          rules: [
+            {
+              required: true,
+              message: '所属项目不能为空！'
+            }
+          ]
+        })(<Select
+          mode="multiple"
+        >
           {
-            required: true,
-            message: '所属项目不能为空！'
+            projectsData.map((v,k)=>{
+              return <Option value={v.id} key={v.id}>{v.name}</Option>
+            })
           }
-        ]
-      })(<Select
-        mode="multiple"
-      >
-        {
-          projectsData.map((v,k)=>{
-            return <Option value={v.id} key={v.id}>{v.name}</Option>
-          })
-        }
-      </Select>)}
-    </Form.Item>
+        </Select>)}
+      </Form.Item>
+    }
+    
     <Form.Item label="组件分类">
       {getFieldDecorator('category', {
         initialValue:JSON.stringify({one:editData.category,two:editData.subCategory}),

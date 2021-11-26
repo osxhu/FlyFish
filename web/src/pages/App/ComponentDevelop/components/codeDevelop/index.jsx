@@ -106,7 +106,7 @@ const CodeDevelop = observer((props)=>{
         }
       </div>
     </div>
-    <div ref={mainDiv} className={styles.main} style={{flexDirection:layout=='row'?'row':'column',height:layout=='row'?'100%':1000}}
+    <div ref={mainDiv} className={styles.main} style={{flexDirection:layout=='row'?'row':'column',height:layout=='row'?'100%':1400}}
       onMouseMove={(e)=>{
         if (moveMode) {
           if (layout=='row') {
@@ -147,7 +147,7 @@ const CodeDevelop = observer((props)=>{
       <div className={styles.previewWrap} 
         style={{
           width:layout=='col'?'100%':`calc(100% - ${layerX+10}px)`,
-          height:layout=='col'?(1000-(layerY-5)):'100%'
+          height:layout=='col'?(1400-(layerY-5)):'100%'
           }}>
         <div style={{padding:'5px 15px'}}>可视化区</div>
         <iframe 

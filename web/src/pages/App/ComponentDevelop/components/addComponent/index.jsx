@@ -11,9 +11,9 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const AddComponent = observer((props)=>{
-  const { getFieldDecorator,validateFields } = props.form;
+  const { getFieldDecorator,validateFields,getFieldValue } = props.form;
 
-  const { setAddModalvisible,treeData,projectsData,tagsData,getListData,getTagsData } = store;
+  const { setAddModalvisible,treeData,projectsData,tagsData,getListData,getTagsData,userInfo } = store;
 
   const formItemLayout = {
     labelCol: { span:4 },
@@ -74,7 +74,7 @@ const AddComponent = observer((props)=>{
         content={
           <>
             <p style={{width:200}}>
-              组件类别用于区分项目组件或基础组件，默认选择"项目组件"，即特地昂项目可以使用的组件。
+              组件类别用于区分项目组件或基础组件，默认选择"项目组件"，即特定项目可以使用的组件。
             </p>
             <p style={{width:200}}>
               基础组件默认所有项目都可以使用；只有管理员才能将组件修改为基础组件。
@@ -95,27 +95,32 @@ const AddComponent = observer((props)=>{
         ]
       })(<Select>
         <Option value='project'>项目组件</Option>
-        <Option value='common'>基础组件</Option>
-      </Select>)}
-    </Form.Item>
-    <Form.Item label="所属项目">
-      {getFieldDecorator('projects', {
-        rules: [
-          {
-            required: true,
-            message: '所属项目不能为空！'
-          }
-        ]
-      })(<Select
-        mode="multiple"
-      >
         {
-          projectsData.map((v,k)=>{
-            return <Option value={v.id} key={v.id}>{v.name}</Option>
-          })
+          userInfo.isAdmin?<Option value='common'>基础组件</Option>:null
         }
       </Select>)}
     </Form.Item>
+    {
+      getFieldValue('type')=='common'?null:
+      <Form.Item label="所属项目">
+        {getFieldDecorator('projects', {
+          rules: [
+            {
+              required: true,
+              message: '所属项目不能为空！'
+            }
+          ]
+        })(<Select
+          mode="multiple"
+        >
+          {
+            projectsData.map((v,k)=>{
+              return <Option value={v.id} key={v.id}>{v.name}</Option>
+            })
+          }
+        </Select>)}
+      </Form.Item>
+    }
     <Form.Item label="组件分类">
       {getFieldDecorator('category', {
         rules: [
