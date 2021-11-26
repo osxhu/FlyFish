@@ -107,20 +107,36 @@ async function init() {
     tableName: 'visual_components',
     timestamps: false,
   });
+
+  tableMap.VCOrg = VCSequelize.define('visual_org', {
+    org_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
+    org_mark: {
+      type: DataTypes.STRING,
+    },
+  }, {
+    tableName: 'visual_org',
+    timestamps: false,
+  });
 }
 
 
 (async () => {
   try {
     await init();
-    const { SolutionComponent, VCComponent, SolutionTagView } = tableMap;
+    const { SolutionComponent, VCComponent, SolutionTagView, VCOrg } = tableMap;
     const solutionComponents = await SolutionComponent.findAll({ where: { deleted_at: 1 } });
+
     const solutionTagViews = await SolutionTagView.findAll({ where: { status: 1 } });
     const solutionTagViewMap = _.keyBy(solutionTagViews, 'component_id');
 
-
     const VCComponents = await VCComponent.findAll({});
     const CVComponentMap = _.keyBy(VCComponents, 'component_mark');
+
+    const VCOrgs = await VCOrg.findAll({});
+    const VCOrgMap = _.keyBy(VCOrgs, 'org_id');
 
     const category = await db.collection('component_categories').findOne({}, { sort: { create_time: -1 } });
     const categoryId = category.categories[0].id;
@@ -130,6 +146,7 @@ async function init() {
 
     const projects = await db.collection('projects').find().toArray();
     const projectMap = _.keyBy(projects, 'old_id');
+    const weiguishuProjectId = projects.filter(p => p.name === '未归属组件')[0]._id.toString();
 
     const pubComponents = [];
 
@@ -205,7 +222,6 @@ async function init() {
         subCategoryId = category.categories[0].children[1].id;
       }
 
-
       const doc = {
         name: component.name,
         is_lib: false,
@@ -228,12 +244,13 @@ async function init() {
         create_time: new Date(+component.created_at),
         update_time: new Date(+component.updated_at),
 
-        old_org_id: component.org_id,
+        old_org_mark: VCOrgMap[component.org_id].org_mark,
         old_component_mark: component.component_mark,
       };
 
-      // TODO: project 归属
-
+      if (type === 'project') {
+        doc.projects = [ weiguishuProjectId ];
+      }
 
       await db.collection('components').insertOne(doc);
     }

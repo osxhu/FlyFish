@@ -58,6 +58,15 @@ async function init() {
       };
       await db.collection('projects').insertOne(doc);
     }
+
+    const weiguishu = {
+      name: '未归属组件',
+      desc: '旧组件开发平台未导入应用平台的组件',
+      status: 'valid',
+      create_time: new Date(),
+      update_time: new Date(),
+    };
+    await db.collection('projects').insertOne(weiguishu);
   } catch (error) {
     console.log(error.stack || error);
   } finally {
