@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
-import { CWTable, Input, Button, message, Select ,Icon} from "@chaoswise/ui";
+import { CWTable, Input, Button, message, Select, Icon } from "@chaoswise/ui";
 const { Option } = Select;
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
@@ -22,9 +22,9 @@ const UserList = observer(() => {
     addOrChange,
     closeEditProjectModal,
   } = store;
-  const { total,current, projectList, pageSize,isEditProjectModalVisible, activeUser } =
+  const { total, current, projectList, pageSize, isEditProjectModalVisible, activeUser } =
     store;
-    const [saveOrChangeFlag, setSaveOrChangeFlag] = React.useState(false);
+  const [saveOrChangeFlag, setSaveOrChangeFlag] = React.useState(false);
 
   const loading = loadingStore.loading["UserList/getProjectList"];
   // 表格列表数据
@@ -85,15 +85,15 @@ const UserList = observer(() => {
             >
               <FormattedMessage id="common.edit" defaultValue="编辑" />
             </a>
-            <Popconfirm title={record.status==='valid'?"确认禁用？":'确认恢复?'} okText="确认" cancelText="取消" onConfirm={() => {
-              let result=record.status==='valid'?{status: 'invalid'}:{status: 'valid'};
+            <Popconfirm title={record.status === 'valid' ? "确认禁用？" : '确认恢复?'} okText="确认" cancelText="取消" onConfirm={() => {
+              let result = record.status === 'valid' ? { status: 'invalid' } : { status: 'valid' };
               saveUser(record.id, result, (res) => {
                 if (res.code === 0) {
                   message.success(
-                    record.status==='valid'?intl.formatMessage({
+                    record.status === 'valid' ? intl.formatMessage({
                       id: "common.disableSuccess",
                       defaultValue: "禁用成功！",
-                    }):intl.formatMessage({
+                    }) : intl.formatMessage({
                       id: "common.recoverySuccess",
                       defaultValue: "恢复成功！",
                     })
@@ -126,11 +126,12 @@ const UserList = observer(() => {
     {
       components: (
         <Input
+          allowClear={true}
           id="username"
           key="username"
           name='用户名'
-          suffix	={<Icon type="search" />
-        }
+          suffix={<Icon type="search" />
+          }
           placeholder={intl.formatMessage({
             id: "pages.userManage.searchInputUsername",
             defaultValue: "输入用户名进行查询",
@@ -140,11 +141,12 @@ const UserList = observer(() => {
     }, {
       components: (
         <Input
+          allowClear={true}
           id="email"
           key="email"
           name='邮箱'
-          suffix	={<Icon type="search" />
-        }
+          suffix={<Icon type="search" />
+          }
           placeholder={intl.formatMessage({
             id: "pages.userManage.searchInputEmail",
             defaultValue: "输入邮箱进行查询",
@@ -154,7 +156,7 @@ const UserList = observer(() => {
     }, {
       components: (
         <Select
-        allowClear={true}
+          allowClear={true}
           id="status"
           key="status"
           name='状态'
@@ -180,13 +182,13 @@ const UserList = observer(() => {
   }, []);
   // 分页、排序、筛选变化时触发
   const onPageChange = (curPage, pageSize) => {
-    getProjectList({ curPage:curPage-1, pageSize });
+    getProjectList({ curPage: curPage - 1, pageSize });
   };
   const onSearch = (params) => {
     setSearchParams(params);
     getProjectList({
       curPage: 0,
-      pageSize:10
+      pageSize: 10
     });
   };
 
@@ -200,9 +202,9 @@ const UserList = observer(() => {
         pagination={{
           showTotal: true,
           total: total,
-          current:current,
-          pageSize:pageSize,
-          defaultPageSize:10,
+          current: current+1,
+          pageSize: pageSize,
+          defaultPageSize: 10,
           onChange: onPageChange,
           onShowSizeChange: onPageChange,
           showSizeChanger: true
@@ -248,7 +250,7 @@ const UserList = observer(() => {
                   curPage: 0,
                 });
               } else {
-                message.error(res.msg ||intl.formatMessage({
+                message.error(res.msg || intl.formatMessage({
                   id: "common.addError",
                   defaultValue: "新增失败，请稍后重试！",
                 })
@@ -270,7 +272,7 @@ const UserList = observer(() => {
                   curPage: 0,
                 });
               } else {
-                 message.error(
+                message.error(
                   res.msg || intl.formatMessage({
                     id: "common.changeError",
                     defaultValue: "编辑失败，请稍后重试！",

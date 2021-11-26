@@ -79,7 +79,6 @@ export default Form.create({ name: "FORM_IN_USER_MODAL" })(
               initialValue: role.desc,
               rules: [
                 {
-                  required: !flag?true:false,
                   message:
                     intl.formatMessage({
                       id: "common.pleaseInput",

@@ -6,6 +6,7 @@ export default flattenMessages({
     cancel: "取消",
     create: "添加",
     edit: "编辑",
+    editDetail: "编辑信息",
     delete: "删除",
     ok: "确定",
     disable:'禁用',

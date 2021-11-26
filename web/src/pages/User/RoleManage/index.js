@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { CWTable, Input, Button, message,Icon, Select } from "@chaoswise/ui";
+import { CWTable, Input, Button, message, Icon, Select } from "@chaoswise/ui";
 import { observer, loadingStore, toJS } from "@chaoswise/cw-mobx";
 import store from "./model/index";
 import EditRoleModal from "./components/EditRoleModal";
@@ -16,7 +16,6 @@ const RoleList = observer(() => {
   const {
     getUserList, changeRole,
     setSearchParams,
-    saveProject,
     openEditRoleModal,
     openRoleModal,
     closeRoleModal,
@@ -25,10 +24,10 @@ const RoleList = observer(() => {
     closeEditRoleModal, changeRoleAuth,
     openRoleJurisdictionModal,
     closeRoleJurisdictionModal, getRoleDetail,
-    addNewRole,getAllMenuList
+    addNewRole, getAllMenuList
   } = store;
 
-  const { total,menuList, projectList, pageSize, current, userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
+  const { total, menuList, projectList, pageSize, current, userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
     store;
   const [saveOrChangeFlag, setSaveOrChangeFlag] = useState(false);
   // 成员列表的值
@@ -42,7 +41,7 @@ const RoleList = observer(() => {
       dataIndex: "name",
       key: "name",
       disabled: true,
-      width: 250
+      width: 150
     },
     {
       title: "描述",
@@ -81,7 +80,7 @@ const RoleList = observer(() => {
                 defaultValue="成员列表"
               />
             </a>
-            <a className={styles.projectAction}
+            {record.name !== '管理员' && <a className={styles.projectAction}
               onClick={() => {
 
                 openRoleJurisdictionModal(record);
@@ -91,18 +90,21 @@ const RoleList = observer(() => {
                 id="pages.roleManage.role"
                 defaultValue="权限配置"
               />
-            </a>
-            <a
-              className={styles.projectAction}
-              onClick={() => {
-                setSaveOrChangeFlag(false);
-                openEditRoleModal(record);
-              }}
-            >
-              <FormattedMessage id="common.edit" defaultValue="编辑" />
-            </a>
-           {
-              record.name!=='管理员'&&<Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
+            </a>}
+
+            {
+              record.name !== '管理员' && record.name !== '成员' && <a
+                className={styles.projectAction}
+                onClick={() => {
+                  setSaveOrChangeFlag(false);
+                  openEditRoleModal(record);
+                }}
+              >
+                <FormattedMessage id="common.editDetail" defaultValue="编辑信息" />
+              </a>
+            }
+            {
+              record.name !== '管理员' && record.name !== '成员' && <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
                 deleteRole({ id: record.id, ...record }, (res) => {
                   if (res.code === successCode) {
                     message.success(
@@ -129,7 +131,7 @@ const RoleList = observer(() => {
                   <FormattedMessage id="common.delete" defaultValue="删除" />
                 </a>
               </Popconfirm>
-           }
+            }
           </span>
         );
       },
@@ -142,8 +144,8 @@ const RoleList = observer(() => {
           id="name"
           key="name"
           name='角色名'
-          suffix	={<Icon type="search" />
-        }
+          suffix={<Icon type="search" />
+          }
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.roleManage.searchInputRoleName",
@@ -184,7 +186,7 @@ const RoleList = observer(() => {
         pagination={{
           showTotal: true,
           total: total,
-          current: current,
+          current: current + 1,
           pageSize: pageSize,
           defaultPageSize: 10,
           onChange: onPageChange,
@@ -271,7 +273,7 @@ const RoleList = observer(() => {
       {/* 修改用户角色 */}
       {isRoleModalVisible && (
         <ChangeRoleModal
-       
+
           id={activeUser.id}
           project={userList}
           checkProject={oneRoleDetail}
@@ -307,7 +309,7 @@ const RoleList = observer(() => {
       {/* 修改菜单 */}
       {isRoleJurisdictionModalVisible && (
         <ChangeRoleJurisdiction
-        menuList={menuList}
+          menuList={menuList}
           project={activeUser}
           close={closeRoleJurisdictionModal}
           onSave={(project) => {
