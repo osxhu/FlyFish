@@ -548,7 +548,7 @@ class ComponentService extends Service {
 
       const ignoreDirs = [ 'node_modules', '.git', 'components', 'release', 'package-lock.json' ];
       await ctx.helper.copyAndReplace(componentDevPath, componentReleasePath, ignoreDirs, { from: initComponentVersion, to: releaseVersion });
-      await exec(`cd ${componentReleasePath} && npm run build-production`);
+      await exec(`cd ${componentReleasePath} && npm i && npm run build-production`);
 
       const savePath = `${componentReleasePath}/release/cover.png`;
       this.genCoverImage(componentId, savePath);
