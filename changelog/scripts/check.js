@@ -7,29 +7,63 @@ const _ = require('lodash');
 
 const mongoUrl = config.get('mongoose.url');
 const solutionUri = config.get('mysql.solution_uri');
+const VCUri = config.get('mysql.visual_component_uri');
 
 let mongoClient,
+  VCSequelize,
   solutionSequelize;
 const tableMap = {};
-const SCREEN_STATUS = [ 'doing', 'testing', 'delivered' ];
 
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
   await mongoClient.connect();
+
+  // 应用平台
   solutionSequelize = new Sequelize(solutionUri);
-  tableMap.Screen = solutionSequelize.define('visual_screen', {
-    id: {
+  tableMap.SolutionComponent = solutionSequelize.define('visual_components', {
+    component_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-    },
-    screen_id: {
-      type: DataTypes.STRING,
     },
     name: {
       type: DataTypes.STRING,
     },
-    options_conf: {
-      type: DataTypes.TEXT,
+    org_mark: {
+      type: DataTypes.STRING,
+    },
+    component_mark: {
+      type: DataTypes.STRING,
+    },
+    deleted_at: {
+      type: DataTypes.INTEGER,
+    },
+    created_at: {
+      type: DataTypes.INTEGER,
+    },
+    updated_at: {
+      type: DataTypes.INTEGER,
+    },
+  }, {
+    tableName: 'visual_components',
+    timestamps: false,
+  });
+
+
+  // 组件开发平台
+  VCSequelize = new Sequelize(VCUri);
+  tableMap.VCComponent = VCSequelize.define('visual_components', {
+    component_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+    },
+    org_id: {
+      type: DataTypes.INTEGER,
+    },
+    component_mark: {
+      type: DataTypes.STRING,
     },
     deleted_at: {
       type: DataTypes.INTEGER,
@@ -43,36 +77,11 @@ async function init() {
     create_user_id: {
       type: DataTypes.INTEGER,
     },
-    developing_user_id: {
-      type: DataTypes.INTEGER,
-    },
-    status: {
-      type: DataTypes.INTEGER,
-    },
-    logo: {
-      type: DataTypes.STRING,
-    },
-  }, {
-    tableName: 'visual_screen',
-    timestamps: false,
-  });
-
-  tableMap.ScreenAndView = solutionSequelize.define('visual_screen_tag_view', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-    },
-    screen_id: {
-      type: DataTypes.STRING,
-    },
-    tag_id: {
-      type: DataTypes.STRING,
-    },
-    status: {
+    update_user_id: {
       type: DataTypes.INTEGER,
     },
   }, {
-    tableName: 'visual_screen_tag_view',
+    tableName: 'visual_components',
     timestamps: false,
   });
 }
@@ -81,22 +90,23 @@ async function init() {
 (async () => {
   try {
     await init();
-    const { Screen, ScreenAndView } = tableMap;
-    const screens = await Screen.findAll({ where: { deleted_at: 1 } });
+    const { SolutionComponent, VCComponent } = tableMap;
+    const solutionComponents = await SolutionComponent.findAll({ where: { deleted_at: 1 } });
+    const sc = solutionComponents.map(c => c.component_mark);
 
-    const screenAndViews = await ScreenAndView.findAll({ where: { status: 1 } });
-    const screenAndViewMap = _.keyBy(screenAndViews, 'screen_id');
+    const VCComponents = await VCComponent.findAll({});
+    const leftComponents = VCComponents.filter(c => !sc.includes(c.component_mark) && c.deleted_at === 1);
 
-    for (const screen of screens) {
-      const tagIds = screenAndViewMap[screen.screen_id] && screenAndViewMap[screen.screen_id].tag_id;
-      const tagArr = tagIds.split(',');
-      if (tagArr.length > 1) {
-        console.log(screen.name);
-      }
+    console.log(leftComponents.length);
+    for (const c of leftComponents) {
+      console.log(c.component_mark);
     }
 
   } catch (error) {
     console.log(error.stack || error);
+  } finally {
+    mongoClient.close();
+    process.exit(0);
   }
 })();
 

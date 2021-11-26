@@ -113,6 +113,7 @@ roles: {
 
 	name: String,
 	menus: [String],
+	desc: String,
 	status: String, // 可用状态 enum#COMMON_STATUS
 }
 

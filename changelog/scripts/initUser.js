@@ -9,12 +9,14 @@ const mongoUrl = config.get('mongoose.url');
 const solutionUri = config.get('mysql.solution_uri');
 
 let mongoClient,
+  db,
   solutionSequelize;
 const tableMap = {};
 
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
   await mongoClient.connect();
+  db = mongoClient.db('flyfish');
 
   solutionSequelize = new Sequelize(solutionUri);
   tableMap.User = solutionSequelize.define('user', {
@@ -60,7 +62,7 @@ async function init() {
     const users = await User.findAll({ where: { deleted_at: 1 } });
     console.log(`${users.length} 个用户等待被同步`);
 
-    const roles = await mongoClient.db('roles').find();
+    const roles = await db.collection('roles').find().toArray();
     const roleMap = {
       member: roles.find(r => r.name === '成员')._id.toString(),
       admin: roles.find(r => r.name === '管理员')._id.toString(),
@@ -84,10 +86,13 @@ async function init() {
         create_time: new Date(),
         update_time: new Date(),
       };
-      await mongoClient.db('applications').insertOne(doc);
+      await db.collection('users').insertOne(doc);
     }
   } catch (error) {
     console.log(error.stack || error);
+  } finally {
+    mongoClient.close();
+    process.exit(0);
   }
 })();
 

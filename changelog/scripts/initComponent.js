@@ -3,21 +3,84 @@
 const config = require('config');
 const { MongoClient } = require('mongodb');
 const { Sequelize, DataTypes, Op } = require('sequelize');
+const _ = require('lodash');
 
 const mongoUrl = config.get('mongoose.url');
-const mysqlUri = config.get('mysql.uri');
+const solutionUri = config.get('mysql.solution_uri');
+const VCUri = config.get('mysql.visual_component_uri');
 
-let client,
-  sequelize;
+let mongoClient,
+  db,
+  solutionSequelize,
+  VCSequelize;
 const tableMap = {};
+
 async function init() {
-  client = new MongoClient(mongoUrl);
-  await client.connect();
-  sequelize = new Sequelize(mysqlUri);
-  tableMap.Component = sequelize.define('visual_components', {
+  mongoClient = new MongoClient(mongoUrl);
+  await mongoClient.connect();
+  db = mongoClient.db('flyfish');
+
+  // 应用平台
+  solutionSequelize = new Sequelize(solutionUri);
+  tableMap.SolutionComponent = solutionSequelize.define('visual_components', {
     component_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+    },
+    org_mark: {
+      type: DataTypes.STRING,
+    },
+    component_mark: {
+      type: DataTypes.STRING,
+    },
+    deleted_at: {
+      type: DataTypes.INTEGER,
+    },
+    created_at: {
+      type: DataTypes.INTEGER,
+    },
+    updated_at: {
+      type: DataTypes.INTEGER,
+    },
+  }, {
+    tableName: 'visual_components',
+    timestamps: false,
+  });
+
+  tableMap.SolutionTagView = solutionSequelize.define('visual_component_tag_view', {
+    component_id: {
+      type: DataTypes.INTEGER,
+    },
+    tag_id: {
+      type: DataTypes.INTEGER,
+    },
+    status: {
+      type: DataTypes.INTEGER,
+    },
+    created_at: {
+      type: DataTypes.INTEGER,
+    },
+    updated_at: {
+      type: DataTypes.INTEGER,
+    },
+  }, {
+    tableName: 'visual_component_tag_view',
+    timestamps: false,
+  });
+
+
+  // 组件开发平台
+  VCSequelize = new Sequelize(VCUri);
+  tableMap.VCComponent = VCSequelize.define('visual_components', {
+    component_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
     },
     org_id: {
       type: DataTypes.INTEGER,
@@ -25,13 +88,19 @@ async function init() {
     component_mark: {
       type: DataTypes.STRING,
     },
-    name: {
-      type: DataTypes.STRING,
-    },
     deleted_at: {
       type: DataTypes.INTEGER,
     },
     created_at: {
+      type: DataTypes.INTEGER,
+    },
+    updated_at: {
+      type: DataTypes.INTEGER,
+    },
+    create_user_id: {
+      type: DataTypes.INTEGER,
+    },
+    update_user_id: {
       type: DataTypes.INTEGER,
     },
   }, {
@@ -44,24 +113,135 @@ async function init() {
 (async () => {
   try {
     await init();
-    const { Component } = tableMap;
-    const components = await Component.findAll({ where: { deleted_at: 1 } });
-    console.log(`${components.length} 个组件等待被同步`);
+    const { SolutionComponent, VCComponent, SolutionTagView } = tableMap;
+    const solutionComponents = await SolutionComponent.findAll({ where: { deleted_at: 1 } });
+    const solutionTagViews = await SolutionTagView.findAll({ where: { status: 1 } });
+    const solutionTagViewMap = _.keyBy(solutionTagViews, 'component_id');
 
-    for (const component of components) {
+
+    const VCComponents = await VCComponent.findAll({});
+    const CVComponentMap = _.keyBy(VCComponents, 'component_mark');
+
+    const category = await db.collection('component_categories').findOne({}, { sort: { create_time: -1 } });
+    const categoryId = category.categories[0].id;
+
+    const users = await db.collection('users').find().toArray();
+    const userMap = _.keyBy(users, 'old_user_id');
+
+    const projects = await db.collection('projects').find().toArray();
+    const projectMap = _.keyBy(projects, 'old_id');
+
+    const pubComponents = [];
+
+    // 应用平台的组件（已发布组件）
+    for (const component of solutionComponents) {
+      let subCategoryId,
+        type;
+      if (component.org_mark === 'comonComponent') {
+        type = 'common';
+        subCategoryId = category.categories[0].children[0].id;
+      } else {
+        type = 'project';
+        subCategoryId = category.categories[0].children[1].id;
+      }
+
+      const VCComponent = CVComponentMap[component.component_mark] || {};
+      const oldCreator = VCComponent.create_user_id;
+      const oldUpdater = VCComponent.update_user_id;
+
       const doc = {
         name: component.name,
-        component_mark: component.component_mark,
-        old_id: component.component_id,
-        create_time: new Date(),
-        update_time: new Date(),
+        is_lib: false,
+        category: categoryId,
+        sub_category: subCategoryId,
+        type,
+        applications: [],
+        versions: [
+          {
+            no: 'v-current',
+            desc: '',
+            status: 'valid',
+          },
+          {
+            no: 'v1.0.0',
+            desc: '',
+            status: 'valid',
+          },
+        ],
+        cover: '',
+        creator: oldCreator && userMap[oldCreator] && userMap[oldCreator]._id.toString() || '',
+        updater: oldUpdater && userMap[oldUpdater] && userMap[oldUpdater]._id.toString() || '',
+        develop_status: 'online',
+        status: 'valid',
+        create_time: new Date(+component.created_at),
+        update_time: new Date(+component.updated_at),
+
+        old_org_mark: component.org_mark,
+        old_component_mark: component.component_mark,
       };
-      await client.db('components').insertOne(doc);
+
+      if (type === 'project') {
+        let projectId;
+        const oldTagId = solutionTagViewMap[component.component_id] && solutionTagViewMap[component.component_id].tag_id;
+        if (oldTagId) projectId = projectMap[oldTagId] && projectMap[oldTagId]._id.toString();
+        doc.projects = projectId && [ projectId ] || [];
+      }
+      await db.collection('components').insertOne(doc);
+
+      pubComponents.push(component.component_mark);
     }
 
+    // 组件开发平台，除应用平台已存在的组件（未发布组件）
+    const unPubComponents = VCComponents.filter(c => !pubComponents.includes(c.component_mark) && c.deleted_at === 1);
 
+    for (const component of unPubComponents) {
+      let subCategoryId,
+        type;
+      if (component.org_id === 4) {
+        type = 'common';
+        subCategoryId = category.categories[0].children[0].id;
+      } else {
+        type = 'project';
+        subCategoryId = category.categories[0].children[1].id;
+      }
+
+
+      const doc = {
+        name: component.name,
+        is_lib: false,
+        category: categoryId,
+        sub_category: subCategoryId,
+        type,
+        applications: [],
+        versions: [
+          {
+            no: 'v-current',
+            desc: '',
+            status: 'valid',
+          },
+        ],
+        cover: '',
+        creator: component.create_user_id && userMap[component.create_user_id] && userMap[component.create_user_id]._id.toString() || '',
+        updater: component.update_user_id && userMap[component.update_user_id] && userMap[component.update_user_id]._id.toString() || '',
+        develop_status: 'doing',
+        status: 'valid',
+        create_time: new Date(+component.created_at),
+        update_time: new Date(+component.updated_at),
+
+        old_org_id: component.org_id,
+        old_component_mark: component.component_mark,
+      };
+
+      // TODO: project 归属
+
+
+      await db.collection('components').insertOne(doc);
+    }
   } catch (error) {
     console.log(error.stack || error);
+  } finally {
+    mongoClient.close();
+    process.exit(0);
   }
 })();
 

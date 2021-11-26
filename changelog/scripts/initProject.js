@@ -8,12 +8,14 @@ const mongoUrl = config.get('mongoose.url');
 const solutionUri = config.get('mysql.solution_uri');
 
 let mongoClient,
+  db,
   solutionSequelize;
 const tableMap = {};
 
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
   await mongoClient.connect();
+  db = mongoClient.db('flyfish');
 
   solutionSequelize = new Sequelize(solutionUri);
   tableMap.Tag = solutionSequelize.define('component_tag', {
@@ -45,6 +47,7 @@ async function init() {
     console.log(`${tags.length} 个项目等待被同步`);
 
     for (const tag of tags) {
+      if (tag.name === '基础组件') continue;
       const doc = {
         name: tag.name,
         desc: tag.description,
@@ -53,10 +56,13 @@ async function init() {
         update_time: new Date(),
         old_id: tag.id,
       };
-      await mongoClient.db('projects').insertOne(doc);
+      await db.collection('projects').insertOne(doc);
     }
   } catch (error) {
     console.log(error.stack || error);
+  } finally {
+    mongoClient.close();
+    process.exit(0);
   }
 })();
 

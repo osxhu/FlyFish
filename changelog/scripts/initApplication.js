@@ -9,6 +9,7 @@ const mongoUrl = config.get('mongoose.url');
 const solutionUri = config.get('mysql.solution_uri');
 
 let mongoClient,
+  db,
   solutionSequelize;
 const tableMap = {};
 const SCREEN_STATUS = [ 'doing', 'testing', 'delivered' ];
@@ -16,6 +17,7 @@ const SCREEN_STATUS = [ 'doing', 'testing', 'delivered' ];
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
   await mongoClient.connect();
+  db = mongoClient.db('flyfish');
 
   solutionSequelize = new Sequelize(solutionUri);
   tableMap.Screen = solutionSequelize.define('visual_screen', {
@@ -83,32 +85,35 @@ async function init() {
   try {
     await init();
     const { Screen, ScreenAndView } = tableMap;
+    const componentAppMap = {};
+
     const screens = await Screen.findAll({ where: { deleted_at: 1 } });
     console.log(`${screens.length} 个应用等待被同步`);
 
     const screenAndViews = await ScreenAndView.findAll({ where: { status: 1 } });
     const screenAndViewMap = _.keyBy(screenAndViews, 'screen_id');
 
-    const users = await mongoClient.db('users').find();
+    const users = await db.collection('users').find().toArray();
     const userMap = _.keyBy(users, 'old_user_id');
 
-    const projects = await mongoClient.db('projects').find();
+    const projects = await db.collection('projects').find().toArray();
     const projectMap = _.keyBy(projects, 'old_id');
 
-    // TODO: 查所有的新组件
-
+    const components = await db.collection('components').find({}, {}).toArray();
+    const componentMap = _.keyBy(components, 'old_component_mark');
 
     for (const screen of screens) {
-      // Todo: tag_id只留一个
+      // TODO: tag_id只留一个
       const tagIds = screenAndViewMap[screen.screen_id] && screenAndViewMap[screen.screen_id].tag_id;
       const tagId = tagIds.split(',')[0];
 
       const projectId = projectMap[tagId]._id.toString();
 
       screen.options_conf.components = screen.options_conf.components.map(c => {
-        // TODO:替换成新的mongo组件id
-        c.type = '';
+        c._type = c.type;
+        c.type = componentMap[c.type]._id.toString();
         c.version = 'v1.0.0';
+
         return c;
       });
       const doc = {
@@ -125,11 +130,14 @@ async function init() {
         create_time: new Date(),
         update_time: new Date(),
       };
-      await mongoClient.db('applications').insertOne(doc);
+      await db.collection('applications').insertOne(doc);
     }
 
   } catch (error) {
     console.log(error.stack || error);
+  } finally {
+    mongoClient.close();
+    process.exit(0);
   }
 })();
 
