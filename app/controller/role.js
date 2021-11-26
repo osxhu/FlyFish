@@ -84,7 +84,7 @@ class RolesController extends BaseController {
     const { ctx, app, service } = this;
 
     const addRoleBasicInfoSchema = app.Joi.object().keys({
-      desc: app.Joi.string(),
+      desc: app.Joi.string().allow(''),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
     const { value: requestData } = ctx.validate(addRoleBasicInfoSchema, ctx.request.body);
