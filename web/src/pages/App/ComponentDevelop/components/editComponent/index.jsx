@@ -85,9 +85,7 @@ const EditComponent = observer((props)=>{
         ]
       })(<Select>
         <Option value='project'>项目组件</Option>
-        {
-          userInfo.isAdmin?<Option value='common'>基础组件</Option>:null
-        }
+        <Option value='common'>基础组件</Option>
       </Select>)}
     </Form.Item>
     {

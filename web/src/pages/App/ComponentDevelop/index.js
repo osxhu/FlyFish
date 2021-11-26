@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-26 10:40:56
+ * @LastEditTime: 2021-11-26 11:40:03
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -196,12 +196,22 @@ const ComponentDevelop = observer((props) => {
                 </Popconfirm>
                 :null
               }
-              <div 
-                onClick={()=>{
-                  setEditData(record);
-                  setEditModalvisible(true);
-                }}
-              >编辑信息</div>
+              {
+                record.type===CONSTANT.TYPE_PROJECT?
+                <div 
+                  onClick={()=>{
+                    setEditData(record);
+                    setEditModalvisible(true);
+                  }}
+                >编辑信息</div>:
+                (userInfo.isAdmin?
+                  <div 
+                    onClick={()=>{
+                      setEditData(record);
+                      setEditModalvisible(true);
+                    }}
+                  >编辑信息</div>:null)
+              }
               <Popconfirm  
                 title='确定要删除吗？'
                 cancelText='否' 
