@@ -26,6 +26,7 @@ module.exports = app => {
 
   // roles
   router.post('/roles', controller.role.add);
+  router.get('/roles/get-all', controller.role.getAll);
   router.delete('/roles/:id', controller.role.delete);
   router.get('/roles/info/:id', controller.role.getInfo);
   router.post('/roles/list', controller.role.getList);

@@ -82,6 +82,16 @@ class RoleService extends Service {
     return { total, data };
   }
 
+  async getAll() {
+    const { ctx } = this;
+
+    const queryCond = {
+      status: Enum.COMMON_STATUS.VALID,
+    };
+
+    return await ctx.model.Role._find(queryCond, [ 'name' ], { sort: '-update_time' });
+  }
+
   async getRoleInfo(id) {
     const { ctx } = this;
 

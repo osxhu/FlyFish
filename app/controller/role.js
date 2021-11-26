@@ -147,6 +147,13 @@ class RolesController extends BaseController {
 
     this.success('获取成功', returnInfo);
   }
+
+  async getAll() {
+    const { service } = this;
+
+    const roleList = await service.role.getAll();
+    this.success('获取成功', roleList);
+  }
 }
 
 module.exports = RolesController;
