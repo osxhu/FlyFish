@@ -83,14 +83,13 @@ class ComponentService extends Service {
       status: Enum.COMMON_STATUS.VALID,
     };
     const queryProjects = [];
-    if (projectId) queryProjects.push(projectId);
 
     queryCond.$or = [];
     if (key) {
-      queryCond.$or.push({ name: { $regex: key } });
       queryCond.$or.push({ desc: { $regex: key } });
     }
     if (name) queryCond.name = { $regex: name };
+    if (projectId) queryCond.projectId = projectId;
     if (category) queryCond.category = category;
     if (subCategory) queryCond.subCategory = subCategory;
     if (developStatus) queryCond.developStatus = developStatus;
@@ -103,11 +102,9 @@ class ComponentService extends Service {
     const tagList = await ctx.model.Tag._find();
 
     const matchUsers = (users || []).filter(user => user.username.includes(key));
-    const matchProjects = (projectList || []).filter(project => project.name.includes(key));
     const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
 
     const matchUserIds = matchUsers.map(user => user.id);
-    const matchProjectIds = matchProjects.map(project => project.id);
     const matchTagIds = matchTags.map(tag => tag.id);
 
     if (!_.isEmpty(trades)) {
@@ -121,7 +118,6 @@ class ComponentService extends Service {
     if (!_.isEmpty(queryProjects)) queryCond.projects = { $in: queryProjects };
 
     if (!_.isEmpty(matchUserIds)) queryCond.$or.push({ creator: { $in: matchUserIds } });
-    if (!_.isEmpty(matchProjectIds)) queryCond.$or.push({ projects: { $in: matchProjectIds } });
     if (!_.isEmpty(matchTagIds)) queryCond.$or.push({ tags: { $in: matchTagIds } });
     if (_.isEmpty(queryCond.$or)) delete queryCond.$or;
     const componentList = await ctx.model.Component._find(queryCond);
