@@ -140,7 +140,7 @@ class ApplicationService extends Service {
     const createInfo = {
       name: applicationInfo.name,
       projectId: applicationInfo.projectId,
-      tags: tagData,
+      tags: tagData.tags,
 
       type: copyApplication.type,
       category: copyApplication.category,

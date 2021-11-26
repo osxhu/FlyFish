@@ -89,12 +89,12 @@ class ComponentService extends Service {
       queryCond.$or.push({ desc: { $regex: key } });
     }
     if (name) queryCond.name = { $regex: name };
-    if (projectId) queryCond.projectId = projectId;
     if (category) queryCond.category = category;
     if (subCategory) queryCond.subCategory = subCategory;
     if (developStatus) queryCond.developStatus = developStatus;
     if (type) queryCond.type = type;
     if (_.isBoolean(isLib)) queryCond.isLib = isLib;
+    if (projectId) queryCond.projects = { $in: projectId };
     if (!_.isEmpty(tags)) queryCond.tags = { $in: tags };
 
     const users = await ctx.model.User._find();
