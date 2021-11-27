@@ -64,18 +64,16 @@ module.exports = app => {
 
   ProjectSchema.statics._updateOne = async function(query, params) {
     const filter = _toDoc(query);
-    const doc = _toDoc(params);
+    const doc = _toDoc(params, true);
     return await this.updateOne(filter, doc);
   };
 
-  function _toDoc(obj) {
+  function _toDoc(obj, update) {
     if (_.isEmpty(obj)) return;
     obj = _.omitBy(obj, _.isNil);
 
-    if (!_.isNil(obj.id)) {
-      obj._id = obj.id;
-      delete obj.id;
-    }
+    if (obj.id) obj._id = obj.id; delete (obj.id);
+    if (update) obj.updateTime = Date.now();
     return decamelizeKeys(obj);
   }
 

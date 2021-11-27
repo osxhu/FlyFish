@@ -5,6 +5,7 @@ const AdmZip = require('adm-zip');
 const BaseController = require('./base');
 const CODE = require('../lib/error');
 const _ = require('lodash');
+const Enum = require('../lib/enum');
 
 class ComponentsController extends BaseController {
   async updateCategory() {
@@ -51,7 +52,7 @@ class ComponentsController extends BaseController {
       projectId: app.Joi.string().length(24),
       isLib: app.Joi.boolean(),
       developStatus: app.Joi.string(),
-      type: app.Joi.string(),
+      type: app.Joi.string().valid(...Object.values(Enum.COMPONENT_TYPE)),
       category: app.Joi.number(),
       subCategory: app.Joi.number(),
 
@@ -93,9 +94,9 @@ class ComponentsController extends BaseController {
     const errInfo = componentInfo.data.error || null;
     if (componentInfo.msg === 'Exists Already') {
       this.fail('创建失败, 组件名称已存在', null, CODE.FAIL);
-    } else if (componentInfo.msg === 'Fail') {
+    } else if (componentInfo.msg === 'Init Workplace Fail') {
       this.fail('创建失败, 初始化开发空间失败', null, CODE.FAIL);
-    } else if (componentInfo.msg === 'Compile Fail') {
+    } else if (componentInfo.msg === 'Build Workplace Fail') {
       this.fail('编译失败', errInfo, CODE.FAIL);
     } else {
       this.success('创建成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
@@ -229,10 +230,13 @@ class ComponentsController extends BaseController {
     if (!requestData.compatible && !requestData.no) this.fail('组件版本不兼容旧版本，请添加版本号', null, CODE.PARAM_ERR);
     const releaseComponent = await service.component.releaseComponent(id, requestData);
 
+    const errInfo = releaseComponent.data.error || null;
     if (releaseComponent.msg === 'Exists Already') {
-      this.fail('发行版本失败, 组件版本已存在', null, CODE.FAIL);
-    } else if (releaseComponent.msg === 'Fail') {
-      this.fail('发行版本失败, 初始化空间失败', null, CODE.FAIL);
+      this.fail('发行版本失败, 组件版本已存在', errInfo, CODE.FAIL);
+    } else if (releaseComponent.msg === 'Init Workplace Fail') {
+      this.fail('发行版本失败, 初始化空间失败', errInfo, CODE.FAIL);
+    } else if (releaseComponent.msg === 'Build Workplace Fail') {
+      this.fail('发行版本失败, npm build失败', errInfo, CODE.FAIL);
     } else {
       this.success('发行版本成功', null);
     }

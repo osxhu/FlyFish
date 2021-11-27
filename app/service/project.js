@@ -16,13 +16,8 @@ class ProjectService extends Service {
     return await ctx.model.Project._create(projectData);
   }
 
-  async assembleProjectData(params, update = false) {
+  async assembleProjectData(params) {
     const { ctx } = this;
-
-    if (!update) {
-      const existProject = await ctx.model.Project._findOne({ name: params.name });
-      if (!_.isEmpty(existProject)) return;
-    }
 
     const newTradeNames = params.trades.filter(item => !item.id);
     const existTrades = await ctx.model.Trade._find({ name: { $in: newTradeNames.map(item => item.name) }, status: Enum.COMMON_STATUS.VALID });
@@ -45,16 +40,35 @@ class ProjectService extends Service {
 
   async delete(id) {
     const { ctx } = this;
-    return await ctx.model.Project._deleteOne({ id });
+    const returnData = { msg: 'ok', data: {} };
+
+    const existsComponent = await ctx.model.Component._findOne({ projects: { $in: id }, status: Enum.COMMON_STATUS.VALID });
+    const existsApplication = await ctx.model.Application._findOne({ projectId: id, status: Enum.COMMON_STATUS.VALID });
+
+    if (!_.isEmpty(existsComponent) || !_.isEmpty(existsApplication)) {
+      returnData.msg = 'Exists Already';
+      return returnData;
+    }
+    await ctx.model.Project._deleteOne({ id });
+
+    return returnData;
   }
 
   async edit(id, params) {
     const { ctx } = this;
 
-    const projectData = await this.assembleProjectData(params, true);
-    if (!projectData) return;
+    const returnData = { msg: 'ok', data: {} };
+    if (params.name) {
+      const existProject = await ctx.model.Project._findOne({ id: { $ne: id }, name: params.name, status: Enum.COMMON_STATUS.VALID });
+      if (!_.isEmpty(existProject)) {
+        returnData.msg = 'Exists Already';
+        return returnData;
+      }
+    }
 
-    return await ctx.model.Project._updateOne({ id }, projectData);
+    const projectData = await this.assembleProjectData(params, true);
+    await ctx.model.Project._updateOne({ id }, projectData);
+    return returnData;
   }
 
   async getList(query, options) {
@@ -105,10 +119,10 @@ class ProjectService extends Service {
     const creators = await ctx.model.User._find({ id: { $in: _.uniq(userIds) } });
     const creatorMap = _.keyBy(creators, 'id');
     list.forEach(l => {
-      l.trades = l.trades.map(id => ({
+      l.trades = _.orderBy(l.trades.map(id => ({
         id,
         name: tradeMap[id] && tradeMap[id].name || '',
-      }));
+      })), [ 'name' ], [ 'desc' ]);
       l.creatorName = creatorMap[l.creator] && creatorMap[l.creator].username || '';
     });
 
@@ -127,10 +141,10 @@ class ProjectService extends Service {
     const tradeMap = _.keyBy(tradeInfos, 'id');
 
     const creator = await ctx.model.User._findOne({ id: info.creator });
-    info.trades = info.trades.map(id => ({
+    info.trades = _.orderBy(info.trades.map(id => ({
       id,
       name: tradeMap[id] && tradeMap[id].name || '',
-    }));
+    })), [ 'name', 'desc' ]);
     info.creatorName = creator.username;
 
     return info;

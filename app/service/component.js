@@ -78,11 +78,10 @@ class ComponentService extends Service {
   async getList(requestData) {
     const { ctx } = this;
 
-    const { key, name, isLib, tags, trades, projectId, developStatus, type, category, subCategory, curPage, pageSize } = requestData;
-    const queryCond = {
-      status: Enum.COMMON_STATUS.VALID,
-    };
+    let orderField = 'updateTime';
     const queryProjects = [];
+    const { key, name, isLib, tags, trades, projectId, developStatus, type, category, subCategory, curPage, pageSize } = requestData;
+    const queryCond = { status: Enum.COMMON_STATUS.VALID };
 
     queryCond.$or = [];
     if (key) {
@@ -93,19 +92,25 @@ class ComponentService extends Service {
     if (subCategory) queryCond.subCategory = subCategory;
     if (developStatus) queryCond.developStatus = developStatus;
     if (type) queryCond.type = type;
-    if (_.isBoolean(isLib)) queryCond.isLib = isLib;
     if (projectId) queryCond.projects = { $in: projectId };
     if (!_.isEmpty(tags)) queryCond.tags = { $in: tags };
+
+    // handle logic of component lib
+    if (_.isBoolean(isLib)) {
+      // 组件库组件只要项目组件
+      if (isLib) {
+        queryCond.type = Enum.COMPONENT_TYPE.PROJECT;
+        orderField = 'createTime';
+      }
+      queryCond.isLib = isLib;
+    }
 
     const users = await ctx.model.User._find();
     const projectList = await ctx.model.Project._find();
     const tagList = await ctx.model.Tag._find();
 
     const matchUsers = (users || []).filter(user => user.username.includes(key));
-    const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
-
     const matchUserIds = matchUsers.map(user => user.id);
-    const matchTagIds = matchTags.map(tag => tag.id);
 
     if (!_.isEmpty(trades)) {
       const tradeProjects = (projectList || []).filter(project => {
@@ -118,12 +123,11 @@ class ComponentService extends Service {
     if (!_.isEmpty(queryProjects)) queryCond.projects = { $in: queryProjects };
 
     if (!_.isEmpty(matchUserIds)) queryCond.$or.push({ creator: { $in: matchUserIds } });
-    if (!_.isEmpty(matchTagIds)) queryCond.$or.push({ tags: { $in: matchTagIds } });
     if (_.isEmpty(queryCond.$or)) delete queryCond.$or;
     const componentList = await ctx.model.Component._find(queryCond);
 
     const total = componentList.length || 0;
-    const data = _.orderBy(componentList, [ 'updateTime' ], [ 'desc' ]).splice(curPage * pageSize, pageSize).map(component => {
+    const data = _.orderBy(componentList, [ orderField ], [ 'desc' ]).splice(curPage * pageSize, pageSize).map(component => {
       const curUser = (users || []).find(user => user.id === component.creator) || {};
       const curProjects = (projectList || []).filter(project => (component.projects || []).includes(project.id));
       const curTags = (tagList || []).filter(tag => (component.tags || []).includes(tag.id));
@@ -151,6 +155,7 @@ class ComponentService extends Service {
         creator: curUser.username,
         isLib: component.isLib || false,
         cover: component.cover,
+        desc: component.desc,
 
         updateTime: component.updateTime,
         createTime: component.createTime,
@@ -204,7 +209,7 @@ class ComponentService extends Service {
           name: curTag.name || '',
         };
       }),
-      versions: (componentInfo.versions || []).map(version => {
+      versions: _.orderBy((componentInfo.versions || []).map(version => {
         return {
           no: version.no,
           desc: version.desc || '无',
@@ -212,7 +217,7 @@ class ComponentService extends Service {
           cover: version.cover,
           time: version.time && version.time.getTime(),
         };
-      }),
+      }), [ 'time' ], [ 'desc' ]),
       desc: componentInfo.desc,
       dataConfig: componentInfo.dataConfig || {},
       creatorInfo: {
@@ -259,15 +264,20 @@ class ComponentService extends Service {
     const componentId = result.id;
     returnData.data.id = componentId;
 
-    const createResult = await this.initDevWorkspace(componentId, createComponentInfo.name);
-    if (createResult.msg !== 'success') returnData.msg = createResult.msg;
+    try {
+      await this.initDevWorkspace(componentId, createComponentInfo.name);
+    } catch (error) {
+      returnData.msg = 'Init Workplace Fail';
+      returnData.data.error = error.message || error.stack;
+      return returnData;
+    }
 
     try {
       const componentPath = `${staticDir}/${componentsPath}/${componentId}`;
       const componentDevPath = `${componentPath}/${initComponentVersion}`;
       await exec(`cd ${componentDevPath} && npm run build-dev`);
     } catch (error) {
-      returnData.msg = 'Compile Fail';
+      returnData.msg = 'Build Workplace Fail';
       returnData.data.error = error.message || error.stack;
       return returnData;
     }
@@ -400,13 +410,7 @@ class ComponentService extends Service {
     await ctx.helper.copyAndReplace(src, dest, [ 'node_modules', '.git', 'components', 'release', 'package-lock.json' ], { from: id, to: componentId });
 
     // 初始化git仓库
-    if (config.env === 'prod') {
-      try {
-        await this.initGit(componentId);
-      } catch (e) {
-        logger.error('git init error: ', e.stack);
-      }
-    }
+    if (config.env === 'prod') await this.initGit(componentId);
 
     return returnData;
   }
@@ -513,7 +517,7 @@ class ComponentService extends Service {
   async releaseComponent(componentId, releaseComponentInfo) {
     const { ctx } = this;
 
-    const returnData = { msg: 'ok' };
+    const returnData = { msg: 'ok', data: {} };
     const { no, compatible, desc } = releaseComponentInfo;
     const componentInfo = await ctx.model.Component._findOne({ id: componentId });
 
@@ -530,31 +534,42 @@ class ComponentService extends Service {
     const createResult = await this.initReleaseWorkspace(componentId, newVersion);
     await ctx.model.Component._updateOne({ id: componentId }, { developStatus: Enum.COMPONENT_DEVELOP_STATUS.ONLINE, $push: { versions: { no: newVersion, desc, status: Enum.COMMON_STATUS.VALID, time: Date.now() } } });
 
-    if (createResult.msg !== 'Success') returnData.msg = createResult.msg;
+    if (createResult.msg !== 'Success') {
+      returnData.msg = createResult.msg;
+      returnData.data = createResult.data;
+      return returnData;
+    }
 
     return returnData;
   }
 
   async initReleaseWorkspace(componentId, releaseVersion) {
-    const { ctx, config, logger } = this;
+    const { ctx, config } = this;
     const { pathConfig: { staticDir, componentsPath, initComponentVersion } } = config;
 
-    const returnInfo = { msg: 'Success' };
+    const returnInfo = { msg: 'Success', data: {} };
+
+    const componentPath = `${staticDir}/${componentsPath}/${componentId}`;
+    const componentDevPath = `${componentPath}/${initComponentVersion}`;
+    const componentReleasePath = `${componentPath}/${releaseVersion}`;
 
     try {
-      const componentPath = `${staticDir}/${componentsPath}/${componentId}`;
-      const componentDevPath = `${componentPath}/${initComponentVersion}`;
-      const componentReleasePath = `${componentPath}/${releaseVersion}`;
-
-      const ignoreDirs = [ 'node_modules', '.git', 'components', 'release', 'package-lock.json' ];
+      const ignoreDirs = [ '.git', 'components', 'release', 'package-lock.json' ];
       await ctx.helper.copyAndReplace(componentDevPath, componentReleasePath, ignoreDirs, { from: initComponentVersion, to: releaseVersion });
-      await exec(`cd ${componentReleasePath} && npm i && npm run build-production`);
+    } catch (error) {
+      returnInfo.msg = 'Init Workplace Fail';
+      returnInfo.data.error = error || error.stack;
+      return returnInfo;
+    }
 
+    try {
+      await exec(`cd ${componentReleasePath} && npm run build-production`);
       const savePath = `${componentReleasePath}/release/cover.png`;
       this.genCoverImage(componentId, savePath);
     } catch (error) {
-      returnInfo.msg = 'Fail';
-      logger.error('releaseCompatibleComponent error: ', error || error.stack);
+      returnInfo.msg = 'Build Workplace Fail';
+      returnInfo.data.error = error || error.stack;
+      return returnInfo;
     }
 
     return returnInfo;
@@ -562,55 +577,41 @@ class ComponentService extends Service {
 
   // 初始化开发组件空间
   async initDevWorkspace(componentId, componentName) {
-    const { config, logger } = this;
+    const { config } = this;
     const { pathConfig: { staticDir, componentsPath, componentsTplPath, initComponentVersion } } = config;
-
-    const returnInfo = { msg: 'Success' };
 
     const componentPath = `${staticDir}/${componentsPath}/${componentId}`;
     const componentDevPath = `${componentPath}/${initComponentVersion}`;
-    try {
-      fs.mkdirSync(`${componentPath}`);
-      fs.mkdirSync(componentDevPath);
+    fs.mkdirSync(`${componentPath}`);
+    fs.mkdirSync(componentDevPath);
 
-      const srcPath = `${componentDevPath}/src`;
-      const srcTplPath = `${staticDir}/${componentsTplPath}/src`;
+    const srcPath = `${componentDevPath}/src`;
+    const srcTplPath = `${staticDir}/${componentsTplPath}/src`;
 
-      fs.mkdirSync(srcPath);
-      fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId, initComponentVersion));
-      fs.writeFileSync(`${srcPath}/Component.js`, require(`${srcTplPath}/ComponentJs.js`)());
-      fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(componentId, initComponentVersion));
+    fs.mkdirSync(srcPath);
+    fs.writeFileSync(`${srcPath}/main.js`, require(`${srcTplPath}/mainJs.js`)(componentId, initComponentVersion));
+    fs.writeFileSync(`${srcPath}/Component.js`, require(`${srcTplPath}/ComponentJs.js`)());
+    fs.writeFileSync(`${srcPath}/setting.js`, require(`${srcTplPath}/setting.js`)(componentId, initComponentVersion));
 
-      const settingPath = `${srcPath}/settings`;
-      fs.mkdirSync(settingPath);
-      fs.writeFileSync(`${settingPath}/options.js`, require(`${srcTplPath}/options.js`)(componentId));
-      fs.writeFileSync(`${settingPath}/data.js`, require(`${srcTplPath}/data.js`)(componentId));
+    const settingPath = `${srcPath}/settings`;
+    fs.mkdirSync(settingPath);
+    fs.writeFileSync(`${settingPath}/options.js`, require(`${srcTplPath}/options.js`)(componentId));
+    fs.writeFileSync(`${settingPath}/data.js`, require(`${srcTplPath}/data.js`)(componentId));
 
-      const buildPath = `${componentDevPath}/build`;
-      const buildTplPath = `${staticDir}/${componentsTplPath}/build`;
-      fs.mkdirSync(buildPath);
-      fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(componentId));
-      fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
+    const buildPath = `${componentDevPath}/build`;
+    const buildTplPath = `${staticDir}/${componentsTplPath}/build`;
+    fs.mkdirSync(buildPath);
+    fs.writeFileSync(`${buildPath}/webpack.config.dev.js`, require(`${buildTplPath}/webpack.config.dev.js`)(componentId));
+    fs.writeFileSync(`${buildPath}/webpack.config.production.js`, require(`${buildTplPath}/webpack.config.production.js`)(componentId));
 
-      fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${staticDir}/${componentsTplPath}/editor.html.js`)(componentId, initComponentVersion));
-      fs.writeFileSync(`${componentDevPath}/index.html`, require(`${staticDir}/${componentsTplPath}/index.html.js`)(componentId, initComponentVersion));
-      fs.writeFileSync(`${componentDevPath}/env.js`, require(`${staticDir}/${componentsTplPath}/env.js`)(componentId, initComponentVersion));
-      fs.writeFileSync(`${componentDevPath}/options.json`, require(`${staticDir}/${componentsTplPath}/options.json.js`)(componentId, componentName));
-      fs.writeFileSync(`${componentDevPath}/package.json`, require(`${staticDir}/${componentsTplPath}/package.json.js`)(componentId));
-      await fsExtra.copy(`${staticDir}/${componentsTplPath}/.gitignore`, `${componentDevPath}/.gitignore`);
-    } catch (error) {
-      returnInfo.msg = 'Fail';
-      logger.error('createDevWorkspace error: ', error || error.stack);
-    }
-    if (config.env === 'prod') {
-      try {
-        await this.initGit(componentId);
-      } catch (e) {
-        logger.error('git init error: ', e.stack);
-      }
-    }
+    fs.writeFileSync(`${componentDevPath}/editor.html`, require(`${staticDir}/${componentsTplPath}/editor.html.js`)(componentId, initComponentVersion));
+    fs.writeFileSync(`${componentDevPath}/index.html`, require(`${staticDir}/${componentsTplPath}/index.html.js`)(componentId, initComponentVersion));
+    fs.writeFileSync(`${componentDevPath}/env.js`, require(`${staticDir}/${componentsTplPath}/env.js`)(componentId, initComponentVersion));
+    fs.writeFileSync(`${componentDevPath}/options.json`, require(`${staticDir}/${componentsTplPath}/options.json.js`)(componentId, componentName));
+    fs.writeFileSync(`${componentDevPath}/package.json`, require(`${staticDir}/${componentsTplPath}/package.json.js`)(componentId));
+    await fsExtra.copy(`${staticDir}/${componentsTplPath}/.gitignore`, `${componentDevPath}/.gitignore`);
 
-    return returnInfo;
+    if (config.env === 'prod') await this.initGit(componentId);
   }
 
   async initGit(componentId) {
@@ -637,7 +638,7 @@ class ComponentService extends Service {
 
       await ctx.model.Component._updateOne({ id: componentId }, { gitLabProjectId: newRepoId, needPushGit: false, lastChangeTime: Date.now() });
     } catch (e) {
-      logger.error(e.stack || e);
+      logger.error('git init error: ', e || e.stack);
     }
   }
 

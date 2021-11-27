@@ -8,7 +8,7 @@ class RoleService extends Service {
     const { ctx } = this;
 
     const returnData = { msg: 'ok', data: {} };
-    const existsRoles = await ctx.model.Role._findOne({ name: createRoleInfo.name });
+    const existsRoles = await ctx.model.Role._findOne({ name: createRoleInfo.name, status: Enum.COMMON_STATUS.VALID });
     if (!_.isEmpty(existsRoles)) {
       returnData.msg = 'Exists Already';
       return returnData;
@@ -39,6 +39,8 @@ class RoleService extends Service {
 
     await ctx.model.User._updateMany({ id: { $in: enableMemberIds } }, { role: id });
     await ctx.model.User._updateMany({ id: { $in: disableMemberIds } }, { role: null });
+
+    await ctx.model.Role._updateOne({ id }, { updateTime: Date.now() });
   }
 
   async updateAuthInfo(id, updateInfo) {

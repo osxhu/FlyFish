@@ -30,8 +30,13 @@ class ProjectController extends BaseController {
     });
 
     const { projectId } = await deleteSchema.validateAsync(ctx.params);
-    await service.project.delete(projectId);
-    this.success('删除成功', null);
+    const deleteResult = await service.project.delete(projectId);
+
+    if (deleteResult.msg === 'Exists Already') {
+      this.fail('删除失败, 项目中存在组件或者应用', null, CODE.FAIL);
+    } else {
+      this.success('删除成功', { id: projectId });
+    }
   }
 
   async edit() {
@@ -51,8 +56,14 @@ class ProjectController extends BaseController {
 
     const { projectId } = await editParamSchema.validateAsync(ctx.params);
     const body = await editBodySchema.validateAsync(ctx.request.body);
-    await service.project.edit(projectId, body);
-    this.success('编辑成功', null);
+    const editResult = await service.project.edit(projectId, body);
+
+    const errInfo = editResult.data.error || null;
+    if (editResult.msg === 'Exists Already') {
+      this.fail('编辑失败, 组件名称已存在', errInfo, CODE.FAIL);
+    } else {
+      this.success('编辑成功', { id: projectId });
+    }
   }
 
   async list() {
@@ -65,13 +76,14 @@ class ProjectController extends BaseController {
     });
 
     const { key, curPage, pageSize } = await listSchema.validateAsync(ctx.query);
-    let options = {};
+    const options = {
+      sort: '-update_time',
+    };
     if (!_.isNil(curPage) && !_.isNil(pageSize)) {
-      options = {
-        sort: '-update_time',
+      Object.assign(options, {
         skip: curPage * pageSize,
         limit: pageSize,
-      };
+      });
     }
 
     const { list, total } = await service.project.getList({ key }, options);
