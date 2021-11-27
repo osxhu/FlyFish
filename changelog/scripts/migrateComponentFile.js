@@ -30,9 +30,15 @@ async function init() {
       const target = path.resolve(componentDir, component._id.toString(), 'v-current');
       await fs.copy(source, target);
 
+      // 加版本号
+      await replaceFiles(target, 'v-current');
+
       if (component.develop_status === 'online') {
         const versionTarget = path.resolve(componentDir, component._id.toString(), 'v1.0.0');
         await fs.copy(source, versionTarget);
+
+        // 加版本号
+        await replaceFiles(versionTarget, 'v1.0.0');
 
         const releaseSource = path.resolve(oldSolutionWww, 'static/public_visual_component/1', component.old_component_mark);
         const releaseTarget = path.resolve(versionTarget, 'release');
@@ -47,4 +53,17 @@ async function init() {
     process.exit(0);
   }
 })();
+
+async function replaceFiles(target, version) {
+  const mainJsPath = path.resolve(target, 'src/main.js');
+  const mainJsOrigin = await fs.readFile(mainJsPath, { encoding: 'utf8' });
+  const mainJsReplacement = mainJsOrigin.replace(/registerComponent\(\'(\w+)\'\,\sComponent\);/, `registerComponent(\'$1\', \'${version}\', Component);`);
+  await fs.writeFile(mainJsPath, mainJsReplacement);
+
+  const settingJsPath = path.resolve(target, 'src/setting.js');
+  const settingJsOrigin = await fs.readFile(settingJsPath, { encoding: 'utf8' });
+  const settingJsReplacement = settingJsOrigin.replace(/registerComponentOptionsSetting\(\'(\w+)\'\,\sOptionsSetting\);/, `registerComponentOptionsSetting(\'$1\', \'${version}\', OptionsSetting);`)
+    .replace(/registerComponentDataSetting\(\'(\w+)\'\,\sDataSetting\);/, `registerComponentDataSetting(\'$1\', \'${version}\', DataSetting);`);
+  await fs.writeFile(settingJsPath, settingJsReplacement);
+}
 
