@@ -99,15 +99,40 @@ async function init() {
     const projects = await db.collection('projects').find().toArray();
     const projectMap = _.keyBy(projects, 'old_id');
 
-    const components = await db.collection('components').find({}, {}).toArray();
+    const components = await db.collection('components').find().toArray();
     const componentMap = _.keyBy(components, 'old_component_mark');
 
-    for (const screen of screens) {
-      // TODO: tag_id只留一个
-      const tagIds = screenAndViewMap[screen.screen_id] && screenAndViewMap[screen.screen_id].tag_id;
-      const tagId = tagIds.split(',')[0];
+    const yunyingProjectId = projects.filter(p => p.name === '云智慧运营')[0]._id.toString();
 
-      const projectId = projectMap[tagId]._id.toString();
+    const specialScreenMap = {
+      57: [[ 17, 14 ], 17 ], // 招商城科
+      98: [[ 37, 15 ], 37 ], // 震坤行poc
+      99: [[ 34, 14 ], 34 ], // display-components
+      106: [[ 40, 42 ], 40 ], // 国投IT基础设施监控大屏
+      164: [[ 16, 59 ], 16 ], // 星巴克
+      209: [[ 20, 70 ], 70 ], // 四川社保厅POC
+      220: [[ 34, 75, 67, 58, 71, 111 ], yunyingProjectId ], // 云智慧运营看板
+      223: [[ 15, 47, 20 ], 15 ], // 基础设施运维监控概览大屏- pepper副本
+      247: [[ 31, 83, 15 ], 83 ], // 贵州省公安厅运维态势大屏
+      259: [[ 40, 42, 93 ], 40 ], // 国投IT基础设施监控大屏复制保存
+      261: [[ 44, 93 ], 40 ], // 国投基础设施监控大屏2复制保存
+      113: [[ 44 ], 40 ], // 国投基础设施监控大屏2
+      283: [[ 99 ], 40 ], // 国投集团IT设施监控大屏
+    };
+    for (const screen of screens) {
+      const tagStr = screenAndViewMap[screen.screen_id] && screenAndViewMap[screen.screen_id].tag_id;
+      const tagIds = tagStr.split(',');
+      let tagId = tagIds[0];
+      let projectId = projectMap[tagId]._id.toString();
+
+      if (tagIds.length > 1) {
+        tagId = specialScreenMap[screen.id][1];
+        // TODO: 把0下的组件都挂到1上
+        const components = await db.collection('components').find({ projects: { $in: specialScreenMap[screen.id][0] } }).toArray();
+        const componentIds = _.uniq(components.map(item => item._id));
+        projectId = projectMap[tagId]._id.toString();
+        await db.collection('components').updateMany({ _id: { $in: componentIds } }, { $addToSet: { projects: projectId } });
+      }
 
       screen.options_conf.components = screen.options_conf.components.map(c => {
         c._type = c.type;
@@ -126,6 +151,7 @@ async function init() {
         creator: userMap[screen.create_user_id] && userMap[screen.create_user_id]._id.toString(),
         updater: userMap[screen.developing_user_id] && userMap[screen.developing_user_id]._id.toString(),
         status: 'valid',
+        _cover: screen.cover,
         pages: [ screen.options_conf ],
         create_time: new Date(),
         update_time: new Date(),

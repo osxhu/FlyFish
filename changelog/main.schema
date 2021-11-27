@@ -22,7 +22,7 @@ applications: {
 	tags: [String],							// 标签	
 	develop_status: String, 	 // 应用开发状态 enum#APP_DEVELOP_STATUS
 	type: String,						    // 应用类型
-	cover: String, 							// 封面
+	cover: String, 							// 封面 不再存储，就在www/applications/cover.png
 	creator: String,
 	updater: String,
 	status: String,    			// 可用状态 enum#COMMON_STATUS

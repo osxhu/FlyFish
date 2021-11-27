@@ -67,6 +67,15 @@ async function init() {
       update_time: new Date(),
     };
     await db.collection('projects').insertOne(weiguishu);
+
+    const yunying = {
+      name: '云智慧运营',
+      desc: '云智慧运营',
+      status: 'valid',
+      create_time: new Date(),
+      update_time: new Date(),
+    };
+    await db.collection('projects').insertOne(yunying);
   } catch (error) {
     console.log(error.stack || error);
   } finally {

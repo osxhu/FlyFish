@@ -22,9 +22,8 @@ async function init() {
 (async () => {
   try {
     await init();
-    const componentDir = path.resolve(staticDir, 'www/components');
-    const components = await db.collection('components').find({}, {}).toArray();
-    const componentMap = _.keyBy(components, 'old_component_mark');
+    const componentDir = path.resolve(staticDir, 'components');
+    const components = await db.collection('components').find().toArray();
 
     for (const component of components) {
       const source = path.resolve(oldVCWww, 'static/dev_visual_component/dev_workspace', component.old_org_mark, component.old_component_mark);
