@@ -28,14 +28,14 @@ async function init() {
     for (const component of components) {
       const source = path.resolve(oldVCWww, 'static/dev_visual_component/dev_workspace', component.old_org_mark, component.old_component_mark);
       const target = path.resolve(componentDir, component._id.toString(), 'v-current');
-      await fs.copy(source, target);
+      await copyAndIgnore(source, target, [ '.git' ]);
 
       // 加版本号
       await replaceFiles(target, 'v-current');
 
       if (component.develop_status === 'online') {
         const versionTarget = path.resolve(componentDir, component._id.toString(), 'v1.0.0');
-        await fs.copy(source, versionTarget);
+        await copyAndIgnore(source, versionTarget, [ '.git' ]);
 
         // 加版本号
         await replaceFiles(versionTarget, 'v1.0.0');
@@ -65,5 +65,13 @@ async function replaceFiles(target, version) {
   const settingJsReplacement = settingJsOrigin.replace(/registerComponentOptionsSetting\(\'(\w+)\'\,\sOptionsSetting\);/, `registerComponentOptionsSetting(\'$1\', \'${version}\', OptionsSetting);`)
     .replace(/registerComponentDataSetting\(\'(\w+)\'\,\sDataSetting\);/, `registerComponentDataSetting(\'$1\', \'${version}\', DataSetting);`);
   await fs.writeFile(settingJsPath, settingJsReplacement);
+}
+
+
+async function copyAndIgnore(src, dest, ignores) {
+  await fs.copy(src, dest, { filter: src => {
+    const basename = path.basename(src);
+    return !ignores.some(item => basename === item);
+  } });
 }
 
