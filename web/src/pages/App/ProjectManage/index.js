@@ -57,8 +57,6 @@ const AppProjectManage = observer((props) => {
     },
     {
       title: "描述",
-      width: '15%',
-      ellipsis: true,
       dataIndex: "desc",
       key: "desc",
     },
