@@ -15,6 +15,7 @@ let mongoClient,
   VCSequelize;
 const tableMap = {};
 let success = 0;
+const errList = [];
 
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
@@ -157,115 +158,125 @@ async function init() {
 
     // 应用平台的组件（已发布组件）
     for (const component of solutionComponents) {
-      let subCategoryId,
-        type;
-      if (component.org_mark === 'comonComponent') {
-        type = 'common';
-        subCategoryId = category.categories[0].children[0].id;
-      } else {
-        type = 'project';
-        subCategoryId = category.categories[0].children[1].id;
+      try {
+        let subCategoryId,
+          type;
+        if (component.org_mark === 'comonComponent') {
+          type = 'common';
+          subCategoryId = category.categories[0].children[0].id;
+        } else {
+          type = 'project';
+          subCategoryId = category.categories[0].children[1].id;
+        }
+
+        const VCComponent = CVComponentMap[component.component_mark] || {};
+        const oldCreator = VCComponent.create_user_id;
+        const oldUpdater = VCComponent.update_user_id;
+
+        const doc = {
+          name: component.name,
+          is_lib: false,
+          category: categoryId,
+          sub_category: subCategoryId,
+          type,
+          applications: [],
+          versions: [
+            {
+              no: 'v-current',
+              desc: '',
+              status: 'valid',
+            },
+            {
+              no: 'v1.0.0',
+              desc: '',
+              status: 'valid',
+            },
+          ],
+          cover: '',
+          creator: oldCreator && userMap[oldCreator] && userMap[oldCreator]._id.toString() || '',
+          updater: oldUpdater && userMap[oldUpdater] && userMap[oldUpdater]._id.toString() || '',
+          develop_status: 'online',
+          status: 'valid',
+          create_time: new Date(+component.created_at),
+          update_time: new Date(+component.updated_at),
+
+          old_org_mark: component.org_mark,
+          old_component_mark: component.component_mark,
+        };
+
+        if (type === 'project') {
+          let projectId;
+          const oldTagId = solutionTagViewMap[component.component_id] && solutionTagViewMap[component.component_id].tag_id;
+          if (oldTagId) projectId = projectMap[oldTagId] && projectMap[oldTagId]._id.toString();
+          doc.projects = projectId && [ projectId ] || [];
+        }
+        await db.collection('components').insertOne(doc);
+        success++;
+
+        pubComponents.push(component.component_mark);
+      } catch (error) {
+        errList.push(component.component_mark);
+        console.error(`失败：${component.component_mark}`, JSON.stringify(error.stack || error));
       }
-
-      const VCComponent = CVComponentMap[component.component_mark] || {};
-      const oldCreator = VCComponent.create_user_id;
-      const oldUpdater = VCComponent.update_user_id;
-
-      const doc = {
-        name: component.name,
-        is_lib: false,
-        category: categoryId,
-        sub_category: subCategoryId,
-        type,
-        applications: [],
-        versions: [
-          {
-            no: 'v-current',
-            desc: '',
-            status: 'valid',
-          },
-          {
-            no: 'v1.0.0',
-            desc: '',
-            status: 'valid',
-          },
-        ],
-        cover: '',
-        creator: oldCreator && userMap[oldCreator] && userMap[oldCreator]._id.toString() || '',
-        updater: oldUpdater && userMap[oldUpdater] && userMap[oldUpdater]._id.toString() || '',
-        develop_status: 'online',
-        status: 'valid',
-        create_time: new Date(+component.created_at),
-        update_time: new Date(+component.updated_at),
-
-        old_org_mark: component.org_mark,
-        old_component_mark: component.component_mark,
-      };
-
-      if (type === 'project') {
-        let projectId;
-        const oldTagId = solutionTagViewMap[component.component_id] && solutionTagViewMap[component.component_id].tag_id;
-        if (oldTagId) projectId = projectMap[oldTagId] && projectMap[oldTagId]._id.toString();
-        doc.projects = projectId && [ projectId ] || [];
-      }
-      await db.collection('components').insertOne(doc);
-      success++;
-
-      pubComponents.push(component.component_mark);
     }
 
     // 组件开发平台，除应用平台已存在的组件（未发布组件）
     const unPubComponents = VCComponents.filter(c => !pubComponents.includes(c.component_mark) && c.deleted_at === 1);
 
     for (const component of unPubComponents) {
-      if (!VCOrgMap[component.org_id]) console.log('===========', component.component_mark);
-      let subCategoryId,
-        type;
-      if (component.org_id === 4) {
-        type = 'common';
-        subCategoryId = category.categories[0].children[0].id;
-      } else {
-        type = 'project';
-        subCategoryId = category.categories[0].children[1].id;
+      try {
+        let subCategoryId,
+          type;
+        if (component.org_id === 4) {
+          type = 'common';
+          subCategoryId = category.categories[0].children[0].id;
+        } else {
+          type = 'project';
+          subCategoryId = category.categories[0].children[1].id;
+        }
+
+        const doc = {
+          name: component.name,
+          is_lib: false,
+          category: categoryId,
+          sub_category: subCategoryId,
+          type,
+          applications: [],
+          versions: [
+            {
+              no: 'v-current',
+              desc: '',
+              status: 'valid',
+            },
+          ],
+          cover: '',
+          creator: component.create_user_id && userMap[component.create_user_id] && userMap[component.create_user_id]._id.toString() || '',
+          updater: component.update_user_id && userMap[component.update_user_id] && userMap[component.update_user_id]._id.toString() || '',
+          develop_status: 'doing',
+          status: 'valid',
+          create_time: new Date(+component.created_at),
+          update_time: new Date(+component.updated_at),
+
+          old_org_mark: VCOrgMap[component.org_id].org_mark,
+          old_component_mark: component.component_mark,
+        };
+
+        if (type === 'project') {
+          doc.projects = [ weiguishuProjectId ];
+        }
+
+        await db.collection('components').insertOne(doc);
+        success++;
+      } catch (error) {
+        errList.push(component.component_mark);
+        console.error(`失败：${component.component_mark}`, JSON.stringify(error.stack || error));
       }
-
-      const doc = {
-        name: component.name,
-        is_lib: false,
-        category: categoryId,
-        sub_category: subCategoryId,
-        type,
-        applications: [],
-        versions: [
-          {
-            no: 'v-current',
-            desc: '',
-            status: 'valid',
-          },
-        ],
-        cover: '',
-        creator: component.create_user_id && userMap[component.create_user_id] && userMap[component.create_user_id]._id.toString() || '',
-        updater: component.update_user_id && userMap[component.update_user_id] && userMap[component.update_user_id]._id.toString() || '',
-        develop_status: 'doing',
-        status: 'valid',
-        create_time: new Date(+component.created_at),
-        update_time: new Date(+component.updated_at),
-
-        old_org_mark: VCOrgMap[component.org_id].org_mark,
-        old_component_mark: component.component_mark,
-      };
-
-      if (type === 'project') {
-        doc.projects = [ weiguishuProjectId ];
-      }
-
-      await db.collection('components').insertOne(doc);
-      success++;
     }
   } catch (error) {
     console.log(error.stack || error);
   } finally {
     console.log(`执行完毕，成功${success}条`);
+    console.log(`失败：${errList.length}条`, errList);
     mongoClient.close();
     process.exit(0);
   }
