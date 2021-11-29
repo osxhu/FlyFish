@@ -25,8 +25,8 @@ const ComponentDevelop = observer(({ ProgressId }) => {
     setAddModalvisible,
     getIndustrysList,
     getTagsList,
-    deleteAssembly,
-    getTreeDataFirst, setCurPage,
+    deleteAssembly,setLibraryLisCurPage,
+    getTreeDataFirst, addLibraryLisCurPage,
     changeOneAssemly,
     getListData, setDrawerVisible,
     getAssemlyDetail,
@@ -39,10 +39,8 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   let [libraryParams, setLibraryParams] = useState({});
   // 公共组件下滑
   const changePage = () => {
-    setLibraryFlagNum(libraryFlagNum += 1);
-    setInfinitKey(Math.random().toString(36).substr(2),);
+    addLibraryLisCurPage();
     getLibraryListData({
-      curPage: libraryFlagNum,
       ...libraryParams
     });
   };
@@ -116,6 +114,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
         delete values[i];
       }
     }
+    setLibraryLisCurPage(1);
     setLibraryParams(values);
     getLibraryListData(values, true);
   };

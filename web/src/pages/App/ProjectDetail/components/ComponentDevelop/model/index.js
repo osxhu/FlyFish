@@ -42,6 +42,7 @@ const model = {
     total: 0,
     curPage: 1,
     pageSize: 20,
+    libraryLisCurPage: 1,
     hasMore: true,
     tagsList: [],
     industryList: [],//行业列表
@@ -98,10 +99,11 @@ const model = {
       const { category, subCategory } = toJS(this.selectedData);
       const params = {
         isLib: true,
-        type:'project',
-          category: category,
+        type: 'project',
+        category: category,
         subCategory: subCategory === '' ? undefined : subCategory,
         pageSize: 20,
+        curPage: this.libraryLisCurPage-1,
         ...options
       };
       const res = yield getListDataService(params);
@@ -159,10 +161,10 @@ const model = {
       }
       let libraryListData = toJS(this.libraryListData.list);
       this.libraryListLength = libraryListData.length;
-      if(this.libraryListLength>=res.total){
-        this.hasMore=false;
-      }else{
-        this.hasMore=true;
+      if (this.libraryListLength >= res.total) {
+        this.hasMore = false;
+      } else {
+        this.hasMore = true;
       }
     },
     setDetailShow(res) {
@@ -180,6 +182,13 @@ const model = {
     },
     setCurPage(res) {
       this.curPage = res;
+    },
+    setLibraryLisCurPage(res){
+      this.libraryLisCurPage=res;
+    },
+    addLibraryLisCurPage() {
+      this.libraryLisCurPage = this.libraryLisCurPage += 1;
+
     },
     setHasMore(flag) {
       this.hasMore = flag;

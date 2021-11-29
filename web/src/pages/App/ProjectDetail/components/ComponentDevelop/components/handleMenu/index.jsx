@@ -12,6 +12,7 @@ const HandleMenu = observer((props)=>{
   const { 
     treeData,
     getTreeData,
+    setLibraryLisCurPage,
     setSelectedData,
     selectedData,
     userInfo,
@@ -55,6 +56,7 @@ const HandleMenu = observer((props)=>{
             className={styles.firstLine+ ((selectedData.category===v.id && selectedData.subCategory==='')?(' '+styles.selected):'')}
             onClick={()=>{
               setCurPage(1);
+              setLibraryLisCurPage(1)
               setSelectedData({
                 category:v.id,
                 subCategory:''
@@ -87,6 +89,7 @@ const HandleMenu = observer((props)=>{
               style={{display:v.expand?'flex':'none'}}
               onClick={()=>{
                 setCurPage(1);
+                setLibraryLisCurPage(1)
                 setSelectedData({
                   category:v.id,
                   subCategory:v2.id

@@ -142,8 +142,7 @@ const ComponentDevelop = observer(() => {
       <SearchBar
         searchContent={searchContent} showSearchCount={6} onSearch={onSearch}
       />
-      {/* 更改二级菜单覆盖否则push数据。页码一致会导致识别不了更新，随机key值 */}
-      <div id="scrollableDiv" style={{ height: 'calc(100vh - 233px)', overflow: 'auto' }} >
+      <div id="scrollableDiv" style={{ height: '87%', overflow: 'auto' }} >
         <InfiniteScroll
           dataLength={listLength}
           next={changePage}

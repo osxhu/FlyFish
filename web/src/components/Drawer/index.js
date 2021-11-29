@@ -157,13 +157,19 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
         <div className={stylus.firstTitle}>描述:
         <span>{assemlyData.desc}</span>
         </div>
+        <div className={stylus.firstTitle}>开发状态:
+        <span>{assemlyData.developStatus==='doing'?'开发中':'已交付'}</span>
+        </div>
+        <div className={stylus.firstTitle}>创建者信息:
+        <span>{assemlyData.creatorInfo&&assemlyData.creatorInfo.username}</span>
+        </div>
         <Row className={stylus.effectTitle}>
           <Col span={6}>
             <span>效果演示</span>
             {/* <DescriptionItem title="效果演示" content="Programmer" /> */}
           </Col>
           <Col span={18}>
-            <span>提供组件标识：<span className={stylus.identification}>Computer English, Java, ASP</span></span>
+            <span>提供组件标识：<span className={stylus.identification}>{assemlyData.id}</span></span>
           </Col>
         </Row>
         {/* 实时面板 */}
