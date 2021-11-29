@@ -103,3 +103,13 @@
   bottom: 10px;
   padding: 0 2px;
 }
+.imgPreviewBody{
+  :global{
+    .ant-modal-content{
+      height: 100%;
+    }
+    .ant-modal-body{
+      height: calc(~'100% - 80px');
+    }
+  }
+}

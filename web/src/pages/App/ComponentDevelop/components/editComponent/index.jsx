@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style.less';
-import { observer } from "@chaoswise/cw-mobx";
+import { observer,toJS } from "@chaoswise/cw-mobx";
 import store from "../../model/index";
 import { Form,Input,Select,Button,Row,Col,Icon,Popover,TreeSelect,message } from 'antd';
 import { useState } from 'react';
@@ -12,7 +12,7 @@ const { TextArea } = Input;
 
 const EditComponent = observer((props)=>{
   
-  const { getFieldDecorator,validateFields,getFieldValue } = props.form;
+  const { getFieldDecorator,validateFields,getFieldValue,setFieldsValue } = props.form;
 
   const { setEditModalvisible,treeData,editData,getListData,tagsData,projectsData,userInfo } = store;
 
@@ -43,6 +43,9 @@ const EditComponent = observer((props)=>{
       }
     });
   }
+  useEffect(() => {
+    setFieldsValue({projects:editData.projects.map(item=>item.id)})
+  }, [editData]);
   return <Form
     {...formItemLayout}  
     onSubmit={handleSubmit}
@@ -85,7 +88,9 @@ const EditComponent = observer((props)=>{
         ]
       })(<Select>
         <Option value='project'>项目组件</Option>
-        <Option value='common'>基础组件</Option>
+        {
+          userInfo.isAdmin?<Option value='common'>基础组件</Option>:null
+        }
       </Select>)}
     </Form.Item>
     {
@@ -93,6 +98,7 @@ const EditComponent = observer((props)=>{
       <Form.Item label="所属项目">
         {getFieldDecorator('projects', {
           initialValue:editData.projects.map(item=>item.id),
+          preserve:false,
           rules: [
             {
               required: true,

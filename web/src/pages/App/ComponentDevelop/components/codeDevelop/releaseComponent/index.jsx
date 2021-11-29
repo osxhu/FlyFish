@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from './style.less';
 import store from "../../../model/index";
 import { observer } from "@chaoswise/cw-mobx";
 import { Form,Radio,Input,Icon,Popover,Button,message } from 'antd';
@@ -38,6 +39,7 @@ const ReleaseComponent = observer((props)=>{
     wrapperCol={{span:16}}
     style={{padding:20}}
     onSubmit={submitClick}
+    className={styles.wrap}
     >
     {
       developingData.developStatus===CONSTANT.DEVELOPSTATUS_DOING?
@@ -57,7 +59,7 @@ const ReleaseComponent = observer((props)=>{
       </Form.Item>:
       <>
         <Form.Item
-          style={{display:'flex'}}
+          className={styles.compatibleItemWrap}
          label={
           <>
             <Popover placement='left' content={
@@ -70,9 +72,9 @@ const ReleaseComponent = observer((props)=>{
                 </p>
               </>
             }>
-              <Icon type="question-circle" style={{margin:'13px 5px'}}/>
+              <Icon type="question-circle" />
             </Popover>
-            <span>兼容旧版本</span>
+            <span>　兼容旧版本</span>
           </>
         }>
           {
@@ -86,6 +88,7 @@ const ReleaseComponent = observer((props)=>{
               ]
             })(
               <Radio.Group 
+                style={{display: 'flex',height: 40,alignItems: 'center'}}
                 onChange={(e)=>{
                   setisCompatible(e.target.value)
                 }}
