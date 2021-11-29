@@ -115,7 +115,7 @@ class ComponentService extends Service {
 
       if (isLib) {
         orderField = 'createTime';
-        if (key) queryCond.$or.push({ name: { $regex: key } });
+        queryCond.$or.push({ name: { $regex: key } });
       } else {
         const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
         const matchTagIds = matchTags.map(tag => tag.id);
