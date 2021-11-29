@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-29 15:04:09
+ * @LastEditTime: 2021-11-29 16:08:53
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -185,14 +185,14 @@ const ComponentDevelop = observer((props) => {
               {
                 userInfo.isAdmin?
                 <Popconfirm
-                  title="确定上传组件至组件库?上传后该组件可公开被查看及使用。"
+                  title={record.isLib?'确定从组件库移除？':"确定上传组件至组件库?上传后该组件可公开被查看及使用。"}
                   onConfirm={()=>{
-                    uploadToLibrary(record.id);
+                    uploadToLibrary(record);
                   }}
                   okText="是"
                   cancelText="否"
                 >
-                  <div>上传组件库</div>
+                  <div>{record.isLib?'从组件库移除':'上传组件库'}</div>
                 </Popconfirm>
                 :null
               }
@@ -347,10 +347,12 @@ const ComponentDevelop = observer((props) => {
       window.URL.revokeObjectURL($link.href); // 释放掉blob对象
     });
   };
-  const uploadToLibrary = async (id)=>{
-    const res = await uploadLibraryService(id);
+  const uploadToLibrary = async (record)=>{
+    const {id,isLib} = record;
+    const res = await uploadLibraryService(id,!isLib);
     if (res && res.code===0) {
-      message.success('上传成功');
+      message.success('操作成功');
+      getListData();
     }else{
       message.error(res.msg);
     }
