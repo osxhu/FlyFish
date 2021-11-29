@@ -32,14 +32,16 @@ async function init() {
         const page = app.pages[0];
         if (!page.options) continue;
 
-        const bgImgSource = path.resolve(oldSolutionWww, page.options.backgroundImage);
-        const gbImgBasename = path.basename(page.options.backgroundImage);
-        const bgImgTarget = path.resolve(appDir, app._id.toString(), gbImgBasename);
-        const bgImgSourceExist = fs.existsSync(bgImgSource);
-        if (bgImgSourceExist) {
-          await fs.copy(bgImgSource, bgImgTarget);
-          page.options._backgroundImage = page.options.backgroundImage;
-          page.options.backgroundImage = path.join('applications', app._id.toString(), gbImgBasename);
+        if (page.options.backgroundImage) {
+          const bgImgSource = path.resolve(oldSolutionWww, page.options.backgroundImage);
+          const gbImgBasename = path.basename(page.options.backgroundImage);
+          const bgImgTarget = path.resolve(appDir, app._id.toString(), gbImgBasename);
+          const bgImgSourceExist = fs.existsSync(bgImgSource);
+          if (bgImgSourceExist) {
+            await fs.copy(bgImgSource, bgImgTarget);
+            page.options._backgroundImage = page.options.backgroundImage;
+            page.options.backgroundImage = path.join('applications', app._id.toString(), gbImgBasename);
+          }
         }
 
         for (const component of page.components) {
