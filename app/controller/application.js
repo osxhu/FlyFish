@@ -200,7 +200,7 @@ class ApplicationController extends BaseController {
 
     await fs.outputFile(
       path.resolve(configPath, 'env.production.js'),
-      require(path.resolve(staticDir, appTplPath, 'config/env.js'))({ globalOptions: mergedGlobalOptions })
+      require(path.resolve(staticDir, appTplPath, 'config/env.js'))({ globalOptions: JSON.stringify(mergedGlobalOptions) })
     );
 
     const sourceIndexPath = path.resolve(staticDir, appTplPath, 'index.html');
