@@ -24,18 +24,19 @@ async function init() {
 
     const applications = await db.collection('applications').find().toArray();
     for (const app of applications) {
-
-      for (const component of app.pages) {
-        if (componentAppRelation[component.type]) {
-          componentAppRelation[component.type].add(app._id.toString());
-        } else {
-          componentAppRelation[component.type] = new Set(app._id.toString());
+      for (const page of app.pages) {
+        for (const component of page.components) {
+          if (componentAppRelation[component.type]) {
+            componentAppRelation[component.type].add(app._id.toString());
+          } else {
+            componentAppRelation[component.type] = new Set([ app._id.toString() ]);
+          }
         }
       }
     }
 
     for (const [ componentId, apps ] of Object.entries(componentAppRelation)) {
-      await db.collection('components').updateOne({ _id: ObjectId(componentId) }, { applications: [ ...apps ] });
+      await db.collection('components').updateOne({ _id: ObjectId(componentId) }, { $set: { applications: [ ...apps ] } });
     }
   } catch (error) {
     console.log(error.stack || error);

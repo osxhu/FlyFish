@@ -49,7 +49,7 @@ async function init() {
       const coverTarget = path.resolve('applications', app._id.toString(), 'cover.png');
       await fs.copy(coverSource, coverTarget);
 
-      await db.collection('applications').updateOne({ _id: app._id }, { pages: app.pages });
+      await db.collection('applications').updateOne({ _id: app._id }, { $set: { pages: app.pages } });
     }
 
   } catch (error) {

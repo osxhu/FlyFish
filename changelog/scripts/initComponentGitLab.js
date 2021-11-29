@@ -54,7 +54,7 @@ async function init() {
         .addRemote('origin', newRepoUrl)
         .push([ '-u', '--set-upstream', 'origin', 'master' ]);
 
-      await db.collection('components').updateOne({ _id: component._id }, { git_lab_project_id: newRepoId, need_push_git: false, last_change_time: new Date() });
+      await db.collection('components').updateOne({ _id: component._id }, { $set: { git_lab_project_id: newRepoId, need_push_git: false, last_change_time: new Date() } });
       console.log(component._id.toString(), '初始化成功');
       successCount++;
     }
