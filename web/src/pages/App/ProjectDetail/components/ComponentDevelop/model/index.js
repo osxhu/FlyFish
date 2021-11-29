@@ -29,12 +29,12 @@ const model = {
     treeData: null,
     listData: {},
     userInfo: {},
-
     libraryListData: {},
     selectedData: {
       category: '',
       subCategory: ''
     },
+    libraryOptions:{},//组件库中的serch内容
     searchName: '',
     searchKey: '',
     searchStatus: 'all',
@@ -104,7 +104,8 @@ const model = {
         subCategory: subCategory === '' ? undefined : subCategory,
         pageSize: 20,
         curPage: this.libraryLisCurPage-1,
-        ...options
+        ...options,
+        ...this.libraryOptions
       };
       const res = yield getListDataService(params);
       this.setLibraryListData(res.data, state);
@@ -140,6 +141,9 @@ const model = {
     },
     setProjectId(id) {
       this.projectId = id;
+    },
+    setLibraryOptions(res){
+      this.libraryOptions=res;
     },
     setUserInfo(res) {
       this.userInfo = res;

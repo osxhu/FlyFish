@@ -20,11 +20,11 @@ const { Option } = Select;
 const ComponentDevelop = observer(({ ProgressId }) => {
   const intl = useIntl();
   const {
-    getLibraryListData,
+    getLibraryListData,setLibraryOptions,
     addModalvisible,
     setAddModalvisible,
     getIndustrysList,
-    getTagsList,
+    getTagsList,setCurPage,
     deleteAssembly,setLibraryLisCurPage,
     getTreeDataFirst, addLibraryLisCurPage,
     changeOneAssemly,
@@ -34,15 +34,10 @@ const ComponentDevelop = observer(({ ProgressId }) => {
   } = store;
   const { total, curPage, pageSize, tagsList, hasMore, libraryListLength, industryList, isDrawerVisible, assemlyDetail, libraryListData, listData, selectedData } = store;
   const [changeFlga, setchangeFlga] = useState(false); //编辑完成
-  let [infinitKey, setInfinitKey] = useState(0);
-  let [libraryFlagNum, setLibraryFlagNum] = useState(0);
-  let [libraryParams, setLibraryParams] = useState({});
   // 公共组件下滑
   const changePage = () => {
     addLibraryLisCurPage();
-    getLibraryListData({
-      ...libraryParams
-    });
+    getLibraryListData();
   };
   // 表格列表数据
   let basicTableListData = toJS(listData);
@@ -74,6 +69,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
         <Input
           id="key"
           key="key"
+          allowClear={true}
           style={{ width: "200px" }}
           suffix={<Icon type="search" />
           }
@@ -106,20 +102,19 @@ const ComponentDevelop = observer(({ ProgressId }) => {
       ),
     },
   ];
-  const addCateRef = useRef();
   const changeColumns = (values) => {
-    setLibraryFlagNum(0);
     for (let i in values) {
       if (!values[i] || values[i].length === 0) {
         delete values[i];
       }
     }
     setLibraryLisCurPage(1);
-    setLibraryParams(values);
-    getLibraryListData(values, true);
+    setLibraryOptions(values);
+    getLibraryListData({}, true);
   };
   // 请求列表数据
   useEffect(() => {
+    setLibraryOptions({});
     setProjectId(ProgressId);
     getTreeDataFirst();
     getIndustrysList(); //行业
@@ -203,7 +198,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                 current={curPage }
                 pageSize={pageSize}
                 onChange={(page) => {
-                  setCurPage(page );
+                  setCurPage(page);
                   getListData();
                 }}
               />

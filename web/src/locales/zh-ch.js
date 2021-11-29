@@ -68,7 +68,7 @@ export default flattenMessages({
     applyTemplate:{ 
       trade:'选择行业进行查询',
       applyName:'选择应用名称进行查询',
-      name:'输入组件名称/组件编号/描述/标签/查找组件',
+      name:'输入组件名称/描述/查找组件',
       searchInputApplyLabel:'选择应用标签进行查询',
       searchtype:'选择组件类别进行查询'
 

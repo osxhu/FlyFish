@@ -72,29 +72,29 @@ class UserLayout extends React.PureComponent {
         return;
       }
       if (!err) {
-       if(!this.state.loginType){
-        login(values,(res)=>{
-          if (res.code == 0) {
-            localStorage.setItem('id',res.data.id);
-            message.success('登录成功');
-            this.props.history.push('/app/project-manage');
-          }else{
-            message.error(res.msg||'注册失败');
-          }
-        });
-       }else{
-        register(values, (res) => {
-          if (res.code == 0) {
-            message.success('注册成功');
-            this.setState({
-              loginType: 0,
-            });
-            
-          }else{
-            message.error(res.msg||'注册失败');
-          }
-        });
-       }
+        if (!this.state.loginType) {
+          login(values, (res) => {
+            if (res.code == 0) {
+              localStorage.setItem('id', res.data.id);
+              message.success('登录成功');
+              this.props.history.push('/app/project-manage');
+            } else {
+              message.error(res.msg || '注册失败');
+            }
+          });
+        } else {
+          register(values, (res) => {
+            if (res.code == 0) {
+              message.success('注册成功');
+              this.setState({
+                loginType: 0,
+              });
+
+            } else {
+              message.error(res.msg || '注册失败');
+            }
+          });
+        }
       }
       // localStorageUtil.setItem('user', { ...values, userId: 1, userName: 1, password: 1 });
       // this.props.history.push('/');
@@ -143,6 +143,7 @@ class UserLayout extends React.PureComponent {
                   ],
                 })(
                   <Input
+                    allowClear
                     prefix={<Icon type="user" style={{ color: '#1890FF' }} />}
                     placeholder={`${loginType == 0 ? '' : '*'}请输入用户名`}
                   />
@@ -150,29 +151,30 @@ class UserLayout extends React.PureComponent {
               </Form.Item>
             </Col>
             {loginType == 1 ?
-             <Col span={24}>
-             <Form.Item>
-               {getFieldDecorator('phone', {
-                 rules: [
-                   {
-                     required: true,
-                     message: '请输入手机号！',
-                   },
-                   {
-                    pattern: /^[1]([3-9])[0-9]{9}$/ ,
-                    message: "请输入正确的手机号",
-                  },
-                 ],
-               })(
-                 <Input
-                   prefix={<Icon type="mobile" style={{ color: '#1890FF' }} />}
-                   placeholder={`${loginType == 0 ? '' : '*'}请输入手机号`}
-                 />
-               )}
-             </Form.Item>
-           </Col>:null
+              <Col span={24}>
+                <Form.Item>
+                  {getFieldDecorator('phone', {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入手机号！',
+                      },
+                      {
+                        pattern: /^[1]([3-9])[0-9]{9}$/,
+                        message: "请输入正确的手机号",
+                      },
+                    ],
+                  })(
+                    <Input
+                      allowClear
+                      prefix={<Icon type="mobile" style={{ color: '#1890FF' }} />}
+                      placeholder={`${loginType == 0 ? '' : '*'}请输入手机号`}
+                    />
+                  )}
+                </Form.Item>
+              </Col> : null
             }
-           
+
             {loginType == 1 ? <Col span={24}>
               <Form.Item>
                 {getFieldDecorator('email', {
@@ -188,13 +190,14 @@ class UserLayout extends React.PureComponent {
                   ],
                 })(
                   <Input
-                    prefix={<Icon type="mobile" style={{ color: '#1890FF' }} />}
+                    allowClear
+                    prefix={<Icon type="mail" style={{ color: '#1890FF' }} />}
                     placeholder={`${loginType == 0 ? '' : '*'}请输入邮箱`}
                   />
                 )}
               </Form.Item>
-            </Col>:null}
-           
+            </Col> : null}
+
             <Col span={24}>
               <Form.Item>
                 {getFieldDecorator('password', {
@@ -206,19 +209,21 @@ class UserLayout extends React.PureComponent {
                   ],
                 })(
                   loginType == 0 ? <Input.Password
+                    allowClear
                     prefix={<Icon type="lock" style={{ color: '#1890FF' }} />}
                     placeholder={`${loginType == 0 ? '' : '*'}请输入登录密码`}
-                  />:
-                  <Input
-                    prefix={<Icon type="lock" style={{ color: '#1890FF' }} />}
-                    placeholder={`${loginType == 0 ? '' : '*'}请输入登录密码`}
-                  />
+                  /> :
+                    <Input.Password
+                      allowClear
+                      prefix={<Icon type="lock" style={{ color: '#1890FF' }} />}
+                      placeholder={`${loginType == 0 ? '' : '*'}请输入登录密码`}
+                    />
                 )}
               </Form.Item>
             </Col>
 
             <Col span={24}>
-              <Button type="primary" style={{ width: '100%' ,height:'40px'}} htmlType="submit" className="login-form-button">
+              <Button type="primary" style={{ width: '100%', height: '40px' }} htmlType="submit" className="login-form-button">
                 {loginType == 0 ? '登录' : '注册'}
               </Button>
             </Col>
@@ -227,7 +232,7 @@ class UserLayout extends React.PureComponent {
             {loginType == 0 ? (
               <>
                 {' '}
-                还没有账号
+                还没有账号,
                 <Button type="link" onClick={() => this.changeLoginType(1)}>
                   去注册 &gt;
                 </Button>
@@ -235,7 +240,7 @@ class UserLayout extends React.PureComponent {
             ) : (
               <>
                 {' '}
-                已有账号
+                已有账号,
                 <Button type="link" onClick={() => this.changeLoginType(0)}>
                   去登录 &gt;
                 </Button>

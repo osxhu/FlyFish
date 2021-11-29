@@ -37,8 +37,9 @@ const ComponentDevelop = observer(() => {
         delete params[i];
       }
     }
-    setSelectedOptions(params);
     setCurPage(1);
+    setSelectedOptions(params);
+    
   };
   let cardDate = toJS(listData);
   const changePage = () => {
@@ -79,7 +80,7 @@ const ComponentDevelop = observer(() => {
           }
           placeholder={intl.formatMessage({
             id: "pages.applyTemplate.name",
-            defaultValue: "输入组件名称/组件编号/描述/标签/查找组件",
+            defaultValue: "输入组件名称/描述/查找组件",
           })}
         />
       ),
@@ -120,6 +121,7 @@ const ComponentDevelop = observer(() => {
   ];
   // 请求列表数据
   useEffect(() => {
+    setSelectedOptions({});
     getTagsData();
     getTreeDataFirst();
     getIndustrysList();
