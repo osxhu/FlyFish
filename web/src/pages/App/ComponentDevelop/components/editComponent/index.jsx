@@ -43,9 +43,9 @@ const EditComponent = observer((props)=>{
       }
     });
   }
-  useEffect(() => {
-    setFieldsValue({projects:editData.projects.map(item=>item.id)})
-  }, [editData]);
+  // useEffect(() => {
+  //   setFieldsValue({projects:editData.projects.map(item=>item.id)})
+  // }, [editData]);
   return <Form
     {...formItemLayout}  
     onSubmit={handleSubmit}
@@ -177,7 +177,6 @@ const EditComponent = observer((props)=>{
     <Form.Item label="描述">
       {getFieldDecorator('desc', {
         initialValue:editData.desc,
-        initialValue:'',
         rules: []
       })(<TextArea rows={4}/>)}
     </Form.Item>

@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-29 16:08:53
+ * @LastEditTime: 2021-11-29 17:12:56
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -507,6 +507,7 @@ const ComponentDevelop = observer((props) => {
           <Modal
             title="编辑组件"
             visible={editModalvisible}
+            destroyOnClose
             footer={null}
             width='50%'
             onCancel={()=>{setEditModalvisible(false);}}
