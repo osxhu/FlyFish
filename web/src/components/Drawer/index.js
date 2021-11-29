@@ -5,6 +5,8 @@ import stylus from './index.less';
 import AceEditor from "react-ace";
 import { CWTable, Input, Button, message, Popconfirm } from "@chaoswise/ui";
 const { Panel } = Collapse;
+import moment from 'moment';
+
 import { observer, toJS } from '@chaoswise/cw-mobx';
 import ReactMarkdown from 'react-markdown';
 
@@ -111,10 +113,17 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
       align: 'center'
     },
     {
-      title: '变更描述',
+      title: '描述',
       align: 'center',
       dataIndex: 'desc',
       key: 'desc',
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'time',
+      render:(text)=>{
+        return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss');
+      }
     }
   ];
   const showTrades = (arr) => {
