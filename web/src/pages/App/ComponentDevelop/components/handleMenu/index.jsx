@@ -251,7 +251,7 @@ const HandleMenu = observer((props)=>{
                     return v3;
                   })
                   if (has) {
-                    message.warning('无法删除，该组件分类存在二级分类.请删除全部二级分类.')
+                    message.warning('无法删除，该组件分类存在二级分类，请删除全部二级分类！')
                   }else{
                     const datas = treeData.filter((v3,k3)=>{
                       return k!==k3
