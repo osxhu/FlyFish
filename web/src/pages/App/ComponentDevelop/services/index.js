@@ -49,8 +49,8 @@ export const downloadComponentService = (id)=>{
 export const installPackagesService = (id)=>{
   return fetchPost(API.INSTALL_PACKAGE+'/'+id);
 };
-export const uploadLibraryService = (id)=>{
-  return fetchPost(API.UPLOADTO_LIBRARY+'/'+id);
+export const uploadLibraryService = (id,isLib)=>{
+  return fetchPost(API.UPLOADTO_LIBRARY+'/'+id,{body:{isLib}});
 };
 export const compileComponentService = (id)=>{
   return fetchPost(API.COMPILE_COMPONENT+'/'+id);

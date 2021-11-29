@@ -26,31 +26,34 @@ const CodeDevelop = observer((props)=>{
   const [layerY, setLayerY] = useState(405);
   const mainDiv = useRef();
   const [compileSping, setCompileSping] = useState(false);
+  const [installing, setInstalling] = useState(false);
 
   useEffect(() => {
     if (window.compileListener) { 
       window.removeEventListener('message',window.compileListener);
-    }else{
-      const compileListener = function(event){
-        if (event && event.data) {
-          if ("vscode_compile" ===event.data.event) {
-            //编译
-            if (developingData.id) {
-              compileComponent();
-            }
+    }
+    const compileListener = function(event){
+      if (event && event.data) {
+        if ("vscode_compile" ===event.data.event) {
+          //编译
+          if (developingData.id) {
+            compileComponent();
           }
         }
       }
-      window.compileListener = compileListener;
-      window.addEventListener('message',compileListener)
     }
+    window.compileListener = compileListener;
+    window.addEventListener('message',compileListener)
     setLayerX(mainDiv.current.clientWidth/2 - 5)
   }, []);
   const installPackages = async (id)=>{
+    setInstalling(true)
     const res = await installPackagesService(id);
     if (res && res.code===0) {
+      setInstalling(false)
       message.success('依赖安装成功!')
     }else{
+      setInstalling(false)
       message.error(res.msg)
     }
   }
@@ -82,10 +85,14 @@ const CodeDevelop = observer((props)=>{
       </div>
       <div className={styles.btnwrap}>
         <Button type="primary" style={{marginRight:20}}
+          disabled={installing}
           onClick={()=>{
             installPackages(developingData.id)
           }}
-        >安装依赖</Button>
+        >
+        <Spin spinning={installing} size='small' style={{marginRight:10}}/>  
+        <span>安装依赖</span>
+        </Button>
         <Button
           type='primary'
           onClick={()=>{setReleaseModalVisible(true)}}
