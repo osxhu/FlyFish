@@ -25,6 +25,7 @@ async function init() {
     await init();
     const appDir = path.resolve(staticDir, 'applications');
     const apps = await db.collection('applications').find({ migrated: { $exists: false } }).toArray();
+    console.log(`待迁移: ${apps.length}个`);
 
     for (const app of apps) {
       try {

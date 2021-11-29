@@ -26,6 +26,7 @@ async function init() {
     await init();
     const componentDir = path.resolve(staticDir, 'components');
     const components = await db.collection('components').find({ migrated: { $exists: false } }).toArray();
+    console.log(`待迁移: ${components.length}个`);
 
     for (const component of components) {
       try {
