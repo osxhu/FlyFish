@@ -126,6 +126,7 @@ const RoleList = observer(() => {
                     getUserList({
                       curPage: 0,
                     });
+                    getRoleMenu();
                   } else {
                     message.error(
                       res.msg || intl.formatMessage({
@@ -270,6 +271,7 @@ const RoleList = observer(() => {
                 getUserList({
                   curPage: 0,
                 });
+                getRoleMenu();
               } else {
                 message.error(
                   res.msg || intl.formatMessage({
