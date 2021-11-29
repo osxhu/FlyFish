@@ -23,7 +23,7 @@ class ComponentService extends Service {
 
     const returnData = { msg: 'ok', data: {} };
     if (!_.isEmpty(deleteCategoryIds)) {
-      const components = await ctx.model.Component._find({ subCategory: { $in: deleteCategoryIds } }, null, { limit: 1 }) || [];
+      const components = await ctx.model.Component._find({ subCategory: { $in: deleteCategoryIds }, status: Enum.COMMON_STATUS.VALID }, null, { limit: 1 }) || [];
       if (!_.isEmpty(components)) {
         returnData.msg = 'Exists Already Components';
         return returnData;
