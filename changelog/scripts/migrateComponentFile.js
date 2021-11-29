@@ -51,6 +51,7 @@ async function init() {
         }
         await db.collection('components').updateOne({ _id: component._id }, { $set: { migrated: true } });
         success++;
+        console.log(`迁移成功：${component._id.toString()}`);
       } catch (error) {
         errList.push(component._id.toString());
         console.error(`失败：${component._id.toString()}  =====`, JSON.stringify(error.stack || error));

@@ -54,6 +54,7 @@ async function init() {
 
         await db.collection('applications').updateOne({ _id: app._id }, { $set: { pages: app.pages, migrated: true } });
         success++;
+        console.log(`迁移成功：${app._id.toString()}`);
       } catch (error) {
         errList.push(app._id.toString());
         console.error(`失败：${app._id.toString()}  =====`, JSON.stringify(error.stack || error));
