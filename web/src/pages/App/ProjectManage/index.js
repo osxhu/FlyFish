@@ -128,7 +128,7 @@ const AppProjectManage = observer((props) => {
                   getProjectList();
                 } else {
                   message.error(
-                    intl.formatMessage({
+                    res.msg|| intl.formatMessage({
                       id: "common.deleteError",
                       defaultValue: "删除失败，请稍后重试！",
                     })
