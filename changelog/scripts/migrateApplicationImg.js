@@ -30,28 +30,42 @@ async function init() {
     for (const app of apps) {
       try {
         const page = app.pages[0];
+        if (!page.options) continue;
+
         const bgImgSource = path.resolve(oldSolutionWww, page.options.backgroundImage);
         const gbImgBasename = path.basename(page.options.backgroundImage);
         const bgImgTarget = path.resolve(appDir, app._id.toString(), gbImgBasename);
-        await fs.copy(bgImgSource, bgImgTarget);
-        page.options._backgroundImage = page.options.backgroundImage;
-        page.options.backgroundImage = path.join('applications', app._id.toString(), gbImgBasename);
+        const bgImgSourceStat = await fs.stat(bgImgSource);
+        if (bgImgSourceStat.isFile()) {
+          await fs.copy(bgImgSource, bgImgTarget);
+          page.options._backgroundImage = page.options.backgroundImage;
+          page.options.backgroundImage = path.join('applications', app._id.toString(), gbImgBasename);
+        }
 
         for (const component of page.components) {
           if (component.options.image) {
             const componentImgSource = path.resolve(oldSolutionWww, component.options.image);
             const componentImgBasename = path.basename(component.options.image);
             const componentImgTarget = path.resolve(appDir, app._id.toString(), componentImgBasename);
-            await fs.copy(componentImgSource, componentImgTarget);
-            component.options._image = component.options.image;
-            component.options.image = path.join('applications', app._id.toString(), componentImgBasename);
+
+            const componentImgSourceStat = await fs.stat(componentImgSource);
+            if (componentImgSourceStat.isFile()) {
+              await fs.copy(componentImgSource, componentImgTarget);
+              component.options._image = component.options.image;
+              component.options.image = path.join('applications', app._id.toString(), componentImgBasename);
+            }
           }
         }
 
         // 迁移封面
-        const coverSource = path.resolve(oldSolutionWww, 'upload/screen/cover', app._cover);
-        const coverTarget = path.resolve('applications', app._id.toString(), 'cover.png');
-        await fs.copy(coverSource, coverTarget);
+        if (app._cover) {
+          const coverSource = path.resolve(oldSolutionWww, 'upload/screen/cover', app._cover);
+          const coverTarget = path.resolve('applications', app._id.toString(), 'cover.png');
+          const coverSourceStat = await fs.stat(coverSource);
+          if (coverSourceStat.isFile()) {
+            await fs.copy(coverSource, coverTarget);
+          }
+        }
 
         await db.collection('applications').updateOne({ _id: app._id }, { $set: { pages: app.pages, migrated: true } });
         success++;
