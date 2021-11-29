@@ -4,6 +4,7 @@ const config = require('config');
 const { MongoClient } = require('mongodb');
 const { Sequelize, DataTypes, Op } = require('sequelize');
 const _ = require('lodash');
+const md5 = require('md5');
 
 const mongoUrl = config.get('mongoose.url');
 const solutionUri = config.get('mysql.solution_uri');
@@ -80,13 +81,14 @@ async function init() {
         email: user.user_email,
         phone: user.user_phone,
         role,
-        password,
+        password: md5(password),
         status: 'valid',
         old_user_id: user.user_id,
         create_time: new Date(),
         update_time: new Date(),
       };
       await db.collection('users').insertOne(doc);
+      console.log(`done: ${user.user_name}`);
     }
   } catch (error) {
     console.log(error.stack || error);
