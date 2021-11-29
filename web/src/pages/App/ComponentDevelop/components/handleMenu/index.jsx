@@ -36,30 +36,55 @@ const HandleMenu = observer((props)=>{
         item.focus = false;
         item.adding = false;
         item.editing = false;
+        item.display = true;
         item.children?item.children.map(item=>{
           item.showBtn = false;
           item.editing = false;
+          item.display = true;
           return item;
         }):null;
         return item;
       })
-      if (searchValue) {
-        rs = rs.filter(item=>{
-          if (item.children && item.children.length) {
-            item.children = item.children.filter(item2=>{
-              return item2.name.includes(searchValue)
-            })
-          }
-          if (item.children && item.children.length) {
-            return true
-          }else{
-            return item.name.includes(searchValue)
-          }
-        })
-      }
       setData(rs)
     }
-  }, [treeData,searchValue]);
+  }, [treeData]);
+  useEffect(() => {
+    if (searchValue) {
+      setData((state)=>{
+        return state.map(item=>{
+          item.display = item.name.includes(searchValue);
+          if (item.children && item.children.length) {
+            let has = false;
+            item.children = item.children.map(item2=>{
+              if (item2.name.includes(searchValue)) {
+                has = true;
+              }
+              item2.display = item2.name.includes(searchValue);
+              return item2;
+            })
+            if (has) {
+              //有二级被搜到时，让一级也展示
+              item.display = true;
+            }
+          }
+          return item;
+        })
+      })
+    }else{
+      setData((state)=>{
+        return state.map(item=>{
+          item.display=true;
+          if (item.children&& item.children.length) {
+            item.children = item.children.map(item2=>{
+              item2.display = true;
+              return item2;
+            })
+          }
+          return item;
+        })
+      })
+    }
+  }, [searchValue]);
   return <>
   <div className={styles.treeTitle}>
     组件列表
@@ -76,6 +101,7 @@ const HandleMenu = observer((props)=>{
       data.map((v,k)=>{
         return <div key={k+''}>
           <div 
+            style={{display:v.display?'flex':'none'}}
             className={styles.firstLine+ ((selectedData.category===v.id && selectedData.subCategory==='')?(' '+styles.selected):'')}
             onMouseOver={()=>{
               setData(olddata=>{
@@ -105,7 +131,8 @@ const HandleMenu = observer((props)=>{
               <Icon 
                 className={styles.expandBtn}
                 type={v.expand?'caret-down':'caret-right'} 
-                onClick={()=>{
+                onClick={(e)=>{
+                  e.stopPropagation()
                   setData(olddata=>{
                     return olddata.map((v1,k1)=>{
                       if (k1===k) {
@@ -232,7 +259,7 @@ const HandleMenu = observer((props)=>{
             return <div
               key={k+'-'+k2}
               className={styles.secondLine + ((selectedData.category===v.id && selectedData.subCategory===v2.id)?(' '+styles.selected):'')}
-              style={{display:v.expand?'flex':'none'}}
+              style={{display:(v.expand&&v2.display)?'flex':'none'}}
               onMouseOver={()=>{
                 setData(olddata=>{
                   return olddata.map((v1,k1)=>{
