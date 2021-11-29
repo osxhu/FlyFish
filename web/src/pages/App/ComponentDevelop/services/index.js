@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-23 14:44:19
+ * @LastEditTime: 2021-11-29 18:37:33
  */
 import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api/component";
@@ -49,8 +49,8 @@ export const downloadComponentService = (id)=>{
 export const installPackagesService = (id)=>{
   return fetchPost(API.INSTALL_PACKAGE+'/'+id);
 };
-export const uploadLibraryService = (id,isLib)=>{
-  return fetchPost(API.UPLOADTO_LIBRARY+'/'+id,{body:{isLib}});
+export const uploadLibraryService = (id,toLib)=>{
+  return fetchPost(API.UPLOADTO_LIBRARY+'/'+id,{body:{toLib}});
 };
 export const compileComponentService = (id)=>{
   return fetchPost(API.COMPILE_COMPONENT+'/'+id);
