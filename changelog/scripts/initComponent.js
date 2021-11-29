@@ -14,6 +14,7 @@ let mongoClient,
   solutionSequelize,
   VCSequelize;
 const tableMap = {};
+let success = 0;
 
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
@@ -51,6 +52,10 @@ async function init() {
   });
 
   tableMap.SolutionTagView = solutionSequelize.define('visual_component_tag_view', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
     component_id: {
       type: DataTypes.INTEGER,
     },
@@ -60,10 +65,10 @@ async function init() {
     status: {
       type: DataTypes.INTEGER,
     },
-    created_at: {
+    create_at: {
       type: DataTypes.INTEGER,
     },
-    updated_at: {
+    update_at: {
       type: DataTypes.INTEGER,
     },
   }, {
@@ -132,10 +137,10 @@ async function init() {
     const solutionTagViews = await SolutionTagView.findAll({ where: { status: 1 } });
     const solutionTagViewMap = _.keyBy(solutionTagViews, 'component_id');
 
-    const VCComponents = await VCComponent.findAll({});
+    const VCComponents = await VCComponent.findAll();
     const CVComponentMap = _.keyBy(VCComponents, 'component_mark');
 
-    const VCOrgs = await VCOrg.findAll({});
+    const VCOrgs = await VCOrg.findAll();
     const VCOrgMap = _.keyBy(VCOrgs, 'org_id');
 
     const category = await db.collection('component_categories').findOne({}, { sort: { create_time: -1 } });
@@ -204,6 +209,7 @@ async function init() {
         doc.projects = projectId && [ projectId ] || [];
       }
       await db.collection('components').insertOne(doc);
+      success++;
 
       pubComponents.push(component.component_mark);
     }
@@ -212,6 +218,7 @@ async function init() {
     const unPubComponents = VCComponents.filter(c => !pubComponents.includes(c.component_mark) && c.deleted_at === 1);
 
     for (const component of unPubComponents) {
+      if (!VCOrgMap[component.org_id]) console.log('===========', component.component_mark);
       let subCategoryId,
         type;
       if (component.org_id === 4) {
@@ -253,10 +260,12 @@ async function init() {
       }
 
       await db.collection('components').insertOne(doc);
+      success++;
     }
   } catch (error) {
     console.log(error.stack || error);
   } finally {
+    console.log(`执行完毕，成功${success}条`);
     mongoClient.close();
     process.exit(0);
   }
