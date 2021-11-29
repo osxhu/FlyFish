@@ -146,7 +146,7 @@ const HandleMenu = observer((props)=>{
               {
                 v.editing?
                 <Input
-                  style={{height:28,marginLeft:0}}
+                  style={{height:28,marginLeft:0,width:120}}
                   ref={editInput}
                   className={styles.addingInput}
                   value={editName}
@@ -162,6 +162,10 @@ const HandleMenu = observer((props)=>{
                     })
                   }}
                   onPressEnter={async (e)=>{
+                    if (!editName) {
+                      message.error('分类名称不能为空！')
+                      return 
+                    }
                     const datas = _.cloneDeep(toJS(treeData));
                     datas.map((v4,k4)=>{
                       if (k4===k) {
@@ -192,7 +196,7 @@ const HandleMenu = observer((props)=>{
                 :<span className={styles.firstTitle}>{v.name}</span>
               }
             </div>
-            <div className={styles.firstBtnWrap}>
+            <div className={styles.firstBtnWrap} style={{display:v.editing?'none':'flex'}}>
               <Icon 
                 type="plus-circle" 
                 className={styles.addBtn}
@@ -310,7 +314,7 @@ const HandleMenu = observer((props)=>{
               {
                 v2.editing?
                 <Input
-                  style={{height:28,marginLeft:0}}
+                  style={{height:28,marginLeft:0,width:120}}
                   ref={editInput}
                   className={styles.addingInput}
                   value={editName}
@@ -330,6 +334,10 @@ const HandleMenu = observer((props)=>{
                     })
                   }}
                   onPressEnter={async (e)=>{
+                    if (!editName) {
+                      message.error('分类名称不能为空！')
+                      return 
+                    }
                     const datas = _.cloneDeep(toJS(treeData));
                     datas.map((v4,k4)=>{
                       if (k4===k) {
@@ -368,7 +376,7 @@ const HandleMenu = observer((props)=>{
                 :<span>{v2.name}</span>
               }
               </div>
-              <div className={styles.secondBtnWrap}>
+              <div className={styles.secondBtnWrap} style={{display:v2.editing?'none':'block'}}>
                 <Icon type="form" style={{display:v2.showBtn?'inline':'none'}}
                   onClick={(e)=>{
                     e.stopPropagation()
@@ -441,6 +449,10 @@ const HandleMenu = observer((props)=>{
                 })
               }}
               onPressEnter={async (e)=>{
+                if (!addCateName) {
+                  message.error('分类名称不能为空！')
+                  return 
+                }
                 const datas = _.cloneDeep(toJS(treeData));
                 datas.map((v4,k4)=>{
                   if (k4===k) {
@@ -482,6 +494,10 @@ const HandleMenu = observer((props)=>{
         setAddingCate(false);
       }}
       onPressEnter={async ()=>{
+        if (!addCateName) {
+          message.error('分类名称不能为空！')
+          return 
+        }
         const datas = _.cloneDeep(toJS(treeData));
         let has = false;
         datas.map(item=>{
@@ -499,6 +515,9 @@ const HandleMenu = observer((props)=>{
             setAddingCate(false);
             getTreeData();
             setAddCateName('');
+            message.success('添加成功!')
+          }else{
+            message.error(res.msg)
           }
         }
         
