@@ -34,14 +34,14 @@ async function init() {
 
         const source = path.resolve(oldVCWww, 'static/dev_visual_component/dev_workspace', component.old_org_mark, component.old_component_mark);
         const target = path.resolve(componentDir, component._id.toString(), 'v-current');
-        await copyAndIgnore(source, target, [ '.git' ]);
+        await copyAndIgnore(source, target, [ 'node_modules', '.git', 'components', 'package-lock.json' ]);
 
         // 加版本号
         await replaceFiles(target, 'v-current', componentId);
 
         if (component.develop_status === 'online') {
           const versionTarget = path.resolve(componentDir, component._id.toString(), 'v1.0.0');
-          await copyAndIgnore(source, versionTarget, [ '.git' ]);
+          await copyAndIgnore(source, versionTarget, [ 'node_modules', '.git', 'components', 'package-lock.json' ]);
 
           // 加版本号
           await replaceFiles(versionTarget, 'v1.0.0', componentId);
