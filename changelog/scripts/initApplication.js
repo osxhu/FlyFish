@@ -13,6 +13,7 @@ let mongoClient,
   solutionSequelize;
 const tableMap = {};
 const SCREEN_STATUS = [ 'doing', 'testing', 'delivered' ];
+let success = 0;
 
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
@@ -125,7 +126,7 @@ async function init() {
       let tagId = tagIds[0];
       let projectId = projectMap[tagId]._id.toString();
 
-      if (tagIds.length > 1) {
+      if (tagIds.length > 1 && specialScreenMap[screen.id]) {
         tagId = specialScreenMap[screen.id][1];
         // TODO: 把0下的组件都挂到1上
         const components = await db.collection('components').find({ projects: { $in: specialScreenMap[screen.id][0] } }).toArray();
@@ -134,7 +135,8 @@ async function init() {
         await db.collection('components').updateMany({ _id: { $in: componentIds } }, { $addToSet: { projects: projectId } });
       }
 
-      screen.options_conf.components = screen.options_conf.components.map(c => {
+      const optionObj = JSON.parse(screen.options_conf);
+      optionObj.components = optionObj.components.map(c => {
         c._type = c.type;
         c.type = componentMap[c.type]._id.toString();
         c.version = 'v1.0.0';
@@ -152,16 +154,18 @@ async function init() {
         updater: userMap[screen.developing_user_id] && userMap[screen.developing_user_id]._id.toString(),
         status: 'valid',
         _cover: screen.cover,
-        pages: [ screen.options_conf ],
+        pages: [ optionObj ],
         create_time: new Date(),
         update_time: new Date(),
       };
       await db.collection('applications').insertOne(doc);
+      success++;
     }
 
   } catch (error) {
     console.log(error.stack || error);
   } finally {
+    console.log(`执行完毕，成功${success}条`);
     mongoClient.close();
     process.exit(0);
   }
