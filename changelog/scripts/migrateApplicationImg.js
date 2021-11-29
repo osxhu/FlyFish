@@ -66,7 +66,7 @@ async function init() {
     console.log(error.stack || error);
   } finally {
     console.log(`成功: ${success}个`);
-    console.log(`失败: ${errList.length}个 ====> `, errList);
+    console.log(`失败: ${errList.length}个 ====> `, JSON.stringify(errList));
     mongoClient.close();
     process.exit(0);
   }

@@ -276,7 +276,7 @@ async function init() {
     console.log(error.stack || error);
   } finally {
     console.log(`执行完毕，成功${success}条`);
-    console.log(`失败：${errList.length}条`, errList);
+    console.log(`失败：${errList.length}条`, JSON.stringify(errList));
     mongoClient.close();
     process.exit(0);
   }
