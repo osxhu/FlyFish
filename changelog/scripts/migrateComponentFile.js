@@ -26,19 +26,21 @@ async function init() {
     const components = await db.collection('components').find().toArray();
 
     for (const component of components) {
+      const componentId = component._id.toString();
+
       const source = path.resolve(oldVCWww, 'static/dev_visual_component/dev_workspace', component.old_org_mark, component.old_component_mark);
       const target = path.resolve(componentDir, component._id.toString(), 'v-current');
       await copyAndIgnore(source, target, [ '.git' ]);
 
       // 加版本号
-      await replaceFiles(target, 'v-current');
+      await replaceFiles(target, 'v-current', componentId);
 
       if (component.develop_status === 'online') {
         const versionTarget = path.resolve(componentDir, component._id.toString(), 'v1.0.0');
         await copyAndIgnore(source, versionTarget, [ '.git' ]);
 
         // 加版本号
-        await replaceFiles(versionTarget, 'v1.0.0');
+        await replaceFiles(versionTarget, 'v1.0.0', componentId);
 
         const releaseSource = path.resolve(oldSolutionWww, 'static/public_visual_component/1', component.old_component_mark);
         const releaseTarget = path.resolve(versionTarget, 'release');
@@ -54,7 +56,7 @@ async function init() {
   }
 })();
 
-async function replaceFiles(target, version) {
+async function replaceFiles(target, version, componentId) {
   const mainJsPath = path.resolve(target, 'src/main.js');
   const mainJsOrigin = await fs.readFile(mainJsPath, { encoding: 'utf8' });
   const mainJsReplacement = mainJsOrigin.replace(/registerComponent\(\'(\w+)\'\,\sComponent\);/, `registerComponent(\'$1\', \'${version}\', Component);`);
@@ -65,6 +67,11 @@ async function replaceFiles(target, version) {
   const settingJsReplacement = settingJsOrigin.replace(/registerComponentOptionsSetting\(\'(\w+)\'\,\sOptionsSetting\);/, `registerComponentOptionsSetting(\'$1\', \'${version}\', OptionsSetting);`)
     .replace(/registerComponentDataSetting\(\'(\w+)\'\,\sDataSetting\);/, `registerComponentDataSetting(\'$1\', \'${version}\', DataSetting);`);
   await fs.writeFile(settingJsPath, settingJsReplacement);
+
+  // 替换editor.html
+  const editorPath = path.resolve(target, 'editor.html');
+  const newEditorStr = require(path.resolve(staticDir, 'component_tpl/editor.html.js')(componentId, version));
+  await fs.writeFile(editorPath, newEditorStr);
 }
 
 
