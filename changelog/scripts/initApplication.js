@@ -54,7 +54,7 @@ async function init() {
     status: {
       type: DataTypes.INTEGER,
     },
-    logo: {
+    cover: {
       type: DataTypes.STRING,
     },
   }, {
