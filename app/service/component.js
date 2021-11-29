@@ -106,7 +106,23 @@ class ComponentService extends Service {
     const tagList = await ctx.model.Tag._find();
 
     queryCond.$or = [];
-    if (key) queryCond.$or.push({ desc: { $regex: key } });
+    let matchUserIds = [];
+    if (key) {
+      queryCond.$or.push({ desc: { $regex: key } });
+      const matchUsers = (users || []).filter(user => user.username.includes(key));
+      matchUserIds = matchUsers.map(user => user.id);
+      if (!_.isEmpty(matchUserIds)) queryCond.$or.push({ creator: { $in: matchUserIds } });
+
+      if (isLib) {
+        orderField = 'createTime';
+        if (key) queryCond.$or.push({ name: { $regex: key } });
+      } else {
+        const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
+        const matchTagIds = matchTags.map(tag => tag.id);
+        if (!_.isEmpty(matchTagIds)) queryCond.$or.push({ tags: { $in: matchTagIds } });
+      }
+    }
+
     if (name) queryCond.name = { $regex: name };
     if (category) queryCond.category = category;
     if (subCategory) queryCond.subCategory = subCategory;
@@ -114,25 +130,7 @@ class ComponentService extends Service {
     if (type) queryCond.type = type;
     if (projectId) queryCond.projects = { $in: projectId };
     if (!_.isEmpty(tags)) queryCond.tags = { $in: tags };
-
-    // handle logic of component lib
-    if (_.isBoolean(isLib)) {
-      // 组件库组件只要项目组件
-      if (isLib) {
-        orderField = 'createTime';
-        if (key) {
-          queryCond.$or.push({ name: { $regex: key } });
-          const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
-          const matchTagIds = matchTags.map(tag => tag.id);
-          if (!_.isEmpty(matchTagIds)) queryCond.$or.push({ tags: { $in: matchTagIds } });
-        }
-      }
-      queryCond.isLib = isLib;
-    }
-
-    const matchUsers = (users || []).filter(user => user.username.includes(key));
-    const matchUserIds = matchUsers.map(user => user.id);
-
+    if (_.isBoolean(isLib)) queryCond.isLib = isLib;
     if (!_.isEmpty(trades)) {
       const tradeProjects = (projectList || []).filter(project => {
         const matchTrade = (trades || []).find(trade => (project.trades || []).includes(trade));
@@ -142,7 +140,6 @@ class ComponentService extends Service {
       if (!_.isEmpty(tradeProjectIds)) queryProjects.push(...tradeProjectIds);
     }
     if (!_.isEmpty(queryProjects)) queryCond.projects = { $in: queryProjects };
-    if (!_.isEmpty(matchUserIds)) queryCond.$or.push({ creator: { $in: matchUserIds } });
 
     if (_.isEmpty(queryCond.$or)) delete queryCond.$or;
     const componentList = await ctx.model.Component._find(queryCond);
