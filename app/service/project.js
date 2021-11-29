@@ -7,13 +7,23 @@ class ProjectService extends Service {
   async create(params) {
     const { ctx } = this;
 
+    const returnData = { msg: 'ok', data: {} };
+    const existProject = await ctx.model.Project._findOne({ name: params.name, status: Enum.COMMON_STATUS.VALID });
+    if (!_.isEmpty(existProject)) {
+      returnData.msg = 'Exists Already';
+      return returnData;
+    }
+
     const projectData = await this.assembleProjectData(params);
     if (!projectData) return;
 
     Object.assign(projectData, {
       creator: ctx.userInfo.userId,
     });
-    return await ctx.model.Project._create(projectData);
+    const res = await ctx.model.Project._create(projectData);
+    returnData.data = res;
+
+    return returnData;
   }
 
   async assembleProjectData(params) {

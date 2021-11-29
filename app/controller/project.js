@@ -18,9 +18,12 @@ class ProjectController extends BaseController {
       desc: Joi.string(),
     });
     const body = await addSchema.validateAsync(ctx.request.body);
-    const res = await service.project.create(body);
-    if (!res) return this.fail('该项目名已存在', null, CODE.ALREADY_EXISTS);
-    this.success('新建成功', res);
+    const createResult = await service.project.create(body);
+    if (createResult.msg === 'Exists Already') {
+      this.fail('新建失败, 项目名称已存在', null, CODE.ALREADY_EXISTS);
+    } else {
+      this.success('新建成功', createResult.data);
+    }
   }
 
   async delete() {
