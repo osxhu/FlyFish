@@ -250,7 +250,7 @@ class ComponentService extends Service {
       category: createComponentInfo.category,
       subCategory: createComponentInfo.subCategory,
       type: createComponentInfo.type,
-      projects: createComponentInfo.projects,
+      projects: createComponentInfo.type === Enum.COMPONENT_TYPE.COMMON ? [] : createComponentInfo.projects,
       tags: tagInfo.tags || [],
       desc: createComponentInfo.desc || '无',
       versions: [],
@@ -324,14 +324,16 @@ class ComponentService extends Service {
     }
 
     if (status) updateData.status = status;
-    if (type) updateData.type = type;
     if (_.isBoolean(isLib)) updateData.isLib = isLib;
-
     if (projects) updateData.projects = projects;
     if (category) updateData.category = category;
     if (subCategory) updateData.subCategory = subCategory;
     if (desc) updateData.desc = desc;
     if (!_.isEmpty(dataConfig)) updateData.dataConfig = dataConfig;
+    if (type) {
+      if (type === Enum.COMPONENT_TYPE.COMMON) updateData.projects = [];
+      updateData.type = type;
+    }
 
     const tagInfo = await this.getTagData(requestData);
     Object.assign(updateData, tagInfo);

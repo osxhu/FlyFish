@@ -77,8 +77,8 @@ class ComponentsController extends BaseController {
 
     const addComponentSchema = app.Joi.object().keys({
       name: app.Joi.string(),
-      type: app.Joi.string(),
-      projects: app.Joi.array().items(app.Joi.string()).min(1),
+      type: app.Joi.string().valid(...Object.values(Enum.COMPONENT_TYPE)),
+      projects: app.Joi.array().items(app.Joi.string()),
       tags: app.Joi.array().items(app.Joi.object().keys({
         id: app.Joi.string().length(24),
         name: app.Joi.string().required(),
@@ -168,7 +168,7 @@ class ComponentsController extends BaseController {
 
     const updateInfoSchema = app.Joi.object().keys({
       name: app.Joi.string(),
-      type: app.Joi.string(),
+      type: app.Joi.string().valid(...Object.values(Enum.COMPONENT_TYPE)),
       projects: app.Joi.array().items(app.Joi.string()),
       tags: app.Joi.array().items(app.Joi.object().keys({
         id: app.Joi.string().length(24),
