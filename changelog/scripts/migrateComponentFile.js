@@ -70,7 +70,7 @@ async function replaceFiles(target, version, componentId) {
 
   // 替换editor.html
   const editorPath = path.resolve(target, 'editor.html');
-  const newEditorStr = require(path.resolve(staticDir, 'component_tpl/editor.html.js')(componentId, version));
+  const newEditorStr = require(path.resolve(staticDir, 'component_tpl/editor.html.js'))(componentId, version);
   await fs.writeFile(editorPath, newEditorStr);
 }
 
