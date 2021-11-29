@@ -12,6 +12,8 @@ const oldSolutionWww = config.get('old_solution_www');
 
 let mongoClient,
   db;
+const errList = [];
+let success = 0;
 
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
@@ -23,34 +25,43 @@ async function init() {
   try {
     await init();
     const componentDir = path.resolve(staticDir, 'components');
-    const components = await db.collection('components').find().toArray();
+    const components = await db.collection('components').find({ transferred: { $exists: false } }).toArray();
 
     for (const component of components) {
-      const componentId = component._id.toString();
+      try {
+        const componentId = component._id.toString();
 
-      const source = path.resolve(oldVCWww, 'static/dev_visual_component/dev_workspace', component.old_org_mark, component.old_component_mark);
-      const target = path.resolve(componentDir, component._id.toString(), 'v-current');
-      await copyAndIgnore(source, target, [ '.git' ]);
-
-      // 加版本号
-      await replaceFiles(target, 'v-current', componentId);
-
-      if (component.develop_status === 'online') {
-        const versionTarget = path.resolve(componentDir, component._id.toString(), 'v1.0.0');
-        await copyAndIgnore(source, versionTarget, [ '.git' ]);
+        const source = path.resolve(oldVCWww, 'static/dev_visual_component/dev_workspace', component.old_org_mark, component.old_component_mark);
+        const target = path.resolve(componentDir, component._id.toString(), 'v-current');
+        await copyAndIgnore(source, target, [ '.git' ]);
 
         // 加版本号
-        await replaceFiles(versionTarget, 'v1.0.0', componentId);
+        await replaceFiles(target, 'v-current', componentId);
 
-        const releaseSource = path.resolve(oldSolutionWww, 'static/public_visual_component/1', component.old_component_mark);
-        const releaseTarget = path.resolve(versionTarget, 'release');
-        await fs.copy(releaseSource, releaseTarget);
+        if (component.develop_status === 'online') {
+          const versionTarget = path.resolve(componentDir, component._id.toString(), 'v1.0.0');
+          await copyAndIgnore(source, versionTarget, [ '.git' ]);
+
+          // 加版本号
+          await replaceFiles(versionTarget, 'v1.0.0', componentId);
+
+          const releaseSource = path.resolve(oldSolutionWww, 'static/public_visual_component/1', component.old_component_mark);
+          const releaseTarget = path.resolve(versionTarget, 'release');
+          await fs.copy(releaseSource, releaseTarget);
+        }
+        await db.collection('components').updateOne({ _id: component._id }, { $set: { transferred: true } });
+        success++;
+      } catch (error) {
+        errList.push(component._id.toString());
+        console.error(`失败：${component._id.toString()}  =====`, JSON.stringify(error.stack || error));
       }
     }
 
   } catch (error) {
     console.log(error.stack || error);
   } finally {
+    console.log(`成功: ${success}个`);
+    console.log(`失败: ${errList.length}个 ====> `, errList);
     mongoClient.close();
     process.exit(0);
   }
