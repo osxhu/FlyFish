@@ -25,7 +25,7 @@ async function init() {
   try {
     await init();
     const componentDir = path.resolve(staticDir, 'components');
-    const components = await db.collection('components').find({ transferred: { $exists: false } }).toArray();
+    const components = await db.collection('components').find({ migrated: { $exists: false } }).toArray();
 
     for (const component of components) {
       try {
@@ -49,7 +49,7 @@ async function init() {
           const releaseTarget = path.resolve(versionTarget, 'release');
           await fs.copy(releaseSource, releaseTarget);
         }
-        await db.collection('components').updateOne({ _id: component._id }, { $set: { transferred: true } });
+        await db.collection('components').updateOne({ _id: component._id }, { $set: { migrated: true } });
         success++;
       } catch (error) {
         errList.push(component._id.toString());
