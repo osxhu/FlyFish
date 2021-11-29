@@ -262,8 +262,8 @@ class ApplicationController extends BaseController {
     const { id } = await appSchema.validateAsync(ctx.params);
     const { img } = ctx.query;
     const imgPath = `${staticDir}/${applicationPath}/${id}/${img}`;
-    const imgStat = await fs.stat(imgPath);
-    if (imgStat.isFile()) {
+    const imgExist = fs.existsSync(imgPath);
+    if (imgExist) {
       await fs.remove(imgPath);
     }
     this.success('删除成功');
