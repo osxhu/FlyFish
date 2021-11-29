@@ -6,21 +6,21 @@
   position: relative;
   .loginForm {
     width: 28vw;
-    min-width: 400px;
+    min-width: 448px;
     background: #fff;
     border-radius: @border-radius-base;
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(50%, -50%);
-    padding: 24px;
+    transform: translate(30%, -50%);
+    padding:40px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
   }
   .logo {
     height: 52px;
-    margin-bottom: 24px;
+    margin-bottom: 40px;
   }
   .captchaCodeImg {
     width: 100%;
@@ -31,7 +31,16 @@
     cursor: pointer;
   }
   .tips {
+    margin-top: 24px;
       width: 100%;
       text-align: right;
   }
+  :global {
+    .ant-form-item{
+      margin-bottom:24px !important
+    }
+    .ant-input{
+      height: 40px !important;
+    }
+}
 }

@@ -297,6 +297,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                     })
                   );
                   closeAppProjectModal();
+                  getTagsList();
                   getApplicationList();
                 } else {
                   message.error(

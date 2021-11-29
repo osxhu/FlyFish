@@ -4,7 +4,7 @@ import { useIntl } from "react-intl";
 import { toJS } from "@chaoswise/cw-mobx";
 
 export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
-  function EditProjectModal({ flag, list, form, addIndusty, onChange, project = {}, onSave, onCancel }) {
+  function EditProjectModal({ flag, list, form, onChange, project = {}, onSave, onCancel }) {
     const intl = useIntl();
     let selectArr = toJS(list);//下拉框总数据
     let newarr = toJS(project).trades;

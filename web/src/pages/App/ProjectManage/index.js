@@ -17,7 +17,7 @@ const AppProjectManage = observer((props) => {
     setSearchParams,
     saveProject, changeProject, getIndustrysList,
     openEditProjectModal, openProjectPage, setCurPage,
-    closeEditProjectModal, deleteProject, addNewIndustrys
+    closeEditProjectModal, deleteProject
   } = store;
   const { total, industryList, curPage, pageSize, projectList, isEditProjectModalVisible, activeProject } =
     store;
@@ -229,26 +229,6 @@ const AppProjectManage = observer((props) => {
           flag={checkFlag}
           project={activeProject}
           list={industryList}
-          addIndusty={(name) => {
-            addNewIndustrys(name, (res => {
-              if (res.code === successCode) {
-                message.success(
-                  intl.formatMessage({
-                    id: "common.addSuccess",
-                    defaultValue: "新增成功！",
-                  })
-                );
-                getIndustrysList();
-              } else {
-                message.error(
-                  res.msg || intl.formatMessage({
-                    id: "common.addError",
-                    defaultValue: "新增失败，请稍后重试！",
-                  })
-                );
-              }
-            }));
-          }}
           onSave={(project) => {
             saveProject(project, (res) => {
               if (res.code === successCode) {
@@ -260,6 +240,7 @@ const AppProjectManage = observer((props) => {
                 );
                 closeEditProjectModal();
                 getProjectList();
+                getIndustrysList();
               } else {
                 message.error(
                   res.msg || intl.formatMessage({
@@ -282,6 +263,7 @@ const AppProjectManage = observer((props) => {
                 );
                 closeEditProjectModal();
                 getProjectList();
+                getIndustrysList();
               } else {
                 message.error(
                   res.msg || intl.formatMessage({

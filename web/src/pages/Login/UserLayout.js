@@ -143,7 +143,7 @@ class UserLayout extends React.PureComponent {
                   ],
                 })(
                   <Input
-                    prefix={<Icon type="mobile" style={{ color: '#1890FF' }} />}
+                    prefix={<Icon type="user" style={{ color: '#1890FF' }} />}
                     placeholder={`${loginType == 0 ? '' : '*'}请输入用户名`}
                   />
                 )}
@@ -201,24 +201,24 @@ class UserLayout extends React.PureComponent {
                   rules: [
                     {
                       required: true,
-                      message: '请输入密码！',
+                      message: '请输入登录密码！',
                     }
                   ],
                 })(
                   loginType == 0 ? <Input.Password
-                    prefix={<Icon type="mobile" style={{ color: '#1890FF' }} />}
-                    placeholder={`${loginType == 0 ? '' : '*'}请输入密码`}
+                    prefix={<Icon type="lock" style={{ color: '#1890FF' }} />}
+                    placeholder={`${loginType == 0 ? '' : '*'}请输入登录密码`}
                   />:
                   <Input
-                    prefix={<Icon type="mobile" style={{ color: '#1890FF' }} />}
-                    placeholder={`${loginType == 0 ? '' : '*'}请输入密码`}
+                    prefix={<Icon type="lock" style={{ color: '#1890FF' }} />}
+                    placeholder={`${loginType == 0 ? '' : '*'}请输入登录密码`}
                   />
                 )}
               </Form.Item>
             </Col>
 
             <Col span={24}>
-              <Button type="primary" style={{ width: '100%' }} htmlType="submit" className="login-form-button">
+              <Button type="primary" style={{ width: '100%' ,height:'40px'}} htmlType="submit" className="login-form-button">
                 {loginType == 0 ? '登录' : '注册'}
               </Button>
             </Col>
@@ -229,7 +229,7 @@ class UserLayout extends React.PureComponent {
                 {' '}
                 还没有账号
                 <Button type="link" onClick={() => this.changeLoginType(1)}>
-                  去注册&gt;
+                  去注册 &gt;
                 </Button>
               </>
             ) : (
@@ -237,7 +237,7 @@ class UserLayout extends React.PureComponent {
                 {' '}
                 已有账号
                 <Button type="link" onClick={() => this.changeLoginType(0)}>
-                  去登录&gt;
+                  去登录 &gt;
                 </Button>
               </>
             )}
