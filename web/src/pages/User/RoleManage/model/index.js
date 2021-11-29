@@ -1,5 +1,5 @@
 import { toMobx } from '@chaoswise/cw-mobx';
-import { getUserListService, getMenuService, changeRole, saveRoleMenu, addNewRole, saveRoleAuth, deleteOneRole, roleDetail } from "../services";
+import { getUserListService, getMenuService, getSelectRoleData,changeRole, saveRoleMenu, addNewRole, saveRoleAuth, deleteOneRole, roleDetail } from "../services";
 import { getUsertManageListService } from "../../UserManage/services";
 
 import _ from "lodash";
@@ -22,6 +22,7 @@ const model = {
     curPage: 0,
     pageSize: 10,
     menuList: [],//菜单列表
+    roleMenu:[],
     oneRoleDetail: [], //单个角色详情
     userList: [],//角色列表需要的所有用户信息
     oneRoleMenu: []
@@ -87,7 +88,12 @@ const model = {
     * changeRoleMenu(id, params = {}, callback) {
       const res = yield saveRoleMenu(id, params);
       callback && callback(res);
-    }
+    },
+     //获取角色下拉框
+     * getRoleMenu() {
+     const res = yield getSelectRoleData();
+     this.setRoleMenuList(res.data);
+   }
   },
   reducers: {
     setMenuList(res) {
@@ -95,6 +101,9 @@ const model = {
     },
     setUserMenu(res) {
       this.oneRoleMenu = res.data.menus;
+    },
+    setRoleMenuList(res){
+      this.roleMenu=res;
     },
     setUserDetail(res) {
 

@@ -237,6 +237,7 @@ const ComponentDevelop = observer(({ ProgressId }) => {
                             defaultValue: "新增成功！",
                           })
                         );
+                        setLibraryLisCurPage(1);
                         getListData({ projectId: ProgressId }, true);
                         getLibraryListData({}, true);
                       } else {

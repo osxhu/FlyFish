@@ -87,7 +87,7 @@ export default flattenMessages({
       edit: "编辑角色",
       member:"成员列表",
       role:'权限配置',
-      searchInputRoleName:'输入角色名进行查询'
+      searchInputRoleName:'选择角色名进行查询'
     }
   },
   columns: {

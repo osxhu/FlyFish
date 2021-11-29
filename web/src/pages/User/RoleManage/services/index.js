@@ -33,3 +33,7 @@ export const saveRoleMenu = (id,options) => {
 export const getMenuService = () => {
   return fetchGet(API.MENU_LIST);
 };
+// 获取角色下拉框
+export const getSelectRoleData = () => {
+  return fetchGet(API.ROLE_AUTH + 'get-all');
+};

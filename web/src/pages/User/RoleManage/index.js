@@ -20,7 +20,7 @@ const RoleList = observer(() => {
     openEditRoleModal,
     openRoleModal,
     closeRoleModal,
-    deleteRole,
+    deleteRole, getRoleMenu,
     getAllUserList, changeRoleMenu,
     closeEditRoleModal, changeRoleAuth,
     openRoleJurisdictionModal,
@@ -28,7 +28,7 @@ const RoleList = observer(() => {
     addNewRole, getAllMenuList
   } = store;
 
-  const { total, menuList, projectList, pageSize, current, userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
+  const { total, menuList, roleMenu, projectList, pageSize, current, userList, oneRoleDetail, oneRoleMenu, isEditRoleModalVisible, isRoleJurisdictionModalVisible, isRoleModalVisible, activeUser, activeProject } =
     store;
   const [saveOrChangeFlag, setSaveOrChangeFlag] = useState(false);
   // 成员列表的值
@@ -53,7 +53,7 @@ const RoleList = observer(() => {
       title: '最近更新时间',
       dataIndex: 'updateTime',
       key: 'updateTime',
-      render:(updateTime)=>{
+      render: (updateTime) => {
         return formatDate(updateTime);
       }
     },
@@ -71,7 +71,7 @@ const RoleList = observer(() => {
         id: "common.actions",
         defaultValue: "操作",
       }),
-      width:270,
+      width: 270,
       dataIndex: "actions",
       key: "actions",
       render(text, record, index) {
@@ -149,28 +149,33 @@ const RoleList = observer(() => {
   const searchContent = [
     {
       components: (
-        <Input
+        <Select
           id="name"
           key="name"
           name='角色名'
+          allowClear
           suffix={<Icon type="search" />
           }
           style={{ width: "200px" }}
           placeholder={intl.formatMessage({
             id: "pages.roleManage.searchInputRoleName",
-            defaultValue: "输入角色名进行查询",
+            defaultValue: "选择角色名进行查询",
           })}
-        />
+        >
+          {
+            roleMenu ? roleMenu.map(item => {
+              return <Select.Option key={item.id} value={item.name} label={item.name}>{item.name}</Select.Option>;
+            }) : null
+          }
+        </Select>
       ),
     }
   ];
-  function handleChange(value) {
-    console.log(`selected ${value}`);
-  }
   // 请求列表数据
   useEffect(() => {
     setSearchParams();
     getUserList();
+    getRoleMenu();
     getAllMenuList();
   }, []);
   // 分页、排序、筛选变化时触发
