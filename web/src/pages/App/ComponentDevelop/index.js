@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-26 16:41:38
+ * @LastEditTime: 2021-11-29 15:04:09
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -281,13 +281,17 @@ const ComponentDevelop = observer((props) => {
     getListData();
   }, [selectedData]);
   const copyComponent = async (id,name)=>{
-    const res = await copyComponentService(id,name);
-    if(res && res.code==0){
-      message.success('复制成功');
-      setCopyModalvisible(false);
-      getListData();
+    if (name) {
+      const res = await copyComponentService(id,name);
+      if(res && res.code==0){
+        message.success('复制成功');
+        setCopyModalvisible(false);
+        getListData();
+      }else{
+        message.error(res.msg||'复制失败！');
+      }
     }else{
-      message.error(res.msg||'复制失败！');
+      message.error('组件名称不能为空!');
     }
   };
   const deleteComponet = async (id)=>{
@@ -532,9 +536,11 @@ const ComponentDevelop = observer((props) => {
             visible={imgModalVisible}
             footer={null}
             width='60%'
+            height='80%'
+            className={styles.imgPreviewBody}
             onCancel={()=>{setImgModalVisible(false);}}
           >
-            <img src={previewImgUrl} width='100%'></img>
+            <img src={previewImgUrl} width='100%' height='100%'></img>
           </Modal>
           <Modal
             title="导入组件源码"

@@ -28,16 +28,22 @@ const CodeDevelop = observer((props)=>{
   const [compileSping, setCompileSping] = useState(false);
 
   useEffect(() => {
-    window.addEventListener('message',function(event){
-      if (event && event.data) {
-        if ("vscode_compile" ===event.data.event) {
-          //编译
-          if (developingData.id) {
-            compileComponent();
+    if (window.compileListener) { 
+      window.removeEventListener('message',window.compileListener);
+    }else{
+      const compileListener = function(event){
+        if (event && event.data) {
+          if ("vscode_compile" ===event.data.event) {
+            //编译
+            if (developingData.id) {
+              compileComponent();
+            }
           }
         }
       }
-    })
+      window.compileListener = compileListener;
+      window.addEventListener('message',compileListener)
+    }
     setLayerX(mainDiv.current.clientWidth/2 - 5)
   }, []);
   const installPackages = async (id)=>{
