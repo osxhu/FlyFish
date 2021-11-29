@@ -119,13 +119,13 @@ class ComponentService extends Service {
     if (_.isBoolean(isLib)) {
       // 组件库组件只要项目组件
       if (isLib) {
-        queryCond.$or.push({ name: { $regex: key } });
-
-        const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
-        const matchTagIds = matchTags.map(tag => tag.id);
-        if (!_.isEmpty(matchTagIds)) queryCond.$or.push({ tags: { $in: matchTagIds } });
-
         orderField = 'createTime';
+        if (key) {
+          queryCond.$or.push({ name: { $regex: key } });
+          const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
+          const matchTagIds = matchTags.map(tag => tag.id);
+          if (!_.isEmpty(matchTagIds)) queryCond.$or.push({ tags: { $in: matchTagIds } });
+        }
       }
       queryCond.isLib = isLib;
     }
