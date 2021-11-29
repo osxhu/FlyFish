@@ -91,18 +91,18 @@ class ProjectService extends Service {
         $or: [
           {
             name: {
-              $regex: query.key,
+              $regex: _.escapeRegExp(query.key),
             },
           },
           {
             desc: {
-              $regex: query.key,
+              $regex: _.escapeRegExp(query.key),
             },
           },
         ],
       };
 
-      const trades = await ctx.model.Trade._find({ name: { $regex: query.key } });
+      const trades = await ctx.model.Trade._find({ name: { $regex: _.escapeRegExp(query.key) } });
       const filterTradeIds = trades.map(item => item.id);
       if (!_.isEmpty(filterTradeIds)) {
         keyFilter.$or.push({
@@ -129,10 +129,10 @@ class ProjectService extends Service {
     const creators = await ctx.model.User._find({ id: { $in: _.uniq(userIds) } });
     const creatorMap = _.keyBy(creators, 'id');
     list.forEach(l => {
-      l.trades = _.orderBy(l.trades.map(id => ({
+      l.trades = l.trades.map(id => ({
         id,
         name: tradeMap[id] && tradeMap[id].name || '',
-      })), [ 'name' ], [ 'desc' ]);
+      }));
       l.creatorName = creatorMap[l.creator] && creatorMap[l.creator].username || '';
     });
 
@@ -151,10 +151,10 @@ class ProjectService extends Service {
     const tradeMap = _.keyBy(tradeInfos, 'id');
 
     const creator = await ctx.model.User._findOne({ id: info.creator });
-    info.trades = _.orderBy(info.trades.map(id => ({
+    info.trades = info.trades.map(id => ({
       id,
       name: tradeMap[id] && tradeMap[id].name || '',
-    })), [ 'name', 'desc' ]);
+    }));
     info.creatorName = creator.username;
 
     return info;
