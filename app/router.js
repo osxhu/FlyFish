@@ -52,7 +52,7 @@ module.exports = app => {
   router.post('/components/copy/:id', controller.component.copy);
   router.post('/components/compile/:id', controller.component.compile);
   router.post('/components/install/:id', controller.component.installDepend);
-  router.post('/components/up-to-lib/:id', controller.component.upToLib);
+  router.post('/components/up-to-lib/:id', controller.component.toLib);
   router.post('/components/import-source-code/:componentId', controller.component.uploadComponentSource);
   router.get('/components/export-source-code/:componentId', controller.component.exportComponentSource);
   router.get('/components/git-history/:id', controller.component.getComponentHistory);

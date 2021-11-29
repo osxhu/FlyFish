@@ -24,8 +24,12 @@ class ComponentsController extends BaseController {
     const { value: requestData } = ctx.validate(addRoleBasicInfoSchema, ctx.request.body);
 
     const categoryInfo = await service.component.updateCategoryInfo(requestData);
-    if (categoryInfo.msg === 'Exists Already') {
+    if (categoryInfo.msg === 'Exists Already Components') {
       this.fail('更新失败, 删除类别中存在组件', null, CODE.FAIL);
+    } else if (categoryInfo.msg === 'Exists Already Category Name') {
+      this.fail('更新失败, 类别名称重复', null, CODE.FAIL);
+    } else if (categoryInfo.msg === 'Exists Already SubCategory Name') {
+      this.fail('更新失败, 子类别名称重复', null, CODE.FAIL);
     } else {
       this.success('更新成功', null);
     }
@@ -191,11 +195,15 @@ class ComponentsController extends BaseController {
     }
   }
 
-  async upToLib() {
+  async toLib() {
     const { ctx, app, service } = this;
+    const updateInfoSchema = app.Joi.object().keys({
+      toLib: app.Joi.boolean().required(),
+    });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
+    const { value: requestData } = ctx.validate(updateInfoSchema, ctx.request.body);
 
-    await service.component.upToLib(id);
+    await service.component.toLib(id, requestData);
 
     this.success('更新成功', { id });
   }

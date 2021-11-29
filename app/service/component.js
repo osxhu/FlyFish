@@ -25,19 +25,37 @@ class ComponentService extends Service {
     if (!_.isEmpty(deleteCategoryIds)) {
       const components = await ctx.model.Component._find({ subCategory: { $in: deleteCategoryIds } }, null, { limit: 1 }) || [];
       if (!_.isEmpty(components)) {
-        returnData.msg = 'Exists Already';
+        returnData.msg = 'Exists Already Components';
         return returnData;
       }
     }
 
+    const names = [];
     for (let i = 0; i < (updateInfo.categories || []).length; i++) {
       const category = updateInfo.categories[i];
+
+      const existsName = names.find(name => name === category.name);
+      if (!_.isEmpty(existsName)) {
+        returnData.msg = 'Exists Already Category Name';
+        return returnData;
+      }
+      names.push(category.name);
+
       if (!category.id) category.id = `${Date.now()}${i}`;
       for (let j = 0; j < (category.children || []).length; j++) {
         const subCategory = category.children[j];
+        const existsName = names.find(name => name === subCategory.name);
+        if (!_.isEmpty(existsName)) {
+          console.log(subCategory.name);
+          returnData.msg = 'Exists Already SubCategory Name';
+          return returnData;
+        }
+        names.push(subCategory.name);
+
         if (!subCategory.id) subCategory.id = `${Date.now()}${i}${j}`;
       }
     }
+
     await ctx.model.ComponentCategory._create(updateInfo);
 
     return returnData;
@@ -83,10 +101,12 @@ class ComponentService extends Service {
     const { key, name, isLib, tags, trades, projectId, developStatus, type, category, subCategory, curPage, pageSize } = requestData;
     const queryCond = { status: Enum.COMMON_STATUS.VALID };
 
+    const users = await ctx.model.User._find();
+    const projectList = await ctx.model.Project._find();
+    const tagList = await ctx.model.Tag._find();
+
     queryCond.$or = [];
-    if (key) {
-      queryCond.$or.push({ desc: { $regex: key } });
-    }
+    if (key) queryCond.$or.push({ desc: { $regex: key } });
     if (name) queryCond.name = { $regex: name };
     if (category) queryCond.category = category;
     if (subCategory) queryCond.subCategory = subCategory;
@@ -99,15 +119,16 @@ class ComponentService extends Service {
     if (_.isBoolean(isLib)) {
       // 组件库组件只要项目组件
       if (isLib) {
-        queryCond.type = Enum.COMPONENT_TYPE.PROJECT;
+        queryCond.$or.push({ name: { $regex: key } });
+
+        const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
+        const matchTagIds = matchTags.map(tag => tag.id);
+        if (!_.isEmpty(matchTagIds)) queryCond.$or.push({ tags: { $in: matchTagIds } });
+
         orderField = 'createTime';
       }
       queryCond.isLib = isLib;
     }
-
-    const users = await ctx.model.User._find();
-    const projectList = await ctx.model.Project._find();
-    const tagList = await ctx.model.Tag._find();
 
     const matchUsers = (users || []).filter(user => user.username.includes(key));
     const matchUserIds = matchUsers.map(user => user.id);
@@ -121,8 +142,8 @@ class ComponentService extends Service {
       if (!_.isEmpty(tradeProjectIds)) queryProjects.push(...tradeProjectIds);
     }
     if (!_.isEmpty(queryProjects)) queryCond.projects = { $in: queryProjects };
-
     if (!_.isEmpty(matchUserIds)) queryCond.$or.push({ creator: { $in: matchUserIds } });
+
     if (_.isEmpty(queryCond.$or)) delete queryCond.$or;
     const componentList = await ctx.model.Component._find(queryCond);
 
@@ -343,9 +364,11 @@ class ComponentService extends Service {
     return returnData;
   }
 
-  async upToLib(id) {
+  async toLib(id, requestData) {
     const { ctx } = this;
-    await ctx.model.Component._updateOne({ id }, { isLib: true });
+
+    const { toLib } = requestData;
+    await ctx.model.Component._updateOne({ id }, { isLib: toLib });
   }
 
   async delete(id) {
