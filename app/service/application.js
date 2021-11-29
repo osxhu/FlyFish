@@ -124,13 +124,13 @@ class ApplicationService extends Service {
     const userInfo = ctx.userInfo;
     const returnData = { msg: 'ok', data: {} };
 
-    const copyApplication = await ctx.model.Application._findOne({ id });
+    const copyApplication = await ctx.model.Application._findOne({ id, status: Enum.COMMON_STATUS.VALID });
     if (_.isEmpty(copyApplication)) {
       returnData.msg = 'No Exists';
       return returnData;
     }
 
-    const existsApplications = await ctx.model.Application._findOne({ name: applicationInfo.name });
+    const existsApplications = await ctx.model.Application._findOne({ name: applicationInfo.name, status: Enum.COMMON_STATUS.VALID });
     if (!_.isEmpty(existsApplications)) {
       returnData.msg = 'Exists Already';
       return returnData;
