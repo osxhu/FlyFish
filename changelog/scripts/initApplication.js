@@ -14,6 +14,7 @@ let mongoClient,
 const tableMap = {};
 const SCREEN_STATUS = [ 'doing', 'testing', 'delivered' ];
 let success = 0;
+const errList = [];
 
 async function init() {
   mongoClient = new MongoClient(mongoUrl);
@@ -86,9 +87,10 @@ async function init() {
   try {
     await init();
     const { Screen, ScreenAndView } = tableMap;
-    const componentAppMap = {};
 
-    const screens = await Screen.findAll({ where: { deleted_at: 1 } });
+    const screens = await Screen.findAll({ where: { deleted_at: 1,
+      screen_id: '7709d8f0-fc1c-11eb-a7f7-a1560fa6d8c4',
+    } });
     console.log(`${screens.length} 个应用等待被同步`);
 
     const screenAndViews = await ScreenAndView.findAll({ where: { status: 1 } });
@@ -121,51 +123,57 @@ async function init() {
       283: [[ 99 ], 40 ], // 国投集团IT设施监控大屏
     };
     for (const screen of screens) {
-      const tagStr = screenAndViewMap[screen.screen_id] && screenAndViewMap[screen.screen_id].tag_id;
-      const tagIds = tagStr.split(',');
-      let tagId = tagIds[0];
-      let projectId = projectMap[tagId]._id.toString();
+      try {
+        const tagStr = screenAndViewMap[screen.screen_id] && screenAndViewMap[screen.screen_id].tag_id;
+        const tagIds = tagStr.split(',');
+        let tagId = tagIds[0];
+        let projectId = projectMap[tagId]._id.toString();
 
-      if (tagIds.length > 1 && specialScreenMap[screen.id]) {
-        tagId = specialScreenMap[screen.id][1];
-        // TODO: 把0下的组件都挂到1上
-        const components = await db.collection('components').find({ projects: { $in: specialScreenMap[screen.id][0] } }).toArray();
-        const componentIds = _.uniq(components.map(item => item._id));
-        projectId = projectMap[tagId]._id.toString();
-        await db.collection('components').updateMany({ _id: { $in: componentIds } }, { $addToSet: { projects: projectId } });
+        if (tagIds.length > 1 && specialScreenMap[screen.id]) {
+          tagId = specialScreenMap[screen.id][1];
+          // TODO: 把0下的组件都挂到1上
+          const components = await db.collection('components').find({ projects: { $in: specialScreenMap[screen.id][0] } }).toArray();
+          const componentIds = _.uniq(components.map(item => item._id));
+          projectId = projectMap[tagId]._id.toString();
+          await db.collection('components').updateMany({ _id: { $in: componentIds } }, { $addToSet: { projects: projectId } });
+        }
+
+        const optionObj = screen.options_conf && JSON.parse(screen.options_conf) || {};
+        optionObj.components = (optionObj.components || []).map(c => {
+          c._type = c.type;
+          c.type = componentMap[c.type]._id.toString();
+          c.version = 'v1.0.0';
+
+          return c;
+        });
+        const doc = {
+          name: screen.name,
+          old_id: screen.id,
+          old_screen_id: screen.screen_id,
+          project_id: projectId,
+          type: '2D',
+          develop_status: SCREEN_STATUS[screen.status] || 'doing',
+          creator: userMap[screen.create_user_id] && userMap[screen.create_user_id]._id.toString(),
+          updater: userMap[screen.developing_user_id] && userMap[screen.developing_user_id]._id.toString(),
+          status: 'valid',
+          _cover: screen.cover,
+          pages: [ optionObj ],
+          create_time: new Date(),
+          update_time: new Date(),
+        };
+        await db.collection('applications').insertOne(doc);
+        success++;
+      } catch (error) {
+        errList.push(screen.screen_id);
+        console.error(`失败：${screen.screen_id}`, JSON.stringify(error.stack || error));
       }
-
-      const optionObj = JSON.parse(screen.options_conf);
-      optionObj.components = optionObj.components.map(c => {
-        c._type = c.type;
-        c.type = componentMap[c.type]._id.toString();
-        c.version = 'v1.0.0';
-
-        return c;
-      });
-      const doc = {
-        name: screen.name,
-        old_id: screen.id,
-        old_screen_id: screen.screen_id,
-        project_id: projectId,
-        type: '2D',
-        develop_status: SCREEN_STATUS[screen.status] || 'doing',
-        creator: userMap[screen.create_user_id] && userMap[screen.create_user_id]._id.toString(),
-        updater: userMap[screen.developing_user_id] && userMap[screen.developing_user_id]._id.toString(),
-        status: 'valid',
-        _cover: screen.cover,
-        pages: [ optionObj ],
-        create_time: new Date(),
-        update_time: new Date(),
-      };
-      await db.collection('applications').insertOne(doc);
-      success++;
     }
 
   } catch (error) {
     console.log(error.stack || error);
   } finally {
     console.log(`执行完毕，成功${success}条`);
+    console.log(`失败：${errList.length}条`, errList);
     mongoClient.close();
     process.exit(0);
   }
