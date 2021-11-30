@@ -37,19 +37,19 @@ module.exports = {
     config.patterns.push({
       from:path.resolve(__dirname,'../src/assets/diff'),
       to:'diff'
-    })
+    });
     return config;
   },
   devServer: config => {
     config.port = 8000;
     config.proxy = {
-      '/api': {
-          target: 'http://10.2.3.247:7001',
-          // changeOrigin:true,
-          pathRewrite:{
-            "^/api":""
-          }
-      }
+      "/api": {
+        target: "http://10.0.14.151:7001",
+        changeOrigin:true,
+        pathRewrite: {
+          "^/api": "",
+        },
+      },
     };
     return config;
   }
