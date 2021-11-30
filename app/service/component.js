@@ -109,13 +109,13 @@ class ComponentService extends Service {
     let matchUserIds = [];
     if (key) {
       queryCond.$or.push({ desc: { $regex: _.escapeRegExp(key) } });
-      const matchUsers = (users || []).filter(user => user.username.includes(key));
-      matchUserIds = matchUsers.map(user => user.id);
-      if (!_.isEmpty(matchUserIds)) queryCond.$or.push({ creator: { $in: matchUserIds } });
-
       if (isLib) {
         queryCond.$or.push({ name: { $regex: _.escapeRegExp(key) } });
       } else {
+        const matchUsers = (users || []).filter(user => user.username.includes(key));
+        matchUserIds = matchUsers.map(user => user.id);
+        if (!_.isEmpty(matchUserIds)) queryCond.$or.push({ creator: { $in: matchUserIds } });
+
         const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
         const matchTagIds = matchTags.map(tag => tag.id);
         if (!_.isEmpty(matchTagIds)) queryCond.$or.push({ tags: { $in: matchTagIds } });
