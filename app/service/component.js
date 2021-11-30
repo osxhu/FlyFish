@@ -114,7 +114,6 @@ class ComponentService extends Service {
       if (!_.isEmpty(matchUserIds)) queryCond.$or.push({ creator: { $in: matchUserIds } });
 
       if (isLib) {
-        orderField = 'createTime';
         queryCond.$or.push({ name: { $regex: _.escapeRegExp(key) } });
       } else {
         const matchTags = (tagList || []).filter(tag => tag.name.includes(key));
@@ -130,7 +129,10 @@ class ComponentService extends Service {
     if (type) queryCond.type = type;
     if (projectId) queryCond.projects = { $in: projectId };
     if (!_.isEmpty(tags)) queryCond.tags = { $in: tags };
-    if (_.isBoolean(isLib)) queryCond.isLib = isLib;
+    if (_.isBoolean(isLib)) {
+      if (isLib) orderField = 'createTime';
+      queryCond.isLib = isLib;
+    }
     if (!_.isEmpty(trades)) {
       const tradeProjects = (projectList || []).filter(project => {
         const matchTrade = (trades || []).find(trade => (project.trades || []).includes(trade));
