@@ -57,13 +57,13 @@ async function init() {
 
           const releaseMainPath = path.resolve(versionTarget, 'release/main.js');
           const releaseMainOrigin = await fs.readFile(releaseMainPath, { encoding: 'utf8' });
-          const releaseMainReplacement = releaseMainOrigin.replace(/registerComponent\)\((\S+)\,(\w+)\)\}/, `registerComponent)(\'${componentId}\',\'v1.0.0\',$2\)\}`);
+          const releaseMainReplacement = releaseMainOrigin.replace(/registerComponent\)\(((\"|\')\w+(\"|\'))\,(\w+)\)/, `registerComponent)(\'${componentId}\',\'v1.0.0\',$4)`);
           await fs.writeFile(releaseMainPath, releaseMainReplacement);
 
           const releaseSettingPath = path.resolve(versionTarget, 'release/setting.js');
           const releaseSettingOrigin = await fs.readFile(releaseSettingPath, { encoding: 'utf8' });
-          const releaseSettingReplacement = releaseSettingOrigin.replace(/registerComponentOptionsSetting\)\((\S+)\,(\w+)\)\,/, `registerComponentOptionsSetting)(\'${componentId}\',\'v1.0.0\',$2\)\,`)
-            .replace(/registerComponentDataSetting\)\((\S+)\,(\w+)\)\}/, `registerComponentDataSetting)(\'${componentId}\',\'v1.0.0\',$2\)\}`);
+          const releaseSettingReplacement = releaseSettingOrigin.replace(/registerComponentOptionsSetting\)\(((\"|\')\w+(\"|\'))\,(\w+)\)/, `registerComponentOptionsSetting)(\'${componentId}\',\'v1.0.0\',$4\)`)
+            .replace(/registerComponentDataSetting\)\(((\"|\')\w+(\"|\'))\,(\w+)\)/, `registerComponentDataSetting)(\'${componentId}\',\'v1.0.0\',$4\)`);
           await fs.writeFile(releaseSettingPath, releaseSettingReplacement);
         }
         await db.collection('components').updateOne({ _id: component._id }, { $set: { migrated: true } });
