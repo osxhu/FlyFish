@@ -299,7 +299,7 @@ class ApplicationService extends Service {
 
     const returnList = [];
     const componentCategories = await ctx.model.ComponentCategory._find({}, null, { sort: '-create_time', limit: 1 }) || [];
-    const components = await ctx.model.Component._find(queryCond, null, { sort: '-update_time' }) || [];
+    const components = await ctx.model.Component._find(queryCond) || [];
 
     for (const category of _.get(componentCategories, [ 0, 'categories' ], [])) {
       const categoryInfo = { id: category.id, name: category.name, subCategories: [] };
