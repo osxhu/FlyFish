@@ -137,6 +137,10 @@ class ComponentService extends Service {
       const tradeProjects = (projectList || []).filter(project => {
         let match = true;
         for (const trade of trades) {
+          if (_.isEmpty(project.trades)) {
+            match = false;
+            break;
+          }
           if (!project.trades.includes(trade)) {
             match = false;
             break;
