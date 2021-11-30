@@ -127,7 +127,7 @@ class ComponentService extends Service {
     if (subCategory) queryCond.subCategory = subCategory;
     if (developStatus) queryCond.developStatus = developStatus;
     if (type) queryCond.type = type;
-    if (projectId) queryCond.projects = { $in: projectId };
+    if (projectId) queryProjects.push(projectId);
     if (!_.isEmpty(tags)) queryCond.tags = { $in: tags };
     if (_.isBoolean(isLib)) {
       if (isLib) orderField = 'createTime';
@@ -139,7 +139,11 @@ class ComponentService extends Service {
         return !_.isEmpty(matchTrade);
       });
       const tradeProjectIds = (tradeProjects || []).map(project => project.id);
-      if (!_.isEmpty(tradeProjectIds)) queryProjects.push(...tradeProjectIds);
+      if (!_.isEmpty(tradeProjectIds)) {
+        queryProjects.push(...tradeProjectIds);
+      } else {
+        return { total: 0, data: [] };
+      }
     }
     if (!_.isEmpty(queryProjects)) queryCond.projects = { $in: queryProjects };
 
