@@ -42,7 +42,7 @@ class PushComponent extends Subscription {
         if (!status.isClean()) {
           await git
             .add('.')
-            .commit(`Update: regular commit by ${updateUsername}`)
+            .commit(`Update #LOWCODE-581 commit by ${updateUsername}`)
             .push([ 'origin', 'master' ]);
 
           await ctx.model.Component._updateOne({ id: component.id }, { needPushGit: false, lastChangeTime: Date.now() });

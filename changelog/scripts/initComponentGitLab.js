@@ -50,7 +50,7 @@ async function init() {
       await git
         .init()
         .add('.')
-        .commit('first commit by system')
+        .commit('Update #LOWCODE-581 first commit by system')
         .addRemote('origin', newRepoUrl)
         .push([ '-u', '--set-upstream', 'origin', 'master' ]);
 

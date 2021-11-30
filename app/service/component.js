@@ -657,7 +657,7 @@ class ComponentService extends Service {
       await git
         .init()
         .add('.')
-        .commit(`first commit by ${userInfo.username}`)
+        .commit(`Update #LOWCODE-581 commit by ${userInfo.username}`)
         .addRemote('origin', newRepoUrl)
         .push([ '-u', '--set-upstream', 'origin', 'master' ]);
 
