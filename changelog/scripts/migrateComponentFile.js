@@ -76,13 +76,13 @@ async function init() {
 async function replaceFiles(target, version, componentId) {
   const mainJsPath = path.resolve(target, 'src/main.js');
   const mainJsOrigin = await fs.readFile(mainJsPath, { encoding: 'utf8' });
-  const mainJsReplacement = mainJsOrigin.replace(/registerComponent\(\'(\w+)\'\,\sComponent\);/, `registerComponent(\'$1\', \'${version}\', Component);`);
+  const mainJsReplacement = mainJsOrigin.replace(/registerComponent\((\S+)\,\sComponent\);/, `registerComponent($1, \'${version}\', Component);`);
   await fs.writeFile(mainJsPath, mainJsReplacement);
 
   const settingJsPath = path.resolve(target, 'src/setting.js');
   const settingJsOrigin = await fs.readFile(settingJsPath, { encoding: 'utf8' });
-  const settingJsReplacement = settingJsOrigin.replace(/registerComponentOptionsSetting\(\'(\w+)\'\,\sOptionsSetting\);/, `registerComponentOptionsSetting(\'$1\', \'${version}\', OptionsSetting);`)
-    .replace(/registerComponentDataSetting\(\'(\w+)\'\,\sDataSetting\);/, `registerComponentDataSetting(\'$1\', \'${version}\', DataSetting);`);
+  const settingJsReplacement = settingJsOrigin.replace(/registerComponentOptionsSetting\((\S+)\,\sOptionsSetting\);/, `registerComponentOptionsSetting($1, \'${version}\', OptionsSetting);`)
+    .replace(/registerComponentDataSetting\((\S+)\,\sDataSetting\);/, `registerComponentDataSetting($1, \'${version}\', DataSetting);`);
   await fs.writeFile(settingJsPath, settingJsReplacement);
 
   // 替换editor.html
