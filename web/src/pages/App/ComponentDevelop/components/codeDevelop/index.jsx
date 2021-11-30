@@ -148,7 +148,6 @@ const CodeDevelop = observer((props)=>{
           <iframe
             className={styles.vscodeFrame}
             name='vscode'
-            // src={`http://${window.location.hostname}:8080/?folder=/www/components/${developingData.id}/v-current`} 
             src={`http://${window.location.hostname}:8080/?folder=/www/components/${developingData.id}/v-current`} 
             frameBorder={0}
           >
