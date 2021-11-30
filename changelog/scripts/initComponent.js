@@ -182,12 +182,6 @@ async function init() {
           applications: [],
           versions: [
             {
-              no: 'v-current',
-              desc: '',
-              status: 'valid',
-              time: new Date(),
-            },
-            {
               no: 'v1.0.0',
               desc: '',
               status: 'valid',
@@ -244,14 +238,7 @@ async function init() {
           sub_category: subCategoryId,
           type,
           applications: [],
-          versions: [
-            {
-              no: 'v-current',
-              desc: '',
-              status: 'valid',
-              time: new Date(),
-            },
-          ],
+          versions: [],
           cover: '/component_tpl/public/cover.png',
           creator: component.create_user_id && userMap[component.create_user_id] && userMap[component.create_user_id]._id.toString() || '',
           updater: component.update_user_id && userMap[component.update_user_id] && userMap[component.update_user_id]._id.toString() || '',
