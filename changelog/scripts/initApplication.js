@@ -103,8 +103,6 @@ async function init() {
     const components = await db.collection('components').find().toArray();
     const componentMap = _.keyBy(components, 'old_component_mark');
 
-    const yunyingProjectId = projects.filter(p => p.name === '云智慧运营')[0]._id.toString();
-
     const specialScreenMap = {
       57: [[ 17, 14 ], 17 ], // 招商城科
       98: [[ 37, 15 ], 37 ], // 震坤行poc
@@ -112,7 +110,7 @@ async function init() {
       106: [[ 40, 42 ], 40 ], // 国投IT基础设施监控大屏
       164: [[ 16, 59 ], 16 ], // 星巴克
       209: [[ 20, 70 ], 70 ], // 四川社保厅POC
-      220: [[ 34, 75, 67, 58, 71, 111 ], yunyingProjectId ], // 云智慧运营看板
+      220: [[ 34, 75, 67, 58, 71, 111 ], 111 ], // 云智慧运营看板
       223: [[ 15, 47, 20 ], 15 ], // 基础设施运维监控概览大屏- pepper副本
       247: [[ 31, 83, 15 ], 83 ], // 贵州省公安厅运维态势大屏
       259: [[ 40, 42, 93 ], 40 ], // 国投IT基础设施监控大屏复制保存
@@ -132,12 +130,7 @@ async function init() {
           // TODO: 把0下的组件都挂到1上
           const components = await db.collection('components').find({ projects: { $in: specialScreenMap[screen.id][0] } }).toArray();
           const componentIds = _.uniq(components.map(item => item._id));
-
-          if (screen.name === '云智慧运营看板') {
-            projectId = tagId;
-          } else {
-            projectId = projectMap[tagId]._id.toString();
-          }
+          projectId = projectMap[tagId]._id.toString();
 
           await db.collection('components').updateMany({ _id: { $in: componentIds } }, { $addToSet: { projects: projectId } });
         }
