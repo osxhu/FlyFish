@@ -120,7 +120,7 @@ class ProjectService extends Service {
     const tradeIds = [],
       userIds = [];
     list.forEach(l => {
-      tradeIds.push(...l.trades);
+      tradeIds.push(...(l.trades || []));
       userIds.push(l.creator);
     });
     const tradeInfos = await ctx.model.Trade._find({ id: { $in: _.uniq(tradeIds) } });
@@ -129,7 +129,7 @@ class ProjectService extends Service {
     const creators = await ctx.model.User._find({ id: { $in: _.uniq(userIds) } });
     const creatorMap = _.keyBy(creators, 'id');
     list.forEach(l => {
-      l.trades = l.trades.map(id => ({
+      l.trades = (l.trades || []).map(id => ({
         id,
         name: tradeMap[id] && tradeMap[id].name || '',
       }));
