@@ -61,5 +61,5 @@ module.exports = app => {
     return Object.assign({}, camelizeRes, res);
   }
 
-  return mongoose.model('ComponentCategory', ComponentCategorySchema, 'component-category');
+  return mongoose.model('ComponentCategory', ComponentCategorySchema, 'component_categories');
 };
