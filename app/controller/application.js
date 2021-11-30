@@ -208,8 +208,9 @@ class ApplicationController extends BaseController {
     await fs.copy(sourceIndexPath, targetIndexPath);
 
     const sourcePublicPath = path.resolve(staticDir, appTplPath, 'public');
-    const sourceCommonPath = path.resolve(staticDir, commonPath, 'common');
     const targetPublicPath = path.resolve(staticDir, buildPath, 'public');
+
+    const sourceCommonPath = path.resolve(staticDir, commonPath);
 
     await fs.copy(`${sourceCommonPath}/data-vi.js`, `${targetPublicPath}/data-vi.js`);
     await fs.copy(`${sourceCommonPath}/editor.css`, `${targetPublicPath}/editor.css`);

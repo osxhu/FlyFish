@@ -87,6 +87,7 @@ module.exports = {
         maxAge: 1000 * 60 * 60 * 24 * 7, // Unit : second  default Max-Age is one week
       };
       await page.setCookie(cookie); // 设置cookie
+      // await page.setViewport({ width: 1280, height: 720 });
       await page.goto(url, { waitUntil: 'networkidle0', timeout: 50000 });
 
       const fullPagePng = await page.screenshot({ type: 'png', fullPage: true });
