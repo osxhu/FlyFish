@@ -60,16 +60,18 @@ async function init() {
         }
 
         // 迁移封面
+        app.cover = '/application_tpl/public/cover.png';// 默认封面
         if (app._cover) {
           const coverSource = path.resolve(oldSolutionWww, 'upload/screen/cover', app._cover);
           const coverTarget = path.resolve('applications', app._id.toString(), 'cover.png');
           const coverSourceExist = fs.existsSync(coverSource);
           if (coverSourceExist) {
             await fs.copy(coverSource, coverTarget);
+            app.cover = `/applications/${app._id.toString()}/cover.png`;
           }
         }
 
-        await db.collection('applications').updateOne({ _id: app._id }, { $set: { pages: app.pages, migrated: true } });
+        await db.collection('applications').updateOne({ _id: app._id }, { $set: { pages: app.pages, cover: app.cover, migrated: true } });
         success++;
         console.log(`迁移成功：${app._id.toString()}`);
       } catch (error) {
