@@ -56,6 +56,11 @@ module.exports = appInfo => {
     // maxAge: 31536000,
     // buffer: true,
   };
+  config.cookieConfig = {
+    name: 'FLY_FISH_V2.0',
+    domain: '10.0.14.151',
+    encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',
+  };
 
   return {
     ...config,
