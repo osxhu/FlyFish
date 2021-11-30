@@ -31,6 +31,7 @@ async function init() {
     for (const component of components) {
       try {
         const componentId = component._id.toString();
+        const componentMark = component.old_component_mark;
 
         const source = path.resolve(oldVCWww, 'static/dev_visual_component/dev_workspace', component.old_org_mark, component.old_component_mark);
         const target = path.resolve(componentDir, component._id.toString(), 'v-current');
@@ -39,7 +40,7 @@ async function init() {
         if (sourceExist) {
           await copyAndIgnore(source, target, [ 'node_modules', '.git', 'components', 'package-lock.json' ]);
           // 加版本号
-          await replaceFiles(target, 'v-current', componentId);
+          await replaceFiles(target, 'v-current', componentId, componentMark);
         }
 
         if (component.develop_status === 'online') {
@@ -47,7 +48,7 @@ async function init() {
           if (sourceExist) {
             await copyAndIgnore(source, versionTarget, [ 'node_modules', '.git', 'components', 'package-lock.json' ]);
             // 加版本号
-            await replaceFiles(versionTarget, 'v1.0.0', componentId);
+            await replaceFiles(versionTarget, 'v1.0.0', componentId, componentMark);
           }
 
           const releaseSource = path.resolve(oldSolutionWww, 'static/public_visual_component/1', component.old_component_mark);
@@ -73,7 +74,7 @@ async function init() {
   }
 })();
 
-async function replaceFiles(target, version, componentId) {
+async function replaceFiles(target, version, componentId, componentMark) {
   const mainJsPath = path.resolve(target, 'src/main.js');
   const mainJsOrigin = await fs.readFile(mainJsPath, { encoding: 'utf8' });
   const mainJsReplacement = mainJsOrigin.replace(/registerComponent\((\S+)\,\sComponent\);/, `registerComponent($1, \'${version}\', Component);`);
@@ -89,6 +90,37 @@ async function replaceFiles(target, version, componentId) {
   const editorPath = path.resolve(target, 'editor.html');
   const newEditorStr = require(path.resolve(staticDir, 'component_tpl/editor.html.js'))(componentId, version);
   await fs.writeFile(editorPath, newEditorStr);
+
+  // 新增index.html
+  const indexPath = path.resolve(target, 'index.html');
+  const indexStr = require(path.resolve(staticDir, 'component_tpl/index.html.js'))(componentId, version);
+  await fs.writeFile(indexPath, indexStr);
+
+  // 替换env.js
+  const envPath = path.resolve(target, 'env.js');
+  const envJsOrigin = await fs.readFile(envPath, { encoding: 'utf8' });
+  const envReplacement = envJsOrigin.replace(/componentsDir\:(.*)\n/, 'componentsDir: \'components\',');
+  await fs.writeFile(envPath, envReplacement);
+
+  // 替换build文件
+  const buildMainReg = new RegExp(componentMark + '/main');
+  const buildSettingReg = new RegExp(componentMark + '/main');
+
+  const buildDevPath = path.resolve(target, 'build/webpack.config.dev.js');
+  const buildDevJsOrigin = await fs.readFile(buildDevPath, { encoding: 'utf8' });
+  const buildDevJsReplacement = buildDevJsOrigin.replace(buildMainReg, '\./main').replace(buildSettingReg, '\./setting');
+  await fs.writeFile(buildDevPath, buildDevJsReplacement);
+
+  const buildProdPath = path.resolve(target, 'build/webpack.config.production.js');
+  const buildProdJsOrigin = await fs.readFile(buildProdPath, { encoding: 'utf8' });
+  const buildProdJsReplacement = buildProdJsOrigin.replace(buildMainReg, '\./main').replace(buildSettingReg, '\./setting');
+  await fs.writeFile(buildProdPath, buildProdJsReplacement);
+
+  // 替换options.json
+  const optionsPath = path.resolve(target, 'options.json');
+  const optionsObj = await fs.readJson(optionsPath);
+  optionsObj.components[0].type = componentId;
+  await fs.writeJson(optionsPath, optionsObj);
 }
 
 
