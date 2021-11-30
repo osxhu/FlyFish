@@ -58,7 +58,7 @@ class ApplicationService extends Service {
     const { ctx } = this;
 
     const userInfo = ctx.userInfo;
-    const { type, name, developStatus, projectId, isLib, status } = requestData;
+    const { type, name, developStatus, projectId, isLib, status, tags } = requestData;
     const returnData = { msg: 'ok', data: {} };
 
     const updateData = {
@@ -78,9 +78,12 @@ class ApplicationService extends Service {
     if (projectId) updateData.projectId = projectId;
     if (developStatus) updateData.developStatus = developStatus;
     if (_.isBoolean(isLib)) updateData.isLib = isLib;
-    const tagData = await this.getTagData(requestData);
+    if (_.isArray(tags)) {
+      const tagData = await this.getTagData(requestData);
+      updateData.tags = tagData.tags;
+    }
 
-    await ctx.model.Application._updateOne({ id }, Object.assign(updateData, tagData));
+    await ctx.model.Application._updateOne({ id }, updateData);
 
     return returnData;
   }

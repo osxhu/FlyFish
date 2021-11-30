@@ -330,7 +330,7 @@ class ComponentService extends Service {
   async updateInfo(id, requestData) {
     const { ctx } = this;
 
-    const { name, status, type, projects, category, subCategory, isLib, desc, dataConfig } = requestData;
+    const { name, status, type, projects, category, subCategory, isLib, desc, dataConfig, tags } = requestData;
     const returnData = { msg: 'ok', data: {} };
 
     const updateData = {};
@@ -355,8 +355,10 @@ class ComponentService extends Service {
       updateData.type = type;
     }
 
-    const tagInfo = await this.getTagData(requestData);
-    Object.assign(updateData, tagInfo);
+    if (_.isArray(tags)) {
+      const tagData = await this.getTagData(requestData);
+      updateData.tags = tagData.tags;
+    }
 
     await ctx.model.Component._updateOne({ id }, updateData);
 
