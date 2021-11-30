@@ -403,7 +403,7 @@ class ComponentService extends Service {
   }
 
   async copyComponent(id, componentInfo) {
-    const { ctx, config, logger } = this;
+    const { ctx, config } = this;
     const { pathConfig: { staticDir, componentsPath, initComponentVersion } } = config;
 
     const userInfo = ctx.userInfo;
@@ -443,7 +443,14 @@ class ComponentService extends Service {
 
     const src = `${staticDir}/${componentsPath}/${id}/${initComponentVersion}`;
     const dest = `${staticDir}/${componentsPath}/${componentId}/${initComponentVersion}`;
-    await ctx.helper.copyAndReplace(src, dest, [ 'node_modules', '.git', 'components', 'release', 'package-lock.json' ], { from: id, to: componentId });
+
+    try {
+      await ctx.helper.copyAndReplace(src, dest, [ 'node_modules', '.git', 'components', 'release', 'package-lock.json' ], { from: id, to: componentId });
+    } catch (error) {
+      returnData.msg = 'Init Workplace Fail';
+      returnData.data.error = error;
+      return returnData;
+    }
 
     // 初始化git仓库
     if (config.env === 'prod') await this.initGit(componentId);

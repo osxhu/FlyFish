@@ -118,12 +118,15 @@ class ComponentsController extends BaseController {
 
     const componentInfo = await service.component.copyComponent(id, requestData);
 
+    const errInfo = componentInfo.data.error || null;
     if (componentInfo.msg === 'Exists Already') {
       this.fail('复制失败, 组件名称已存在', null, CODE.FAIL);
     } else if (componentInfo.msg === 'Fail') {
       this.fail('复制失败, 初始化开发空间失败', null, CODE.FAIL);
     } else if (componentInfo.msg === 'No Exists') {
       this.fail('复制失败, 复制组件不存在', null, CODE.FAIL);
+    } else if (componentInfo.msg === 'Init Workplace Fail') {
+      this.fail('复制失败, 复制组件空间失败', errInfo, CODE.FAIL);
     } else {
       this.success('复制成功', { id: _.get(componentInfo, [ 'data', 'id' ]) });
     }
