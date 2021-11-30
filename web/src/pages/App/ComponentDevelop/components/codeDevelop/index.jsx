@@ -67,7 +67,9 @@ const CodeDevelop = observer((props)=>{
     const res  = await compileComponentService(developingData.id);
     if (res && res.code===0) {
       message.success('编译成功!');
-      setPreviewRandom(Math.random());
+      // setPreviewRandom(Math.random());
+      const frame= document.getElementsByName('preview')[0];
+      frame.contentWindow.postMessage('vscode_compile',frame.src)
       setCompileSping(false)
     }else{
       message.error(res.msg);
@@ -169,7 +171,7 @@ const CodeDevelop = observer((props)=>{
           }}>
         <div style={{padding:'5px 15px'}}>可视化区</div>
         <iframe 
-          className={styles.previewFrame} 
+          className={styles.previewFrame}
           name='preview' 
           src={`http://${window.location.hostname}:7001/components/${developingData.id}/v-current/editor.html?random=${previewRandom}`} 
           frameBorder={0}
