@@ -59,7 +59,7 @@ module.exports = {
     return ctx.cookies.set(config.cookieConfig.name, null);
   },
 
-  async screenshot(url, savePath) {
+  async screenshot(url, savePath, options = {}) {
     const { ctx, config: { cookieConfig: { name: cookieName, domain: cookieDomain } } } = this;
 
     try {
@@ -87,7 +87,7 @@ module.exports = {
         maxAge: 1000 * 60 * 60 * 24 * 7, // Unit : second  default Max-Age is one week
       };
       await page.setCookie(cookie); // 设置cookie
-      // await page.setViewport({ width: 1280, height: 720 });
+      await page.setViewport({ width: options.width || 1920, height: options.height || 1080 });
       await page.goto(url, { waitUntil: 'networkidle0', timeout: 50000 });
 
       const fullPagePng = await page.screenshot({ type: 'png', fullPage: true });

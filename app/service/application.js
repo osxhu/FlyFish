@@ -115,7 +115,11 @@ class ApplicationService extends Service {
 
     // note: async screenshot component cover, no wait!!!!!
     const savePath = `${staticDir}/${applicationPath}/${id}/cover.png`;
-    this.genCoverImage(id, savePath);
+    const options = {
+      width: _.get(pages, [ 0, 'options', 'width' ], '1920'),
+      height: _.get(pages, [ 0, 'options', 'height' ], '1080'),
+    };
+    this.genCoverImage(id, savePath, options);
   }
 
   async copyApplication(id, applicationInfo) {
@@ -318,7 +322,7 @@ class ApplicationService extends Service {
     return returnData;
   }
 
-  async genCoverImage(id, savePath) {
+  async genCoverImage(id, savePath, options) {
     const { ctx, logger, config } = this;
     const { pathConfig: { staticDir, applicationPath } } = config;
 
@@ -328,7 +332,7 @@ class ApplicationService extends Service {
       const prePath = `${staticDir}/${applicationPath}/${id}`;
       if (!fs.existsSync(prePath)) fs.mkdirSync(prePath);
 
-      const result = await ctx.helper.screenshot(url, savePath);
+      const result = await ctx.helper.screenshot(url, savePath, options);
       if (result === 'success') {
         await ctx.model.Application._updateOne({ id }, { cover: `/${applicationPath}/${id}/cover.png` });
       }

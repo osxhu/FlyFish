@@ -10,7 +10,7 @@ class RolesController extends BaseController {
 
     const addRoleSchema = app.Joi.object().keys({
       name: app.Joi.string().required(),
-      desc: app.Joi.string(),
+      desc: app.Joi.string().allow(''),
     });
 
     const { value: createRoleInfo } = ctx.validate(addRoleSchema, ctx.request.body);
