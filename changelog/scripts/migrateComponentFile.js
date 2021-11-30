@@ -54,6 +54,17 @@ async function init() {
           const releaseSource = path.resolve(oldSolutionWww, 'static/public_visual_component/1', component.old_component_mark);
           const releaseTarget = path.resolve(versionTarget, 'release');
           await fs.copy(releaseSource, releaseTarget);
+
+          const releaseMainPath = path.resolve(target, 'release/main.js');
+          const releaseMainOrigin = await fs.readFile(releaseMainPath, { encoding: 'utf8' });
+          const releaseMainReplacement = releaseMainOrigin.releaseMainOrigin.replace(/registerComponent\)\((\S+)\,(\w+)\)\}\,/, `registerComponent)(\'${componentId}\',\'v1.0.0\',$2\)\}\,`);
+          await fs.writeFile(releaseMainPath, releaseMainReplacement);
+
+          const releaseSettingPath = path.resolve(target, 'release/setting.js');
+          const releaseSettingOrigin = await fs.readFile(releaseSettingPath, { encoding: 'utf8' });
+          const releaseSettingReplacement = releaseSettingOrigin.replace(/registerComponentOptionsSetting\)\((\S+)\,(\w+)\)\,/, `registerComponentOptionsSetting)(\'${componentId}\',\'v1.0.0\',$2\)\,`)
+            .replace(/registerComponentDataSetting\)\((\S+)\,(\w+)\)\}/, `registerComponentDataSetting)(\'${componentId}\',\'v1.0.0\',$2\)\}`);
+          await fs.writeFile(releaseSettingPath, releaseSettingReplacement);
         }
         await db.collection('components').updateOne({ _id: component._id }, { $set: { migrated: true } });
         success++;
@@ -121,6 +132,10 @@ async function replaceFiles(target, version, componentId, componentMark) {
   const optionsObj = await fs.readJson(optionsPath);
   optionsObj.components[0].type = componentId;
   await fs.writeJson(optionsPath, optionsObj);
+
+  // 替换release
+
+
 }
 
 
