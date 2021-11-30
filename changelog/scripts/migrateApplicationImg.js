@@ -63,7 +63,7 @@ async function init() {
         app.cover = '/application_tpl/public/cover.png';// 默认封面
         if (app._cover) {
           const coverSource = path.resolve(oldSolutionWww, 'upload/screen/cover', app._cover);
-          const coverTarget = path.resolve('applications', app._id.toString(), 'cover.png');
+          const coverTarget = path.resolve(appDir, app._id.toString(), 'cover.png');
           const coverSourceExist = fs.existsSync(coverSource);
           if (coverSourceExist) {
             await fs.copy(coverSource, coverTarget);
