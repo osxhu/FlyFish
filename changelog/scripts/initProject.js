@@ -52,6 +52,7 @@ async function init() {
         name: tag.name,
         desc: tag.description,
         status: 'valid',
+        trades: [],
         create_time: new Date(),
         update_time: new Date(),
         old_id: tag.id,
@@ -63,6 +64,7 @@ async function init() {
       name: '未归属组件',
       desc: '旧组件开发平台未导入应用平台的组件',
       status: 'valid',
+      trades: [],
       create_time: new Date(),
       update_time: new Date(),
     };
