@@ -174,7 +174,7 @@ class ApplicationController extends BaseController {
   }
 
   async export() {
-    const { ctx, config: { pathConfig: { staticDir, componentsPath, appTplPath, appBuildPath, applicationPath } } } = this;
+    const { ctx, config: { pathConfig: { staticDir, commonPath, componentsPath, appTplPath, appBuildPath, applicationPath } } } = this;
     const id = ctx.params.id;
 
     const buildPath = path.resolve(staticDir, appBuildPath, id);
@@ -208,7 +208,13 @@ class ApplicationController extends BaseController {
     await fs.copy(sourceIndexPath, targetIndexPath);
 
     const sourcePublicPath = path.resolve(staticDir, appTplPath, 'public');
+    const sourceCommonPath = path.resolve(staticDir, commonPath, 'common');
     const targetPublicPath = path.resolve(staticDir, buildPath, 'public');
+
+    await fs.copy(`${sourceCommonPath}/data-vi.js`, `${targetPublicPath}/data-vi.js`);
+    await fs.copy(`${sourceCommonPath}/editor.css`, `${targetPublicPath}/editor.css`);
+    await fs.copy(`${sourceCommonPath}/editor.js`, `${targetPublicPath}/editor.js`);
+
     await fs.copy(sourcePublicPath, targetPublicPath);
 
     const sourceImgPath = path.resolve(staticDir, appPath, id);

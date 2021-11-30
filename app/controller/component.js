@@ -27,9 +27,9 @@ class ComponentsController extends BaseController {
     if (categoryInfo.msg === 'Exists Already Components') {
       this.fail('更新失败, 删除类别中存在组件', null, CODE.FAIL);
     } else if (categoryInfo.msg === 'Exists Already Category Name') {
-      this.fail('更新失败, 类别名称重复', null, CODE.FAIL);
+      this.fail('更新失败, 组件分类名称重复！', null, CODE.FAIL);
     } else if (categoryInfo.msg === 'Exists Already SubCategory Name') {
-      this.fail('更新失败, 子类别名称重复', null, CODE.FAIL);
+      this.fail('更新失败, 组件分类名称重复！', null, CODE.FAIL);
     } else {
       this.success('更新成功', null);
     }
@@ -89,7 +89,7 @@ class ComponentsController extends BaseController {
       })),
       category: app.Joi.number().required(),
       subCategory: app.Joi.number().required(),
-      desc: app.Joi.string(),
+      desc: app.Joi.string().allow(''),
     });
     const { value: requestData } = ctx.validate(addComponentSchema, ctx.request.body);
 
@@ -180,7 +180,7 @@ class ComponentsController extends BaseController {
       })),
       category: app.Joi.number(),
       subCategory: app.Joi.number(),
-      desc: app.Joi.string(),
+      desc: app.Joi.string().allow(''),
       dataConfig: app.Joi.object(),
     });
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);
@@ -229,7 +229,7 @@ class ComponentsController extends BaseController {
       compatible: app.Joi.boolean().required(),
 
       no: app.Joi.string(),
-      desc: app.Joi.string(),
+      desc: app.Joi.string().allow(''),
     });
 
     const { value: id } = ctx.validate(app.Joi.string().length(24).required(), ctx.params.id);

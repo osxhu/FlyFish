@@ -93,6 +93,8 @@ module.exports = appInfo => {
     componentsPath: 'components',
     componentsTplPath: 'component_tpl',
 
+    commonPath: 'common',
+
     defaultComponentCoverPath: '/component_tpl/public/cover.png',
     initComponentVersion: 'v-current',
   };
