@@ -104,7 +104,7 @@ async function replaceFiles(target, version, componentId, componentMark) {
 
   // 替换build文件
   const buildMainReg = new RegExp(componentMark + '/main');
-  const buildSettingReg = new RegExp(componentMark + '/main');
+  const buildSettingReg = new RegExp(componentMark + '/setting');
 
   const buildDevPath = path.resolve(target, 'build/webpack.config.dev.js');
   const buildDevJsOrigin = await fs.readFile(buildDevPath, { encoding: 'utf8' });
