@@ -193,7 +193,7 @@ class ApplicationController extends BaseController {
       (page.components || []).forEach(async component => {
         await fs.copy(
           path.resolve(staticDir, componentsPath, component.type, component.version, 'release'),
-          path.resolve(targetComponentPath, component.type)
+          path.resolve(targetComponentPath, component.type, component.version, 'release')
         );
       });
     });
