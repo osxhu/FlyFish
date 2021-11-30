@@ -132,7 +132,13 @@ async function init() {
           // TODO: 把0下的组件都挂到1上
           const components = await db.collection('components').find({ projects: { $in: specialScreenMap[screen.id][0] } }).toArray();
           const componentIds = _.uniq(components.map(item => item._id));
-          projectId = projectMap[tagId]._id.toString();
+
+          if (screen.name === '云智慧运营看板') {
+            projectId = tagId;
+          } else {
+            projectId = projectMap[tagId]._id.toString();
+          }
+
           await db.collection('components').updateMany({ _id: { $in: componentIds } }, { $addToSet: { projects: projectId } });
         }
 
