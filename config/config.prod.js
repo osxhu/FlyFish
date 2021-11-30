@@ -25,8 +25,7 @@ module.exports = appInfo => {
   };
 
   config.mongoose = {
-    url: 'mongodb://10.2.3.56:27017/flyfish',
-    // url: 'mongodb://localhost:27017/flyfish',
+    url: 'mongodb://10.0.14.151:27017/flyfish',
     options: {
       useUnifiedTopology: true,
     },
@@ -35,7 +34,7 @@ module.exports = appInfo => {
   config.cluster = {
     listen: {
       port: 7001,
-      // hostname: '127.0.0.1',
+      hostname: '10.0.14.151',
     },
   };
 

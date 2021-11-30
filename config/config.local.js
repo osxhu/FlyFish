@@ -17,7 +17,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1635235048156_3836';
 
   // add your middleware config here
-  config.middleware = [ 'errorHandler', 'notfoundHandler' ];
+  config.middleware = [ 'errorHandler', 'notfoundHandler', 'accessLogger' ];
 
 
   // add your user config here
