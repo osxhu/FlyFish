@@ -248,53 +248,89 @@ const ApplyDevelop = observer(() => {
           actions={(item) => {
             return (
               <>
-                <a title="开发应用" target="_blank" href={ './web/screen/editor.html' + '?id=' + item.id} rel="noreferrer">
-                  <Button value="small" type="primary">开发</Button>
-
+                <a
+                  title="开发应用"
+                  target="_blank"
+                  href={`${window.APP_CONFIG.screenEditAddress}?id=${item.id}`}
+                  rel="noreferrer"
+                >
+                  <Button value="small" type="primary">
+                    开发
+                  </Button>
                 </a>
-                <a title="预览应用" target="_blank" href={'./web/screen/index.html' + '?id=' + item.id} rel="noreferrer">
-                  <Button value="small" type="primary">预览</Button>
+                <a
+                  title="预览应用"
+                  target="_blank"
+                  href={`${window.APP_CONFIG.screenViewAddress}?id=${item.id}`}
+                  rel="noreferrer"
+                >
+                  <Button value="small" type="primary">
+                    预览
+                  </Button>
                 </a>
                 <Tooltip key="copy" title="复制">
-                  <a title="复制" onClick={() => {
-                    setCheckFlag(2);
-                    openAddProjectModal();
-                  }}><Icon type="copy" style={{ color: '#333' }} /></a>
+                  <a
+                    title="复制"
+                    onClick={() => {
+                      setCheckFlag(2);
+                      openAddProjectModal();
+                    }}
+                  >
+                    <Icon type="copy" style={{ color: "#333" }} />
+                  </a>
                 </Tooltip>
-                <Tooltip key="export" title="导出"
+                <Tooltip
+                  key="export"
+                  title="导出"
                   onClick={() => {
                     exportCode(item.id);
                   }}
                 >
-                  <a title="导出" target="_blank" ><Icon type="export" style={{ color: '#333' }} /></a>
+                  <a title="导出" target="_blank">
+                    <Icon type="export" style={{ color: "#333" }} />
+                  </a>
                 </Tooltip>
                 <Tooltip key="edit" title="编辑">
-                  <a title="编辑" target="_blank" onClick={() => {
-                    setCheckFlag(1), openAddProjectModal();
-                  }}><Icon type="edit" style={{ color: '#333' }} /></a>
+                  <a
+                    title="编辑"
+                    target="_blank"
+                    onClick={() => {
+                      setCheckFlag(1), openAddProjectModal();
+                    }}
+                  >
+                    <Icon type="edit" style={{ color: "#333" }} />
+                  </a>
                 </Tooltip>
                 <Tooltip key="delete" title="删除">
-                  <Popconfirm title="确认删除？" okText="确认" cancelText="取消" onConfirm={() => {
-                    deleteApplicationOne(item.id, (res) => {
-                      if (res.code === successCode) {
-                        message.success(
-                          intl.formatMessage({
-                            id: "common.deleteSuccess",
-                            defaultValue: "删除成功！",
-                          })
-                        );
-                        getApplicationList();
-                      } else {
-                        message.error(
-                          res.msg || intl.formatMessage({
-                            id: "common.deleteError",
-                            defaultValue: "删除失败，请稍后重试！",
-                          })
-                        );
-                      }
-                    });
-                  }}>
-                    <a title="删除"><Icon type="delete" style={{ color: '#333' }} /></a>
+                  <Popconfirm
+                    title="确认删除？"
+                    okText="确认"
+                    cancelText="取消"
+                    onConfirm={() => {
+                      deleteApplicationOne(item.id, (res) => {
+                        if (res.code === successCode) {
+                          message.success(
+                            intl.formatMessage({
+                              id: "common.deleteSuccess",
+                              defaultValue: "删除成功！",
+                            })
+                          );
+                          getApplicationList();
+                        } else {
+                          message.error(
+                            res.msg ||
+                              intl.formatMessage({
+                                id: "common.deleteError",
+                                defaultValue: "删除失败，请稍后重试！",
+                              })
+                          );
+                        }
+                      });
+                    }}
+                  >
+                    <a title="删除">
+                      <Icon type="delete" style={{ color: "#333" }} />
+                    </a>
                   </Popconfirm>
                 </Tooltip>
               </>
