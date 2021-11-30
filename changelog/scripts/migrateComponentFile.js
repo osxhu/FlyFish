@@ -38,10 +38,9 @@ async function init() {
         const sourceExist = fs.existsSync(source);
         if (sourceExist) {
           await copyAndIgnore(source, target, [ 'node_modules', '.git', 'components', 'package-lock.json' ]);
+          // 加版本号
+          await replaceFiles(target, 'v-current', componentId);
         }
-
-        // 加版本号
-        await replaceFiles(target, 'v-current', componentId);
 
         if (component.develop_status === 'online') {
           const versionTarget = path.resolve(componentDir, component._id.toString(), 'v1.0.0');
