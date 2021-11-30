@@ -13,7 +13,9 @@ const { TextArea } = Input;
 const AddComponent = observer((props)=>{
   const { getFieldDecorator,validateFields,getFieldValue } = props.form;
 
-  const { setAddModalvisible,treeData,projectsData,tagsData,getListData,getTagsData,userInfo } = store;
+  const { setAddModalvisible,treeData,projectsData,tagsData,getListData,getTagsData,userInfo,selectedData } = store;
+
+  console.log(toJS(selectedData));
 
   const formItemLayout = {
     labelCol: { span:4 },
@@ -129,7 +131,8 @@ const AddComponent = observer((props)=>{
             required: true,
             message: '组件分类不能为空！'
           }
-        ]
+        ],
+        initialValue:selectedData.subCategory?JSON.stringify({one:selectedData.category,two:selectedData.subCategory}):undefined
       })(<TreeSelect
         style={{ width: '100%' }}
         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}

@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-30 11:32:50
+ * @LastEditTime: 2021-11-30 15:01:44
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -141,6 +141,24 @@ const ComponentDevelop = observer((props) => {
       key: 'updateTime',
       render:(text)=>{
         return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss');
+      }
+    },
+    {
+      title: '描述',
+      dataIndex: 'desc',
+      width:100,
+      key: 'desc',
+      render:(text,record)=>{
+        return <Popover
+          placement='left'
+          content={<div
+            className={styles.descPopWrap}
+          >
+            {text}
+          </div>}
+        >
+          <div className={styles.descWrap}>{text}</div>
+        </Popover>;
       }
     },
     {
@@ -476,7 +494,7 @@ const ComponentDevelop = observer((props) => {
                 columns={columns}
                 dataSource={listData?toJS(listData).list:[]}
                 rowKey="id"
-                scroll={{ x: 1560}}
+                scroll={{ x: 1660}}
                 pagination={{
                   showSizeChanger:true,
                   showTotal:(total)=>{
