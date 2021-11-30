@@ -316,8 +316,11 @@ class ApplicationService extends Service {
             version: _.get(component, [ 'versions', (component.versions || []).length - 1, 'no' ], initComponentVersion),
           };
         }));
+
+        if (_.isEmpty(subCategoryInfo.components)) continue;
         categoryInfo.subCategories.push(subCategoryInfo);
       }
+      if (_.isEmpty(categoryInfo.subCategories)) continue;
       returnList.push(categoryInfo);
     }
 
