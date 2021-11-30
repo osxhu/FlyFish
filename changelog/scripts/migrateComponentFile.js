@@ -57,7 +57,7 @@ async function init() {
 
           const releaseMainPath = path.resolve(versionTarget, 'release/main.js');
           const releaseMainOrigin = await fs.readFile(releaseMainPath, { encoding: 'utf8' });
-          const releaseMainReplacement = releaseMainOrigin.replace(/registerComponent\)\((\S+)\,(\w+)\)\}\,/, `registerComponent)(\'${componentId}\',\'v1.0.0\',$2\)\}\,`);
+          const releaseMainReplacement = releaseMainOrigin.replace(/registerComponent\)\((\S+)\,(\w+)\)\}/, `registerComponent)(\'${componentId}\',\'v1.0.0\',$2\)\}`);
           await fs.writeFile(releaseMainPath, releaseMainReplacement);
 
           const releaseSettingPath = path.resolve(versionTarget, 'release/setting.js');
