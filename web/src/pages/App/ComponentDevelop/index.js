@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-30 15:01:44
+ * @LastEditTime: 2021-11-30 15:56:19
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -180,6 +180,8 @@ const ComponentDevelop = observer((props) => {
                 onClick={()=>{
                   setDevelopingData(record);
                   // setDeveloping(true);
+                  setDetailShow(false);
+                  setShowRecord(false);
                   props.history.push({pathname:`/app/${record.id}/code-develop`,state:{name:record.name}});
                 }}
               >开发组件</div>
@@ -253,6 +255,7 @@ const ComponentDevelop = observer((props) => {
   const intl = useIntl();
   const {
     setDetailShow,
+    setShowRecord,
     setAddModalvisible,
     setEditModalvisible,
     setImportModalvisible,
@@ -528,6 +531,7 @@ const ComponentDevelop = observer((props) => {
           <Modal
             title="编辑组件"
             visible={editModalvisible}
+            destroyOnClose
             footer={null}
             width='50%'
             onCancel={()=>{setEditModalvisible(false);}}

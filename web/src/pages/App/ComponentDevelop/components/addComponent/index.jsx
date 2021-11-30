@@ -15,7 +15,7 @@ const AddComponent = observer((props)=>{
 
   const { setAddModalvisible,treeData,projectsData,tagsData,getListData,getTagsData,userInfo,selectedData } = store;
 
-  console.log(toJS(selectedData));
+  // console.log(toJS(selectedData));
 
   const formItemLayout = {
     labelCol: { span:4 },
