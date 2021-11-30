@@ -88,9 +88,7 @@ async function init() {
     await init();
     const { Screen, ScreenAndView } = tableMap;
 
-    const screens = await Screen.findAll({ where: { deleted_at: 1,
-      screen_id: '7709d8f0-fc1c-11eb-a7f7-a1560fa6d8c4',
-    } });
+    const screens = await Screen.findAll({ where: { deleted_at: 1 } });
     console.log(`${screens.length} 个应用等待被同步`);
 
     const screenAndViews = await ScreenAndView.findAll({ where: { status: 1 } });
