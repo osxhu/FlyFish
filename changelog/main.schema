@@ -48,6 +48,7 @@ components: {
 		no: String,
 		desc: String,
 		status: String,       // 对应版本的可用状态 enum#COMMON_STATUS
+		time: Time
 	}],
 	cover: String, 					// 封面，效果展示
 	creator: String,
