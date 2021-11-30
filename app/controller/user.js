@@ -13,7 +13,7 @@ class UserController extends BaseController {
       username: app.Joi.string().required(),
       phone: app.Joi.string().length(11).required(),
       email: app.Joi.string().email().required(),
-      password: app.Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+      password: app.Joi.string().required(),
       rePassword: app.Joi.ref('password'),
     });
     const { value: createUserInfo } = ctx.validate(UserRegisterSchema, ctx.request.body);
@@ -30,7 +30,7 @@ class UserController extends BaseController {
 
     const UserLoginSchema = app.Joi.object().keys({
       username: app.Joi.string().required(),
-      password: app.Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+      password: app.Joi.string().required(),
     });
     ctx.validate(UserLoginSchema, ctx.request.body);
 
