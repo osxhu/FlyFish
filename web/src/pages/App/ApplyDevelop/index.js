@@ -248,11 +248,11 @@ const ApplyDevelop = observer(() => {
           actions={(item) => {
             return (
               <>
-                <a title="开发应用" target="_blank" href={window.APP_CONFIG.screen + '/screen/editor.html' + '?id=' + item.id} rel="noreferrer">
+                <a title="开发应用" target="_blank" href={ './web/screen/editor.html' + '?id=' + item.id} rel="noreferrer">
                   <Button value="small" type="primary">开发</Button>
 
                 </a>
-                <a title="预览应用" target="_blank" href={window.APP_CONFIG.screen + '/screen/index.html' + '?id=' + item.id} rel="noreferrer">
+                <a title="预览应用" target="_blank" href={'./web/screen/index.html' + '?id=' + item.id} rel="noreferrer">
                   <Button value="small" type="primary">预览</Button>
                 </a>
                 <Tooltip key="copy" title="复制">
