@@ -51,10 +51,10 @@ module.exports = appInfo => {
   config.static = {
     prefix: '/',
     dir: staticDir,
-    // dynamic: true,
-    // preload: false,
-    // maxAge: 31536000,
-    // buffer: true,
+    maxAge: 0,
+    preload: false,
+    dynamic: true,
+    buffer: false,
   };
   config.cookieConfig = {
     name: 'FLY_FISH_V2.0',

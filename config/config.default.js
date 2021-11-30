@@ -106,10 +106,10 @@ module.exports = appInfo => {
   config.static = {
     prefix: '/',
     dir: staticDir,
-    cache: true,
+    // maxAge: 0,
     // preload: false,
-    // maxAge: 31536000,
-    // buffer: true,
+    // dynamic: true,
+    // buffer: false,
   };
 
   // add your user config here
