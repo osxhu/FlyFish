@@ -1,6 +1,7 @@
 /**
  * @description 大屏配置
  */
+'use strict';
 
 window.DATAVI_ENV = (function() {
   const apiDomain = '';
