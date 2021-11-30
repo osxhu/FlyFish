@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:41
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-25 16:35:44
+ * @LastEditTime: 2021-11-30 15:47:32
  */
 import { toMobx,toJS } from '@chaoswise/cw-mobx';
 import { 
@@ -21,6 +21,7 @@ const model = {
   state: {
     userInfo:{},
     detailShow:false,
+    showRecord:false,
     addModalvisible:false,
     editModalvisible:false,
     importModalvisible:false,
@@ -179,6 +180,9 @@ const model = {
     },
     setReleaseModalVisible(res){
       this.releaseModalVisible = res;
+    },
+    setShowRecord(res){
+      this.showRecord = res;
     }
   }
 };

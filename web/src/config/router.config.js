@@ -59,15 +59,15 @@ module.exports = {
               showBack:true,
               backTitle:'' //如果二级或三级路由有返回模式，返回显示的文字
             },
-            {
-              name: "组件记录",
-              path: "/app/:id/component-record",
-              component: "@/pages/App/ComponentDevelop/components/componentRecord",
-              hideInMenu: true,
-              activeMenuKey: "/app/component-develop",
-              showBack:true,
-              backTitle:'' //如果二级或三级路由有返回模式，返回显示的文字
-            },
+            // {
+            //   name: "组件记录",
+            //   path: "/app/:id/component-record",
+            //   component: "@/pages/App/ComponentDevelop/components/componentRecord",
+            //   hideInMenu: true,
+            //   activeMenuKey: "/app/component-develop",
+            //   showBack:true,
+            //   backTitle:'' //如果二级或三级路由有返回模式，返回显示的文字
+            // },
             { from: "/app", to: "/app/project-manage" },
           ],
         },

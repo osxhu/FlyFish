@@ -35,7 +35,11 @@ const ComponentRecord = observer((props)=>{
       }
     }
   ];
-  const { developingData } = store;
+  const { 
+    developingData,
+    showRecord,
+    setShowRecord 
+  } = store;
 
   const [data, setData] = useState([]);
   const [curPage, setCurPage] = useState(0);
@@ -78,8 +82,10 @@ const createScripts = (src = '')=>{
   return scriptsTag;
 }
   useEffect(() => {
-    getData();
-  }, []);
+    if (showRecord) {
+      getData();
+    }
+  }, [showRecord]);
   useEffect(() => {
     getData()
   }, [curPage,pageSize]);
@@ -118,7 +124,8 @@ const createScripts = (src = '')=>{
           <span>组件开发记录列表</span>
           <Button
             onClick={()=>{
-              props.history.push({pathname:`/app/${developingData.id}/code-develop`,state:{name:developingData.name}});
+              setShowRecord(false)
+              // props.history.push({pathname:`/app/${developingData.id}/code-develop`,state:{name:developingData.name}});
             }}
           >返回</Button>
         </div>
