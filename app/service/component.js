@@ -362,7 +362,7 @@ class ComponentService extends Service {
     if (projects) updateData.projects = projects;
     if (category) updateData.category = category;
     if (subCategory) updateData.subCategory = subCategory;
-    if (desc) updateData.desc = desc;
+    if (!_.isNil(desc)) updateData.desc = desc;
     if (!_.isEmpty(dataConfig)) updateData.dataConfig = dataConfig;
     if (type) {
       if (type === Enum.COMPONENT_TYPE.COMMON) updateData.projects = [];
