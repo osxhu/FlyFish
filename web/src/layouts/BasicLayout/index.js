@@ -10,7 +10,7 @@ import logo from './assets/logo.svg';
 import { Button } from 'antd';
 import actions from '@/shared/mainActions';
 import { loginout, getUserInfoService } from './services';
-import { connect } from '@chaoswise/cw-mobx';
+import { connect,toJS } from '@chaoswise/cw-mobx';
 
 // import styles from './index.less';
 
@@ -128,6 +128,12 @@ const Layout = ({
       return `项目管理/${JSON.parse(sessionStorage.getItem('activeProject')).name}`;
     }
     if (name === '开发组件') {
+      if (location.state && location.state.name) {
+        return `开发组件/${location.state.name}`;
+      }
+      return '开发组件';
+    }
+    if (name === '组件记录') {
       if (location.state && location.state.name) {
         return `开发组件/${location.state.name}`;
       }

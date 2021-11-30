@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-29 17:12:56
+ * @LastEditTime: 2021-11-30 15:01:44
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -144,6 +144,24 @@ const ComponentDevelop = observer((props) => {
       }
     },
     {
+      title: '描述',
+      dataIndex: 'desc',
+      width:100,
+      key: 'desc',
+      render:(text,record)=>{
+        return <Popover
+          placement='left'
+          content={<div
+            className={styles.descPopWrap}
+          >
+            {text}
+          </div>}
+        >
+          <div className={styles.descWrap}>{text}</div>
+        </Popover>;
+      }
+    },
+    {
       title: '创建人',
       dataIndex: 'creator',
       width:100,
@@ -185,6 +203,7 @@ const ComponentDevelop = observer((props) => {
               {
                 userInfo.isAdmin?
                 <Popconfirm
+                  disabled={record.developStatus==CONSTANT.DEVELOPSTATUS_DOING}
                   title={record.isLib?'确定从组件库移除？':"确定上传组件至组件库?上传后该组件可公开被查看及使用。"}
                   onConfirm={()=>{
                     uploadToLibrary(record);
@@ -192,7 +211,9 @@ const ComponentDevelop = observer((props) => {
                   okText="是"
                   cancelText="否"
                 >
-                  <div>{record.isLib?'从组件库移除':'上传组件库'}</div>
+                  <div 
+                    style={{color:record.developStatus==CONSTANT.DEVELOPSTATUS_DOING?'#ccc':'rgb(68, 156, 242)'}}
+                  >{record.isLib?'从组件库移除':'上传组件库'}</div>
                 </Popconfirm>
                 :null
               }
@@ -473,7 +494,7 @@ const ComponentDevelop = observer((props) => {
                 columns={columns}
                 dataSource={listData?toJS(listData).list:[]}
                 rowKey="id"
-                scroll={{ x: 1560}}
+                scroll={{ x: 1660}}
                 pagination={{
                   showSizeChanger:true,
                   showTotal:(total)=>{
@@ -507,7 +528,6 @@ const ComponentDevelop = observer((props) => {
           <Modal
             title="编辑组件"
             visible={editModalvisible}
-            destroyOnClose
             footer={null}
             width='50%'
             onCancel={()=>{setEditModalvisible(false);}}

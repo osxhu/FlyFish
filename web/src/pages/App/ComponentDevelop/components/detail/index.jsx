@@ -303,10 +303,10 @@ const Detail = observer(()=>{
     }
   }, [detailData]);
   useEffect(() => {
-    if (viewId) {
+    if (viewId && detailShow) {
       getDetailData();
     }
-  }, [viewId]);
+  }, [viewId,detailShow]);
 
   const getDetailData = async ()=>{
     const res = await getDetailDataService({id:viewId});
@@ -367,8 +367,11 @@ const Detail = observer(()=>{
               }):''
             }
           </div>
-          <div>
-            <label style={{fontWeight:800}}>描述：</label>{detailData.desc}
+          <div className={styles.descWrap}>
+            <label style={{fontWeight:800}}>描述：</label>
+            <div>
+            {detailData.desc}
+            </div>
           </div>
           <div>
             <label style={{fontWeight:800}}>开发状态：</label>{CONSTANT.componentDevelopStatus_map_ch[detailData.developStatus]}
