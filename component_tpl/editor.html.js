@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-06-04 10:27:43
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-07-27 11:39:20
+ * @LastEditTime: 2021-11-30 18:15:22
  */
 'use strict';
 module.exports = (componentId, version) => `
@@ -27,6 +27,14 @@ module.exports = (componentId, version) => `
             adapter.initComponentEditor(settings);
         });
     };
+    const compileListener = function(event){
+      if (event && event.data) {
+        if ("vscode_compile" ===event.data.event) {
+          window.location.reload(true)
+        }
+      }
+    }
+    window.addEventListener('message',compileListener)
 </script>
 </body>
 </html>
