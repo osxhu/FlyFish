@@ -30,7 +30,7 @@ const EditComponent = observer((props)=>{
         if (values.tags) { 
           values.tags = values.tags.map(item=>({name:item}))
         }
-        values.desc=values.desc?values.desc:undefined;
+        // values.desc=(values.desc?values.desc:undefined);
         // values.name=undefined;
         const res = await editComponentService(editData.id,values);
         if (res && res.code==0) {
@@ -43,9 +43,9 @@ const EditComponent = observer((props)=>{
       }
     });
   }
-  // useEffect(() => {
-  //   setFieldsValue({projects:editData.projects.map(item=>item.id)})
-  // }, [editData]);
+  useEffect(() => {
+    setFieldsValue({projects:editData.projects.map(item=>item.id),desc:editData.desc})
+  }, [editData]);
   return <Form
     {...formItemLayout}  
     onSubmit={handleSubmit}

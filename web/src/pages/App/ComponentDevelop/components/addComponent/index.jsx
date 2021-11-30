@@ -33,6 +33,7 @@ const AddComponent = observer((props)=>{
         const res = await addComponentService(values);
         if (res && res.code==0) {
           message.success('添加成功！');
+          props.form.resetFields()
           setAddModalvisible(false);
           getListData();
           //刷新标签库

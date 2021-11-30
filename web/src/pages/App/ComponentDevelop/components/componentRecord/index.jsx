@@ -7,7 +7,7 @@ import { observer } from "@chaoswise/cw-mobx";
 import { getRecordService,getDiffRecordService } from '../../services';
 import moment from 'moment';
 
-const ComponentRecord = observer(()=>{
+const ComponentRecord = observer((props)=>{
   const columns = [
     {
       title: 'hash',
@@ -38,7 +38,7 @@ const ComponentRecord = observer(()=>{
   const { developingData } = store;
 
   const [data, setData] = useState([]);
-  const [curPage, setCurPage] = useState(1);
+  const [curPage, setCurPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
 
@@ -91,10 +91,19 @@ const createScripts = (src = '')=>{
     }
   }
   
-  return <>
+  return <div className={styles.wrap}>
     {
       showDiff?
-      <iframe
+      <div className={styles.iframeWrap}>
+        <div className={styles.titleWrap}>
+          <span>组件开发diff列表</span>
+          <Button
+            onClick={()=>{
+              setShowDiff(false)
+            }}
+          >返回</Button>
+        </div>
+        <iframe
           id="iframeResult"
           name="iframeResult"
           title="resg"
@@ -103,27 +112,41 @@ const createScripts = (src = '')=>{
           scrolling="auto"
           height='100%'
       />
-      :<Table
+      </div>
+      :<div>
+        <div className={styles.titleWrap}>
+          <span>组件开发记录列表</span>
+          <Button
+            onClick={()=>{
+              props.history.push({pathname:`/app/${developingData.id}/code-develop`,state:{name:developingData.name}});
+            }}
+          >返回</Button>
+        </div>
+        <Table
         columns={columns}
         dataSource={data}
         pagination={{
-          showQuickJumper:true,
+          // showQuickJumper:true,
           showSizeChanger:true,
           pageSize:pageSize,
-          current:curPage,
+          current:curPage+1,
           total:total,
+          showTotal:(total)=>{
+            return `共${total}条记录`;
+          },
           onShowSizeChange:(curPage,size)=>{
             setPageSize(size)
           },
           onChange:(curPage,size)=>{
-            setCurPage(curPage);
+            setCurPage(curPage-1);
           }
         }}
         footer={null}
         rowKey='hash'
       />
+      </div>
     }
-  </>
+  </div>
 })
 
 export default ComponentRecord;
