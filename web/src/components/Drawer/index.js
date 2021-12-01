@@ -11,7 +11,7 @@ import { observer, toJS } from '@chaoswise/cw-mobx';
 import ReactMarkdown from 'react-markdown';
 
 
-export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
+export default function BasicDrawer({ assemly = {}, setDrawerVisible}) {
   const intl = useIntl();
   const assemlyData = toJS(assemly);
   const pStyle = {
@@ -145,7 +145,16 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           </Col>
         </Row>
         {/* 实时面板 */}
-        <div className={stylus.screen}></div>
+        <div style={{backgroundColor:'#eee',height:300,backgroundSize:'cover'}}>
+          <iframe 
+            width='100%'
+            height='100%'
+            name='detailPreview' 
+            src={`http://${window.location.hostname}:7001/components/${assemlyData.id}/v-current/index.html`} 
+            frameBorder={0}
+          >
+          </iframe>
+          </div>
         {/* 版本 表格 */}
         <div className={stylus.table}>
           <Collapse defaultActiveKey={[]} >
