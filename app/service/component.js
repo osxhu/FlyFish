@@ -695,6 +695,9 @@ class ComponentService extends Service {
     const { id, curPage, pageSize } = options;
 
     const componentDevPath = `${staticDir}/${componentsPath}/${id}/${initComponentVersion}`;
+    const gitExist = fs.existsSync(`${componentDevPath}/.git`);
+    if (!gitExist) return { total: 0, list: [] };
+
     const git = simpleGit(componentDevPath);
     const { all: totalLogs } = await git.log();
     const total = totalLogs.length;
