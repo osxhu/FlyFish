@@ -21,7 +21,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
     display: 'block',
     marginBottom: 16,
   };
-  const childTableData =assemly.dataConfig&& assemly.dataConfig.optionsChilds ? assemly.dataConfig.optionsChilds.map(item => item.datas[0]) : [];
+  const childTableData =assemly.dataConfig&& assemly.dataConfig.optionsChilds ? assemly.dataConfig.optionsChilds[0].datas : [];
   const DescriptionItem = ({ title, content }) => (
     <div
       style={{
@@ -263,7 +263,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           <div style={{ fontWeight: 800, padding: '10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>更多信息：</span>
           </div>
-          <AceEditor
+          {/* <AceEditor
             style={{ width: '100%', height: 200 }}
             mode="javascript"
             theme="github"
@@ -271,10 +271,10 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
             value={assemlyData.dataConfig&&assemlyData.dataConfig.markValue}
             name="markText"
             readOnly={true}
-          />
-          {/* <div style={{ padding: 20, border: '1px solid #eee', backgroundColor: '#eee' }}>
-              <ReactMarkdown children={assemlyData.dataConfig.markValue}></ReactMarkdown>
-            </div> */}
+          /> */}
+           <div style={{padding:20,border:'1px solid #eee',backgroundColor:'#eee'}}>
+              <ReactMarkdown children={assemlyData.dataConfig&&assemlyData.dataConfig.markValue}></ReactMarkdown>
+            </div>
         </div>
       </Drawer>
 
