@@ -21,33 +21,9 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
     display: 'block',
     marginBottom: 16,
   };
-  const childTableData =assemly.dataConfig&& assemly.dataConfig.optionsChilds ? assemly.dataConfig.optionsChilds[0].datas : [];
-  const DescriptionItem = ({ title, content }) => (
-    <div
-      style={{
-        fontSize: 14,
-        lineHeight: '22px',
-        marginBottom: 7,
-        color: 'rgba(0,0,0,0.65)',
-      }}
-    >
-      <p
-        style={{
-          marginRight: 8,
-          display: 'inline-block',
-          color: 'rgba(0,0,0,0.85)',
-        }}
-      >
-        {title}:
-      </p>
-      {content}
-    </div>
-  );
-  let state = { visible: true };
+  const childTableData = assemly.dataConfig && assemly.dataConfig.optionsChilds ? [...assemly.dataConfig.optionsChilds[0].datas] : [];
 
-  const showDrawer = () => {
-    state.visible = true;
-  };
+  let state = { visible: true };
 
   const onClose = () => {
     setDrawerVisible(false);
@@ -92,19 +68,6 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
       key: "defaultValue",
 
     }];
-  const basicTableListData = [
-    {
-      name: '111',
-      trades: '店里',
-      desc: '111',
-      type: '类型一'
-    }, {
-      name: '222',
-      trades: '店里',
-      desc: '111',
-      type: '类型二'
-    }
-  ];
   const columns = [
     {
       title: '版本',
@@ -121,7 +84,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
     {
       title: '更新时间',
       dataIndex: 'time',
-      render:(text)=>{
+      render: (text) => {
         return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss');
       }
     }
@@ -161,16 +124,16 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           <span>{assemly.trades ? showTrades(assemly.trades) : '暂无'}</span>
         </div>
         <div className={stylus.firstTitle}>标签:
-        <span>{assemly.tags ? showTrades(assemly.tags) : '暂无'}</span>
+          <span>{assemly.tags ? showTrades(assemly.tags) : '暂无'}</span>
         </div>
         <div className={stylus.firstTitle}>描述:
-        <span>{assemlyData.desc}</span>
+          <span>{assemlyData.desc}</span>
         </div>
         <div className={stylus.firstTitle}>开发状态:
-        <span>{assemlyData.developStatus==='doing'?'开发中':'已交付'}</span>
+          <span>{assemlyData.developStatus === 'doing' ? '开发中' : '已交付'}</span>
         </div>
         <div className={stylus.firstTitle}>创建者信息:
-        <span>{assemlyData.creatorInfo&&assemlyData.creatorInfo.username}</span>
+          <span>{assemlyData.creatorInfo && assemlyData.creatorInfo.username}</span>
         </div>
         <Row className={stylus.effectTitle}>
           <Col span={6}>
@@ -196,7 +159,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
         <div>
           <div style={{ fontWeight: 800, padding: '10px 0' }}>注释：</div>
           <Input disabled
-            value={assemlyData.dataConfig&&assemlyData.dataConfig.annotationValue}
+            value={assemlyData.dataConfig && assemlyData.dataConfig.annotationValue}
           ></Input>
         </div>
         <div>
@@ -206,7 +169,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
             mode="javascript"
             theme="monokai"
             showPrintMargin={false}
-            value={assemlyData.dataConfig&&assemlyData.dataConfig.codeValue}
+            value={assemlyData.dataConfig && assemlyData.dataConfig.codeValue}
             name="code"
             readOnly={true}
           />
@@ -216,11 +179,11 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           <Table
             size='small'
             columns={columns1}
-            dataSource={assemlyData.dataConfig&&assemlyData.dataConfig.options}
+            dataSource={assemlyData.dataConfig && assemlyData.dataConfig.options}
             bordered
             pagination={false}
             footer={null}
-            rowKey='key'
+            rowKey={(record) => record.name}
           />
         </div>
         <div>
@@ -232,7 +195,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
             bordered
             pagination={false}
             footer={null}
-            rowKey='key'
+            rowKey={(record) => record.name}
           />
         </div>
         <div>
@@ -240,11 +203,11 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           <Table
             size='small'
             columns={eventColumns}
-            dataSource={assemlyData.dataConfig&&assemlyData.dataConfig.events}
+            dataSource={assemlyData.dataConfig && assemlyData.dataConfig.events}
             bordered
             pagination={false}
             footer={null}
-            rowKey='key'
+            rowKey={(record) => record.name}
           />
         </div>
         <div>
@@ -252,29 +215,20 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible }) {
           <Table
             size='small'
             columns={eventColumns}
-            dataSource={assemlyData.dataConfig&&assemlyData.dataConfig.listeners}
+            dataSource={assemlyData.dataConfig && assemlyData.dataConfig.listeners}
             bordered
             pagination={false}
             footer={null}
-            rowKey='key'
+            rowKey={(record) => record.name}
           />
         </div>
         <div>
           <div style={{ fontWeight: 800, padding: '10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>更多信息：</span>
           </div>
-          {/* <AceEditor
-            style={{ width: '100%', height: 200 }}
-            mode="javascript"
-            theme="github"
-            showPrintMargin={false}
-            value={assemlyData.dataConfig&&assemlyData.dataConfig.markValue}
-            name="markText"
-            readOnly={true}
-          /> */}
-           <div style={{padding:20,border:'1px solid #eee',backgroundColor:'#eee'}}>
-              <ReactMarkdown children={assemlyData.dataConfig&&assemlyData.dataConfig.markValue}></ReactMarkdown>
-            </div>
+          <div style={{ padding: 20, border: '1px solid #eee', backgroundColor: '#eee' }}>
+            <ReactMarkdown >{assemlyData.dataConfig && assemlyData.dataConfig.markValue}</ReactMarkdown>
+          </div>
         </div>
       </Drawer>
 
