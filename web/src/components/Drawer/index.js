@@ -127,13 +127,13 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible}) {
           <span>{assemly.tags ? showTrades(assemly.tags) : '暂无'}</span>
         </div>
         <div className={stylus.firstTitle}>描述:
-          <span>{assemlyData.desc}</span>
+          <span>{assemlyData.desc||'暂无'}</span>
         </div>
         <div className={stylus.firstTitle}>开发状态:
           <span>{assemlyData.developStatus === 'doing' ? '开发中' : '已交付'}</span>
         </div>
         <div className={stylus.firstTitle}>创建者信息:
-          <span>{assemlyData.creatorInfo && assemlyData.creatorInfo.username}</span>
+          <span>{assemlyData.creatorInfo && assemlyData.creatorInfo.username||'暂无'}</span>
         </div>
         <Row className={stylus.effectTitle}>
           <Col span={6}>
