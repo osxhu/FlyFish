@@ -87,18 +87,18 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
       setType(value);
       getApplicationList({ curPage: 0 });
     };
-    const exportCode = async (id)=>{
-      axios.get(`/api/applications/export/${id}`,{
-        responseType:'blob'
+    const exportCode = async (id) => {
+      axios.get(`/api/applications/export/${id}`, {
+        responseType: 'blob'
       },
-      ).then((res)=>{
+      ).then((res) => {
         const $link = document.createElement("a");
         const url = window.URL.createObjectURL(res.data);
         $link.href = url;
-  
+
         const disposition = res.headers['content-disposition'];
-        $link.download = decodeURI(disposition.replace('attachment;filename=',''));
-        
+        $link.download = decodeURI(disposition.replace('attachment;filename=', ''));
+
         document.body.appendChild($link);
         $link.click();
         document.body.removeChild($link); // 下载完成移除元素
@@ -156,12 +156,25 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                 actions={(item) => {
                   return (
                     <>
-                      <a title="开发应用" target="_blank" href={'./web/screen/editor.html' + '?id=' + item.id} rel="noreferrer">
-                        <Button value="small" type="primary">开发</Button>
-
+                      <a
+                        title="开发应用"
+                        target="_blank"
+                        href={`${window.APP_CONFIG.screenEditAddress}?id=${item.id}`}
+                        rel="noreferrer"
+                      >
+                        <Button value="small" type="primary">
+                          开发
+                        </Button>
                       </a>
-                      <a title="预览应用" target="_blank" href={'./web/screen/index.html' + '?id=' + item.id} rel="noreferrer">
-                        <Button value="small" type="primary">预览</Button>
+                      <a
+                        title="预览应用"
+                        target="_blank"
+                        href={`${window.APP_CONFIG.screenViewAddress}?id=${item.id}`}
+                        rel="noreferrer"
+                      >
+                        <Button value="small" type="primary">
+                          预览
+                        </Button>
                       </a>
                       <Tooltip key="copy" title="复制">
                         <a title="复制" onClick={() => {
