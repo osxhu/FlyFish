@@ -74,7 +74,15 @@ module.exports = appInfo => {
     },
   };
 
+  config.services = {
+    douc: {
+      baseURL: 'http://10.0.12.157:18080',
+    },
+  };
+
   config.cookieConfig = {
+    doucCookieName: 'aops-sessionId',
+
     name: 'FLY_FISH_V2.0',
     domain: 'localhost',
     encryptionKey: 'BYkCpvTfyZ%hrJYSrOUWxPhrJAOZcVZo',

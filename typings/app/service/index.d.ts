@@ -14,6 +14,7 @@ import ExportRole = require('../../../app/service/role');
 import ExportTag = require('../../../app/service/tag');
 import ExportTrade = require('../../../app/service/trade');
 import ExportUser = require('../../../app/service/user');
+import ExportUserDouc = require('../../../app/service/user_douc');
 
 declare module 'egg' {
   interface IService {
@@ -25,5 +26,6 @@ declare module 'egg' {
     tag: AutoInstanceType<typeof ExportTag>;
     trade: AutoInstanceType<typeof ExportTrade>;
     user: AutoInstanceType<typeof ExportUser>;
+    userDouc: AutoInstanceType<typeof ExportUserDouc>;
   }
 }

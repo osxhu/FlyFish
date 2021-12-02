@@ -33,6 +33,10 @@ module.exports = app => {
     password: {
       type: String,
     },
+    is_douc: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       default: Enum.COMMON_STATUS.VALID,

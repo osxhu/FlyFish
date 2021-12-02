@@ -2,10 +2,28 @@
 const CODE = require('../lib/error');
 const _ = require('lodash');
 
-module.exports = options => {
+module.exports = config => {
   return async function authCheck(ctx, next) {
-    const userInfo = ctx.helper.getCookie();
-    if (!options.reqUrlWhiteList.includes(ctx.url) && !userInfo.userId) {
+    const { reqUrlWhiteList, cookieConfig: { doucCookieName, name } } = config;
+
+    const doucCookieValue = ctx.cookies.get(doucCookieName, { signed: false });
+    const lcapCookieValue = ctx.cookies.get(name, { signed: false });
+
+    // douc用户鉴权
+    if (doucCookieValue) {
+      await ctx.service.userDouc.syncUser();
+      await next();
+    // lcap用户鉴权
+    } else if (lcapCookieValue) {
+      const userInfo = ctx.helper.getCookie();
+      if (userInfo.userId) {
+        ctx.userInfo = userInfo;
+        await next();
+      }
+    // 白名单
+    } else if (reqUrlWhiteList.includes(ctx.url)) {
+      await next();
+    } else {
       ctx.body = {
         code: CODE.AUTH_FAIL,
         msg: 'AUTH FAIL',
@@ -13,9 +31,6 @@ module.exports = options => {
       };
       return;
     }
-
-    ctx.userInfo = userInfo;
-    await next();
   };
 };
 
