@@ -21,7 +21,7 @@ const ComponentRecord = observer((props)=>{
       title: '提交时间',
       dataIndex: 'time',
       render:(text)=>{
-        return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss')
+        return moment(Number(text)).format('YYYY.MM.DD HH:mm:ss')
       }
     },{
       title:'操作',

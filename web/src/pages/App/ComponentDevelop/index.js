@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-12-02 14:26:49
+ * @LastEditTime: 2021-12-02 15:38:29
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -140,7 +140,7 @@ const ComponentDevelop = observer((props) => {
       width:200,
       key: 'updateTime',
       render:(text)=>{
-        return moment(Number(text)).format('YYYY-MM-DD HH:mm:ss');
+        return moment(Number(text)).format('YYYY.MM.DD HH:mm:ss');
       }
     },
     {
