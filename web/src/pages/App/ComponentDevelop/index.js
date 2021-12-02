@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-09 10:45:26
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-30 15:56:19
+ * @LastEditTime: 2021-12-02 14:26:49
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState,useEffect, useRef } from "react";
@@ -41,11 +41,20 @@ const ComponentDevelop = observer((props) => {
   const columns = [
     {
       title: '组件类型',
-      dataIndex: 'type',
-      width:150,
-      key: 'type',
+      dataIndex: 'subCategory',
+      width:100,
+      key: 'subCategory',
       render:(text)=>{
-      return <span>{CONSTANT.componentType_map_ch[text]}</span>;
+        let txt = '';
+        treeData.map(item=>{
+          item.children?item.children.map(v=>{
+            if (v.id===text) {
+              txt = v.name;
+            }
+          }):null;
+          return item;
+        });
+      return <span>{txt}</span>;
       }
     },
     {
@@ -118,20 +127,11 @@ const ComponentDevelop = observer((props) => {
     },
     {
       title: '组件类别',
-      dataIndex: 'subCategory',
-      width:100,
-      key: 'subCategory',
+      dataIndex: 'type',
+      width:150,
+      key: 'type',
       render:(text)=>{
-        let txt = '';
-        treeData.map(item=>{
-          item.children?item.children.map(v=>{
-            if (v.id===text) {
-              txt = v.name;
-            }
-          }):null;
-          return item;
-        });
-      return <span>{txt}</span>;
+      return <span>{CONSTANT.componentType_map_ch[text]}</span>;
       }
     },
     {
