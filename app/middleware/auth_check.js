@@ -11,7 +11,6 @@ module.exports = options => {
         msg: 'AUTH FAIL',
         data: null,
       };
-      ctx.status = 403;
       return;
     }
 
