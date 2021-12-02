@@ -231,7 +231,7 @@ const ApplyDevelop = observer(() => {
     ];
   };
   return (
-    <React.Fragment>
+    <div className={styles.container}>
       <SearchBar
         onSearch={onSearchType}
         searchContent={searchTypeContent} showSearchCount={6} extra={extra}
@@ -474,7 +474,7 @@ const ApplyDevelop = observer(() => {
         )
       }
 
-    </React.Fragment>
+    </div>
   );
 });
 export default ApplyDevelop;
