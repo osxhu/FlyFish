@@ -131,11 +131,8 @@ async function replaceFiles(target, version, componentId, componentMark) {
   const optionsPath = path.resolve(target, 'options.json');
   const optionsObj = await fs.readJson(optionsPath);
   optionsObj.components[0].type = componentId;
+  optionsObj.options.scaleMode = 'width';
   await fs.writeJson(optionsPath, optionsObj);
-
-  // 替换release
-
-
 }
 
 
