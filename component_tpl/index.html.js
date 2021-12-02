@@ -6,13 +6,11 @@ module.exports = (componentId, version) => `
     <meta charset="UTF-8">
     <title>Data-VI 数据可视化</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/common/editor.css" />
 </head>
 <body>
 <div id="container"></div>
 <script type="text/javascript" src="/components/${componentId}/${version}/env.js"></script>
 <script type="text/javascript" src="/common/data-vi.js"></script>
-<script type="text/javascript" src="/common/editor.js"></script>
 <script type="text/javascript">
     window.onload = function () {
 
