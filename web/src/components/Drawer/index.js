@@ -21,7 +21,7 @@ export default function BasicDrawer({ assemly = {}, setDrawerVisible}) {
     display: 'block',
     marginBottom: 16,
   };
-  const childTableData = assemly.dataConfig && assemly.dataConfig.optionsChilds ? [...assemly.dataConfig.optionsChilds[0].datas] : [];
+  const childTableData = assemly.dataConfig && assemly.dataConfig.optionsChilds&&assemly.dataConfig.optionsChilds[0] ? [...assemly.dataConfig.optionsChilds[0].datas] : [];
 
   let state = { visible: true };
 
