@@ -72,7 +72,7 @@ class ApplicationController extends BaseController {
           id: Joi.string().required(),
           type: Joi.string().required(),
           version: Joi.string().required(),
-        }).unknown()).required(),
+        }).unknown()),
       }).unknown()).required(),
     });
 
