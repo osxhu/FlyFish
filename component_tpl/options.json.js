@@ -1,3 +1,10 @@
+/*
+ * @Descripttion: 
+ * @Author: zhangzhiyong
+ * @Date: 2021-11-30 18:14:06
+ * @LastEditors: zhangzhiyong
+ * @LastEditTime: 2021-12-02 11:27:51
+ */
 
 'use strict';
 
@@ -6,7 +13,7 @@ module.exports = (componentId, componentName) => `{
         "width": 1920,
         "height": 1080,
         "name": "本地测试大屏",
-        "scaleMode": "origin",
+        "scaleMode": "width",
         "backgroundColor": "#162C51",
         "backgroundImage": "",
         "css": ""
