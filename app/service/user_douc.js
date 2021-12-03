@@ -8,7 +8,7 @@ const DEFAULT_PASSWORD = '123456';
 
 class UserDoucService extends Service {
   async syncUser() {
-    const { ctx, config: { cookieConfig: { doucCookieName }, services: { douc: { baseURL } } } } = this;
+    const { ctx, config: { cookieConfig: { doucCookieName }, services: { douc: { baseURL } } }, logger } = this;
 
     const returnData = { msg: 'ok', data: {} };
 
@@ -22,12 +22,12 @@ class UserDoucService extends Service {
     const userStatus = _.get(doucUserInfo, [ 'data', 'status' ]);
     const userCode = _.get(doucUserInfo, [ 'code' ]);
     if (userStatus !== 1 || userCode !== 100000) {
-      // TODO
-      throw Error('user Status Error');
+      logger.error(`douc user status error: ${JSON.stringify(doucUserInfo)}`);
+      return;
     }
 
     const { iuser } = await ctx.http.get(baseURL + '/api/v1/auth?module=lcap', {}, { headers });
-    const username = _.get(doucUserInfo, [ 'data', 'userAlias' ], '');
+    const username = _.get(doucUserInfo, [ 'data', 'email' ], '') || _.get(doucUserInfo, [ 'data', 'userAlias' ], '');
     const existsUserInfo = await ctx.model.User._findOne({ username });
     returnData.data = existsUserInfo;
 
