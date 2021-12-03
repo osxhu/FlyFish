@@ -13,12 +13,12 @@ class UserDoucService extends Service {
     const returnData = { msg: 'ok', data: {} };
 
     const doucCookieValue = ctx.cookies.get(doucCookieName, { signed: false });
-    const userId = ctx.headers.userid;
+    const { userid, accountid } = ctx.headers;
     const headers = {
       Cookie: `${doucCookieName}=${doucCookieValue}`,
     };
 
-    const doucUserInfo = await ctx.http.get(baseURL + `/douc/api/v1/user/get/${userId}`, {}, { headers });
+    const doucUserInfo = await ctx.http.get(baseURL + `/douc/api/v1/user/get/${userid}`, { params: { accountId: accountid, userId: userid } }, { headers });
     const userStatus = _.get(doucUserInfo, [ 'data', 'status' ]);
     const userCode = _.get(doucUserInfo, [ 'code' ]);
     if (userStatus !== 1 || userCode !== 100000) {
@@ -27,7 +27,7 @@ class UserDoucService extends Service {
     }
 
     const { iuser } = await ctx.http.get(baseURL + '/api/v1/auth?module=lcap', {}, { headers });
-    const username = _.get(doucUserInfo, [ 'data', 'email' ], '') || _.get(doucUserInfo, [ 'data', 'userAlias' ], '');
+    const username = _.get(doucUserInfo, [ 'data', 'userAlias' ], '');
     const existsUserInfo = await ctx.model.User._findOne({ username });
     returnData.data = existsUserInfo;
 
@@ -40,6 +40,7 @@ class UserDoucService extends Service {
         password: md5(DEFAULT_PASSWORD),
         role: initRoleInfo.id,
         is_douc: true,
+        douc_user_id: userid,
       };
       await ctx.model.User._create(createUserInfo);
       const userInfo = await ctx.model.User._findOne({ username: createUserInfo.username });

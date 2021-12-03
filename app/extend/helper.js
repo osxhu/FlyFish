@@ -53,10 +53,9 @@ module.exports = {
     };
   },
 
-  clearCookie() {
-    const { ctx, config } = this;
-
-    return ctx.cookies.set(config.cookieConfig.name, null);
+  clearCookie(cookieName) {
+    const { ctx } = this;
+    return ctx.cookies.set(cookieName, null);
   },
 
   async screenshot(url, savePath, options = {}) {

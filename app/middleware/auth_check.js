@@ -14,6 +14,7 @@ module.exports = config => {
       const userInfo = await ctx.service.userDouc.syncUser();
       if (_.isEmpty(userInfo)) {
         ctx.status = 301;
+        ctx.helper.clearCookie(doucCookieName);
         return ctx.redirect(baseURL + '/lcapWeb/index.html');
       }
       await next();

@@ -58,7 +58,8 @@ class UserController extends BaseController {
   }
 
   async logout() {
-    const { ctx, app } = this;
+    const { ctx, app, config } = this;
+    const { cookieConfig: { name } } = config;
 
     const UserLogoutSchema = app.Joi.object().keys({
       id: app.Joi.string().required(),
@@ -67,8 +68,7 @@ class UserController extends BaseController {
 
     const { id } = ctx.request.body;
 
-    ctx.helper.clearCookie();
-
+    ctx.helper.clearCookie(name);
     this.success('登出成功', { id });
   }
 
@@ -76,9 +76,9 @@ class UserController extends BaseController {
     const { ctx, app, service } = this;
 
     const getUserInfoSchema = app.Joi.object().keys({
-      id: app.Joi.string().required(),
+      id: app.Joi.string(),
     });
-    ctx.validate(getUserInfoSchema, ctx.params);
+    ctx.validate(getUserInfoSchema, ctx.query);
 
     const { id } = ctx.params;
 

@@ -57,9 +57,26 @@ class UserService extends Service {
   }
 
   async getUserInfo(userId) {
-    const { ctx } = this;
+    const { ctx, config } = this;
+    const { cookieConfig: { doucCookieName, name } } = config;
 
-    const userInfo = await ctx.model.User._findOne({ id: userId });
+    let userInfo;
+    if (!userId) {
+      const doucCookieValue = ctx.cookies.get(doucCookieName, { signed: false });
+      const lcapCookieValue = ctx.cookies.get(name, { signed: false });
+
+      if (doucCookieValue) {
+        const result = await ctx.service.userDouc.syncUser();
+        userId = _.get(result, [ 'data', 'doucUserId' ]);
+        userInfo = await ctx.model.User._findOne({ douc_user_id: userId });
+      } else if (lcapCookieValue) {
+        const cookieUserInfo = ctx.helper.getCookie();
+        userId = cookieUserInfo.userId;
+        userInfo = await ctx.model.User._findOne({ id: userId });
+      } else {
+        return {};
+      }
+    }
 
     userInfo.isAdmin = false; userInfo.menus = [];
     if (userInfo.role) {

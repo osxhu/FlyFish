@@ -37,6 +37,7 @@ module.exports = app => {
       type: Boolean,
       default: false,
     },
+    douc_user_id: String,
     status: {
       type: String,
       default: Enum.COMMON_STATUS.VALID,
