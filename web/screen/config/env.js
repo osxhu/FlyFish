@@ -10,7 +10,7 @@ window.DATAVI_ENV = (function() {
     debug: true,
     apiDomain,
     componentsDir: '/components',
-    apiSuccessCode: 0,
+    apiSuccessCode: 200,
 
     screenAPI: {
       // 大屏展示和编辑用到的API
