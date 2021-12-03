@@ -3,13 +3,13 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-23 14:43:23
+ * @LastEditTime: 2021-12-03 11:22:49
  */
 /*
  * 应用
  */
 
-const baseUrl = "/api";
+const baseUrl = "/gateway/lcap";
 export default {
   GET_TREEDATA: `${baseUrl}/components/categories/list`,
   UPDATE_TREEDATA:`${baseUrl}/components/categories`,

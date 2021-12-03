@@ -40,3 +40,5 @@ publish
 */.DS_Store
 package-lock.json
 yarn.lock
+lcapWeb
+lcapWeb.zip

@@ -251,7 +251,7 @@ const ApplyDevelop = observer(() => {
                 <a
                   title="开发应用"
                   target="_blank"
-                  href={`${window.APP_CONFIG.screenEditAddress}?id=${item.id}`}
+                  href={`${window.LCAP_CONFIG.screenEditAddress}?id=${item.id}`}
                   rel="noreferrer"
                 >
                   <Button value="small" type="primary">
@@ -261,7 +261,7 @@ const ApplyDevelop = observer(() => {
                 <a
                   title="预览应用"
                   target="_blank"
-                  href={`${window.APP_CONFIG.screenViewAddress}?id=${item.id}`}
+                  href={`${window.LCAP_CONFIG.screenViewAddress}?id=${item.id}`}
                   rel="noreferrer"
                 >
                   <Button value="small" type="primary">

@@ -22,6 +22,10 @@ module.exports = {
     }
   ],
   modifyVars, // 非多主题下样式变量
+
+  isCombinePortal: true, // 是否开启对接portal的配置
+  publicPath: '/lcapWeb/', // 根据产品名称命名 /xxxWeb/
+
   htmlTagsPlugin: config => {
     config.tags = [
       'conf/env-config.js',

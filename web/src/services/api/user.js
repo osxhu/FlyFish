@@ -3,13 +3,13 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-24 14:57:38
+ * @LastEditTime: 2021-12-03 11:22:57
  */
 /*
  * 应用
  */
 
-const baseUrl = "/api";
+const baseUrl = "/gateway/lcap";
 export default {
   //用户列表
   GET_USER_MANAGELIST_API: `${baseUrl}/users/list`,

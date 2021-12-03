@@ -56,7 +56,7 @@ const App = ({
       }}
     >
       <ConfigProvider locales={locales} defaultLocale={defaultLocale}>
-        <Router basename={window.APP_CONFIG.basename} getAuth={getAuth} />
+        <Router basename={window.LCAP_CONFIG.basename} getAuth={getAuth} />
       </ConfigProvider>
     </ThemeProvider>
   );

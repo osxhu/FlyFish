@@ -150,8 +150,10 @@ const Layout = ({
     <span style={{textAlign:'center' }} onClick={clearCookies}>退出</span>
     </Menu.Item>
   </Menu>);
+  const isInPortal = !!document.querySelector('#singlespa-container');
   return (
     <BasicLayout
+      showHead={!isInPortal} // 集成portal不显示头部
       logo={<img src={logo} />}
       headerTitle='LCAP'
       showTopNavigation={false}

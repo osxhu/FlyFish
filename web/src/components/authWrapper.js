@@ -17,9 +17,9 @@ const authWrapper = (WrappedComponent) => {
       return '权限获取失败，请检查网络';
     }
     // 没有cookies跳转回首页
-    if(status == 'noCookies') {
-      history.replace('/login');
-    }
+    // if(status == 'noCookies') {
+    //   history.replace('/login');
+    // }
 
     return <WrappedComponent getAuth={getAuth} {...props} />;
   };

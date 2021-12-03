@@ -57,7 +57,10 @@ initRequest({
     // eslint-disable-next-line no-unused-vars
     handleResponse: (res, error) => {
       if (error) {
-        // 错误处理
+        if (error.response) {
+          console.log('error.response====',error.response);
+          window.location.href = error.response.headers.location;
+        }
       } else {
         // 响应处理
       }

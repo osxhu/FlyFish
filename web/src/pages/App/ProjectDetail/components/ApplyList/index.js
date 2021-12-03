@@ -159,7 +159,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                       <a
                         title="开发应用"
                         target="_blank"
-                        href={`${window.APP_CONFIG.screenEditAddress}?id=${item.id}`}
+                        href={`${window.LCAP_CONFIG.screenEditAddress}?id=${item.id}`}
                         rel="noreferrer"
                       >
                         <Button value="small" type="primary">
@@ -169,7 +169,7 @@ export default Form.create({ name: "FORM_IN_PROJECT_MODAL" })(
                       <a
                         title="预览应用"
                         target="_blank"
-                        href={`${window.APP_CONFIG.screenViewAddress}?id=${item.id}`}
+                        href={`${window.LCAP_CONFIG.screenViewAddress}?id=${item.id}`}
                         rel="noreferrer"
                       >
                         <Button value="small" type="primary">

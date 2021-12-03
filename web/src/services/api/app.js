@@ -3,13 +3,13 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-10 19:08:53
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-11 15:34:25
+ * @LastEditTime: 2021-12-03 11:22:42
  */
 /*
  * 应用
  */
 
-const baseUrl = "/api";
+const baseUrl = "/gateway/lcap";
 export default {
   LOGIN: `${baseUrl}/users/login`,
   LOGINOUT: `${baseUrl}/users/logout`,

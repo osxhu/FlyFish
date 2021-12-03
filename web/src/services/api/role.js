@@ -2,7 +2,7 @@
  * 应用
  */
 
-const baseUrl = "/api";
+const baseUrl = "/gateway/lcap";
 export default {
   //角色列表
   GET_ROLE_MANAGELIST_API: `${baseUrl}/roles/list`,
