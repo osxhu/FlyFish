@@ -19,8 +19,14 @@ class UserDoucService extends Service {
     };
 
     const doucUserInfo = await ctx.http.get(baseURL + `/douc/api/v1/user/get/${userId}`, {}, { headers });
-    const { iuser } = await ctx.http.get(baseURL + '/api/v1/auth?module=lcap', {}, { headers });
+    const userStatus = _.get(doucUserInfo, [ 'data', 'status' ]);
+    const userCode = _.get(doucUserInfo, [ 'code' ]);
+    if (userStatus !== 1 || userCode !== 100000) {
+      // TODO
+      throw Error('user Status Error');
+    }
 
+    const { iuser } = await ctx.http.get(baseURL + '/api/v1/auth?module=lcap', {}, { headers });
     const username = _.get(doucUserInfo, [ 'data', 'userAlias' ], '');
     const existsUserInfo = await ctx.model.User._findOne({ username });
     returnData.data = existsUserInfo;
