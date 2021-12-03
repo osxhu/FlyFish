@@ -75,7 +75,6 @@ class UserLayout extends React.PureComponent {
         if (!this.state.loginType) {
           login(values, (res) => {
             if (res.code == 0) {
-              localStorage.setItem('id', res.data.id);
               message.success('登录成功');
               this.props.history.push('/app/project-manage');
             } else {

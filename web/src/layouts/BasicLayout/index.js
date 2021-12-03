@@ -48,8 +48,7 @@ const Layout = ({
   }, [locale]);
  
   const getUserInfo = async () => {
-    const id = localStorage.getItem('id');
-    const res = await getUserInfoService(id);
+    const res = await getUserInfoService();
     if (res && res.data) {
       const menu = res.data.menus.map(item => item.name);
       localStorage.setItem('username', res.data.username);

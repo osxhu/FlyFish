@@ -44,6 +44,6 @@ export const assemblyDetail=(id)=>{
   return fetchGet(API.DELETE_ASSEMBLY+id);
 
 };
-export const getUserInfoService = (param)=>{
-  return fetchGet(API.GET_USERINFO+'/'+param.id);
+export const getUserInfoService = ()=>{
+  return fetchGet(API.GET_USERINFO);
 };

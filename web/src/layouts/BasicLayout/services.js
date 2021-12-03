@@ -14,6 +14,6 @@ import API from "@/services/api";
     callback && callback(res);
 };
 
-export const getUserInfoService = (id)=>{
-  return fetchGet(API.GET_USERINFO+'/'+id);
+export const getUserInfoService = ()=>{
+  return fetchGet(API.GET_USERINFO);
 };

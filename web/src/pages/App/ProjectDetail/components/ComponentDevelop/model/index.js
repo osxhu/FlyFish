@@ -53,8 +53,7 @@ const model = {
   },
   effects: {
     *getUserInfo() {
-      const id = localStorage.getItem('id');
-      const res = yield getUserInfoService({ id });
+      const res = yield getUserInfoService();
       if (res && res.data) {
         this.setUserInfo(res.data);
       }

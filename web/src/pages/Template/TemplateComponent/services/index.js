@@ -29,8 +29,8 @@ export const getTagsService = (param)=>{
 export const addComponentService = (param)=>{
   return fetchPost(API.ADD_COMPONENT,{ body: param });
 };
-export const getUserInfoService = (param)=>{
-  return fetchGet(API.GET_USERINFO+'/'+param.id);
+export const getUserInfoService = ()=>{
+  return fetchGet(API.GET_USERINFO);
 };
 export const getDetailDataService = (param)=>{
   return fetchGet(API.GET_DETAILDATA+'/'+param.id);
