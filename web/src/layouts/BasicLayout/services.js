@@ -3,7 +3,7 @@
  * @Author: zhangzhiyong
  * @Date: 2021-11-12 18:44:17
  * @LastEditors: zhangzhiyong
- * @LastEditTime: 2021-11-24 14:59:45
+ * @LastEditTime: 2021-12-07 14:33:01
  */
 import { fetchGet, fetchPost,fetchPut,fetchDelete } from "@/utils/request";
 import API from "@/services/api";
@@ -16,4 +16,7 @@ import API from "@/services/api";
 
 export const getUserInfoService = ()=>{
   return fetchGet(API.GET_USERINFO);
+};
+export const getAuthMenuService = ()=>{
+  return fetchGet(API.GET_USERMENU);
 };

@@ -9,7 +9,7 @@ import {
 import logo from './assets/logo.svg';
 import { Button } from 'antd';
 import actions from '@/shared/mainActions';
-import { loginout, getUserInfoService } from './services';
+import { loginout, getUserInfoService,getAuthMenuService } from './services';
 import { connect,toJS } from '@chaoswise/cw-mobx';
 
 // import styles from './index.less';
@@ -48,10 +48,10 @@ const Layout = ({
   }, [locale]);
  
   const getUserInfo = async () => {
-    const res = await getUserInfoService();
-    if (res && res.data) {
-      const menu = res.data.menus.map(item => item.name);
-      localStorage.setItem('username', res.data.username);
+    const res = await getAuthMenuService();
+    if (res && res.authResults) {
+      const menu = res.authResults.map(item => item.name);
+      // localStorage.setItem('username', res.data.username);
       let routeData = route.routes.filter(item => {
         if (item.routes) {
           item.routes = item.routes.filter(item2 => {
@@ -140,8 +140,9 @@ const Layout = ({
     }
   };
   const clearCookies = () => {
-    loginout();
-    history.replace('/login');
+    // loginout();
+    // history.replace('/login');
+    window.location.href = `http://${window.location.host}/douc/api/v1/sso/logout?restapi=http://${window.location.host}/gateway/checkLogin&service=http://${window.location.host}`;
   };
   const rightMenu = (<Menu>
     <Menu.Item key="0">
