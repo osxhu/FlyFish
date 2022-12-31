@@ -3,6 +3,7 @@
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 THIS_SCRIPT="${CURRENT_DIR}/$(basename $0)"
 PROJECT_FOLDER="$(dirname ${CURRENT_DIR})"
+PROJECT_PATH=$(pwd);
 
 function check_user() {
   user=root
@@ -43,33 +44,22 @@ get_local_ip() {
 }
 
 function init_system() {
-  echo "开始准备环境：git node.js nvm pm2 mongodb nginx"
+  echo "开始准备环境：git node.js nvm pm2 mongodb nginx maven jdk"
 
-  echo "start install git"
-  yum install git -y
-  yum install at-spi2-atk libxkbcommon nss -y
-
-  echo "start install node.js"
-  mkdir -p /usr/local/node/
-  cd /usr/local/node/
-  wget -c https://nodejs.org/dist/v14.9.0/node-v14.9.0-linux-x64.tar.xz
-  tar -xvf node-v14.9.0-linux-x64.tar.xz
-  rm -rf node-v14.9.0-linux-x64.tar.xz
-  echo "export NODE_HOME=/usr/local/node/node-v14.9.0-linux-x64" >>/etc/profile
-  echo 'export PATH=$NODE_HOME/bin:$PATH' >>/etc/profile
-  source /etc/profile
-  npm config set registry=https://registry.npmmirror.com
-  echo "node版本：" $(node -v)
+  echo "start install wget"
+  yum install at-spi2-atk libxkbcommon nss wget zip unzip -y
 
   echo "start install nvm"
   cd ~
-  git clone https://gitee.com/mirrors/nvm
-  $(source nvm/nvm.sh)
+
+  git clone -b v0.39.1 --depth=1 https://gitee.com/mirrors/nvm
+
   echo "source ~/nvm/nvm.sh" >>~/.bashrc
   source ~/.bashrc
   NVM_NODEJS_ORG_MIRROR=https://npmmirror.com/mirrors/node
-  nvm install v14.9.0
-  nvm alias default v14.9.0
+  nvm install v14.19.3
+  nvm alias default v14.19.3
+  npm config set registry=https://registry.npmmirror.com
 
   echo "start install pm2"
   npm install -g pm2@5.1.2
@@ -100,16 +90,22 @@ function init_system() {
   yum install -y nginx-1.20.1
   systemctl enable nginx
   systemctl start nginx
+
+  echo "start install jdk maven"
+  wget --no-check-certificate https://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+  yum -y install apache-maven
+  cp ${PROJECT_PATH}/shell_tpl/settings.xml /etc/maven
+
   echo "初始化环境结束。"
 }
 
 deploy_flyfish_web() {
   echo "开始部署FLyFish前端："
-  cd /data/app/FlyFish/lcapWeb
+  cd ${PROJECT_PATH}/lcapWeb
   npm install
   npm run build
 
-  sed -i "s/127.0.0.1/$local_ip/g" ./dist/conf/env-config.js
+  sed -i "s|PRO_PATH|${PROJECT_PATH}|g" ./lcapWeb/conf/env-config.js
 
   # 提示缺少 conf.d
   cd /
@@ -117,11 +113,10 @@ deploy_flyfish_web() {
   if [ ! -d "$tempPath" ]; then
     mkdir $tempPath
   fi
-  cd /data/app/FlyFish/lcapWeb
+  cp ${PROJECT_PATH}/shell_tpl/flyfish.conf /etc/nginx/conf.d/
 
-  cp FlyFish-2.1.0.conf /etc/nginx/conf.d/FlyFish-2.1.0.conf
-
-  sed -i "s/IP/$local_ip/g" /etc/nginx/conf.d/FlyFish-2.1.0.conf
+  sed -i "s/IP/$local_ip/g" /etc/nginx/conf.d/flyfish.conf
+  sed -i "s|PRO_PATH|${PROJECT_PATH}|g" /etc/nginx/conf.d/flyfish.conf
 
   systemctl restart nginx
 
@@ -129,28 +124,45 @@ deploy_flyfish_web() {
 }
 
 deploy_flyfish_server() {
+
+  sed -i "s|PRO_PATH|${PROJECT_PATH}|g" ${PROJECT_PATH}/lcapServer/lib/chrome-linux/fonts/fonts.conf
+
+  cd ${PROJECT_PATH}/lcapServer/lib/chrome-linux/
+  unzip ./chrome-core.zip
+
   echo "开始部署FlyFish后端："
-  cd /data/app/FlyFish/lcapServer/changelog
+  cd ${PROJECT_PATH}/lcapServer/changelog
   npm install
 
-  cd /data/app/FlyFish/lcapServer/
-  npm install --unsafe-perm=true
+  cd ${PROJECT_PATH}/lcapServer/
+  npm install --production
 
   echo "开始初始化数据库："
-  npm run init-development-database
+  cd ${PROJECT_PATH}/lcapServer/changelog
+  NODE_ENV=development node ./scripts/initDatabase.js
   echo "初始化数据库结束。"
 
-  npm run development
-
+  cd ${PROJECT_PATH}/lcapServer/ && npm run development
+  
   echo "初始化组件开发环境:"
-  cd /data/app/FlyFish/lcapWww/components
+  cd ${PROJECT_PATH}/lcapWeb/lcapWeb/www/components
   npm install
+
+  sed -i "s|PRO_PATH|${PROJECT_PATH}|g" ${PROJECT_PATH}/lcapDataServer/lcap-server/src/main/resources/application.properties
+  sed -i "s|PRO_PATH|${PROJECT_PATH}|g" ${PROJECT_PATH}/lcapDataServer/lcap-server/target/classes/application.properties
+  echo "lcapDataServer部署："
+  cd ${PROJECT_PATH}/lcapDataServer && mvn clean package -Dmaven.test.skip=true -Dmaven.gitcommitid.skip=true -am -pl lcap-server
+  cd ./lcap-server/target
+  tar -zxvf lcapDataServer-\$\{git.build.version\}-\$\{git.commit.time\}-\$\{git.commit.id.abbrev\}.tar.gz
+  cd ./lcapDataServer
+  ./bin/lcapDataServer start
+
   echo "部署后端结束。"
 }
 
 deploy_flyfish_code_server() {
   echo "开始部署FlyFish Code Server:"
-  cd /data/app/FlyFish/lcapCodeServer/
+  cd ${PROJECT_PATH}/lcapCodeServer/
   npm run linux-start
 
   echo "部署FlyFish Code Server结束。"
@@ -190,17 +202,19 @@ stop_flyfish() {
   source nvm/nvm.sh
 
   echo "停止运行FlyFish后端："
-  cd /data/app/FlyFish/lcapServer/
+  cd ${PROJECT_PATH}/lcapServer/
   npm run stop
+  cd ${PROJECT_PATH}/lcapDataServer/lcap-server/target/lcapDataServer
+  ./bin/lcapDataServer stop
 
   echo "停止运行Code Server:"
-  cd /data/app/FlyFish/lcapCodeServer/
+  cd ${PROJECT_PATH}/lcapCodeServer/
   npm run stop
 
 }
 
 remove_system() {
-  echo "开始移除基础环境：nginx mongodb pm2 node.js nvm"
+  echo "开始移除基础环境：nginx mongodb pm2 node.js nvm maven jdk"
 
   echo "start uninstall nginx"
   # systemctl stop nginx
@@ -220,11 +234,18 @@ remove_system() {
   rm -rf /etc/yum.repos.d/mongodb-org-4.0.repo
 
   echo "start uninstall node.js && nvm"
+  npm uninstall -g pm2
+  rm -rf .pm2
   rm -rf /usr/local/node/
   sed -i '/NODE_HOME/d' /etc/profile
   cd ~
   rm -rf nvm
   sed -i '/nvm/d' ~/.bashrc
+
+  echo "start uninstall maven && jdk"
+  yum remove -y maven
+  yum -y remove java-1.8.0-openjdk.x86_64 java-1.8.0-openjdk-devel.x86_64 tzdata-java.noarch
+  rm -rf /etc/yum.repos.d/epel-apache-maven.repo
 
   echo "基础环境移除完毕。"
 }
@@ -232,7 +253,7 @@ remove_system() {
 remove_flyfish() {
   echo "开始删除FlyFish源码："
   cd /
-  rm -rf /data/app/FlyFish
+  rm -rf ${PROJECT_PATH}
 }
 
 function uninstall_flyfish() {
@@ -264,49 +285,35 @@ get_source_code() {
 
 }
 
-reinstall_flyfish() {
+# function update_flyfish() {
+#   read -p "是否更新FlyFish？是(Y)，否（N）" value
 
-  systemctl start nginx
-  deploy_flyfish_web
+#   if [[ $value == "Y" ]] || [[ $value == "y" ]]; then
 
-  echo "开始部署FLyFish后端："
-  cd /data/app/FlyFish/lcapServer/
-  npm install
-  npm run development
-  echo "部署后端结束。"
+#     get_local_ip
 
-  deploy_flyfish_code_server
+#     stop_flyfish
 
-}
+#     reinstall_flyfish
 
-function update_flyfish() {
-  read -p "是否更新FlyFish？是(Y)，否（N）" value
+#     echo_flyfish_info
 
-  if [[ $value == "Y" ]] || [[ $value == "y" ]]; then
-
-    get_local_ip
-
-    stop_flyfish
-
-    reinstall_flyfish
-
-    echo_flyfish_info
-
-    echo "更新成功！"
-    exit 1
-  elif [[ $value == "N" ]] || [[ $value == "n" ]]; then
-    echo "取消更新！"
-    exit 1
-  else
-    echo "请输入Y或者N"
-    exit 1
-  fi
-}
+#     echo "更新成功！"
+#     exit 1
+#   elif [[ $value == "N" ]] || [[ $value == "n" ]]; then
+#     echo "取消更新！"
+#     exit 1
+#   else
+#     echo "请输入Y或者N"
+#     exit 1
+#   fi
+# }
 
 check_user
 
 if [[ $# -eq 0 ]]; then
-  echo "bash flyfish.sh [ install | uninstall | update ]"
+  echo "bash flyfish.sh [ install | uninstall ]"
+  # echo "bash flyfish.sh [ install | uninstall | update ]"
 else
   case $1 in
   install)
@@ -317,9 +324,9 @@ else
     shift
     uninstall_flyfish
     ;;
-  update)
-    shift
-    update_flyfish
-    ;;
+  # update)
+  #   shift
+  #   update_flyfish
+  #   ;;
   esac
 fi

@@ -41,74 +41,49 @@ async function initRole() {
       status: 'valid',
       menus: [
         {
-          name: '工作台',
-          url: '/dashboard',
-          index: 1,
-        },
-        {
           name: '应用创建',
           url: '/app',
-          index: 2,
+          index: 1,
         },
         {
           name: '项目管理',
           url: '/app/project-manage',
-          index: 3,
+          index: 2,
         },
         {
           name: '应用开发',
           url: '/app/apply-develop',
+          index: 3,
+        },
+        {
+          name: '组件列表',
+          url: '/app/component-develop',
           index: 4,
         },
         {
-          name: '组件开发',
-          url: '/app/component-develop',
+          name: '数据源管理',
+          url: '/data',
           index: 5,
         },
         {
-          name: '模板库',
-          url: '/template',
+          name: '数据查询',
+          url: '/data-search',
           index: 6,
-        },
-        {
-          name: '应用模板库',
-          url: '/template/apply-template',
-          index: 7,
-        },
-        {
-          name: '组件库',
-          url: '/template/library-template',
-          index: 8,
         },
         {
           name: '用户管理',
           url: '/user',
-          index: 9,
+          index: 7,
         },
         {
           name: '用户列表',
           url: '/user/user-manage',
-          index: 10,
+          index: 8,
         },
         {
           name: '角色列表',
           url: '/user/role-manage',
-          index: 11,
-        },
-        {
-          name: 'API应用服务层',
-          url: '/api',
-          index: 12,
-        },
-        {
-          name: 'API列表',
-          url: '/api/api-list',
-          index: 13,
-        },
-        {
-          name: '应用管理',
-          url: '/api/api-manage',
-          index: 14,
+          index: 9,
         },
       ],
       desc: 'admin',
@@ -120,59 +95,34 @@ async function initRole() {
       status: 'valid',
       menus: [
         {
-          name: '工作台',
-          url: '/dashboard',
-          index: 1,
-        },
-        {
           name: '应用创建',
           url: '/app',
-          index: 2,
+          index: 1,
         },
         {
           name: '项目管理',
           url: '/app/project-manage',
-          index: 3,
+          index: 2,
         },
         {
           name: '应用开发',
           url: '/app/apply-develop',
-          index: 4,
+          index: 3,
         },
         {
           name: '组件开发',
           url: '/app/component-develop',
+          index: 4,
+        },
+        {
+          name: '数据源管理',
+          url: '/data',
           index: 5,
         },
         {
-          name: '模板库',
-          url: '/template',
+          name: '数据查询',
+          url: '/data-search',
           index: 6,
-        },
-        {
-          name: '应用模板库',
-          url: '/template/apply-template',
-          index: 7,
-        },
-        {
-          name: '组件库',
-          url: '/template/library-template',
-          index: 8,
-        },
-        {
-          name: 'API应用服务层',
-          url: '/api',
-          index: 9,
-        },
-        {
-          name: 'API列表',
-          url: '/api/api-list',
-          index: 10,
-        },
-        {
-          name: '应用管理',
-          url: '/api/api-manage',
-          index: 11,
         },
       ],
       desc: '基础角色',
@@ -229,7 +179,7 @@ async function initMenu() {
               index: 4,
             },
             {
-              name: '组件开发',
+              name: '组件列表',
               url: '/app/component-develop',
               index: 5,
             },
@@ -252,6 +202,18 @@ async function initMenu() {
             },
           ],
         },
+        {
+          name: '数据源管理',
+          url: '/data',
+          index: 12,
+          children: [],
+        },
+        {
+          name: '数据查询',
+          url: '/data-search',
+          index: 13,
+          children: [],
+        },
       ],
       create_time: new Date(),
       update_time: new Date(),
@@ -265,19 +227,22 @@ async function initMenu() {
 async function initComponentCategory() {
   const exists = await db.collection('component_categories').findOne();
   if (_.isEmpty(exists)) {
-    const now = Date.now();
     const doc = {
       categories: [
         {
-          id: `${now}0`,
+          id: '19700101',
           name: '2D图表组件',
           children: [
             {
-              id: `${now}00`,
+              id: '197001010',
+              name: '未分类',
+            },
+            {
+              id: '197001011',
               name: '基础组件',
             },
             {
-              id: `${now}01`,
+              id: '197001012',
               name: '项目组件',
             },
           ],

@@ -8,6 +8,7 @@ module.exports = app => {
   const connFlyfish = app.mongooseDB.get('flyfish');
 
   const MenuSchema = new Schema({
+    account_id: String,
     create_time: {
       type: Date,
       default: Date.now,
@@ -28,6 +29,11 @@ module.exports = app => {
       }],
     }],
   });
+  MenuSchema.statics._find = async function(params, projection, options) {
+    const doc = _toDoc(params);
+    const res = await this.find(doc, projection, options).lean(true);
+    return res.map(_toObj);
+  };
 
   MenuSchema.statics._findOne = async function(params) {
     const doc = _toDoc(params);

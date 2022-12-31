@@ -2,74 +2,77 @@
   <a href="https://github.com/CloudWise-OpenSource/FlyFish"><img src="./doc/images/FlyFish logo.png" alt="flyfish" /></a>
 </div>
 
+**[English](https://github.com/CloudWise-OpenSource/FlyFish/blob/main/README_EN.md)｜简体中文**
+
 # 飞鱼（FlyFish）
 
-[![img](https://camo.githubusercontent.com/b90fbf522edfb28cd12154150fae08fd89d4be956e644f327f369df43ef33bf0/68747470733a2f2f62616467656e2e6e65742f6769746875622f7072732f436c6f7564576973652d4f70656e536f757263652f466c7946697368)](https://github.com/CloudWise-OpenSource/FlyFish/pulls) [![img](https://camo.githubusercontent.com/4bf17723fd9a7438e40dda0d0f05c3ff85df8450605fbec58cf4643bb044ca49/68747470733a2f2f62616467656e2e6e65742f6769746875622f6c6963656e73652f436c6f7564576973652d4f70656e536f757263652f466c7946697368)](https://github.com/CloudWise-OpenSource/FlyFish/blob/main/LICENSE) [![img](https://camo.githubusercontent.com/1fb3e7fec903937186ee550f90f558bdf63575dc171251276c3335ff863d13cc/68747470733a2f2f62616467656e2e6e65742f6769746875622f72656c656173652f436c6f7564576973652d4f70656e536f757263652f466c7946697368)](https://github.com/CloudWise-OpenSource/FlyFish/releases)
+[![img](https://camo.githubusercontent.com/b90fbf522edfb28cd12154150fae08fd89d4be956e644f327f369df43ef33bf0/68747470733a2f2f62616467656e2e6e65742f6769746875622f7072732f436c6f7564576973652d4f70656e536f757263652f466c7946697368)](https://github.com/CloudWise-OpenSource/FlyFish/pulls) [![img](https://camo.githubusercontent.com/4bf17723fd9a7438e40dda0d0f05c3ff85df8450605fbec58cf4643bb044ca49/68747470733a2f2f62616467656e2e6e65742f6769746875622f6c6963656e73652f436c6f7564576973652d4f70656e536f757263652f466c7946697368)](https://github.com/CloudWise-OpenSource/FlyFish/blob/main/LICENSE) [![img](https://camo.githubusercontent.com/1fb3e7fec903937186ee550f90f558bdf63575dc171251276c3335ff863d13cc/68747470733a2f2f62616467656e2e6e65742f6769746875622f72656c656173652f436c6f7564576973652d4f70656e536f757263652f466c7946697368)](https://github.com/CloudWise-OpenSource/FlyFish/releases)<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-)
+
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## 见码如面
 
 飞鱼（FlyFish）是一个数据可视化编码平台。通过简易的方式快速创建数据模型，通过拖拉拽的形式，快速生成一套数据可视化解决方案。
 
-## 在线地址
+| ![IT监控设施概览](./doc/images/IT监控设施概览.gif) | ![基础监控](./doc/images/基础监控.gif) |
+| -------------------------------------------------- | -------------------------------------- |
 
-- [https://flyfish-demo.opscloudwise.com:23368/](https://flyfish-demo.opscloudwise.com:23368/)
+## FlyFish 功能概览
 
-## 国内镜像
+- 项目管理：项目用于代表具体的业务需求场景，是多个应用、组件的集合。
+- 应用开发：支持开发大屏应用，可开发单页面或是多页面路由的大屏应用。
+- 组件开发：组件为最小粒度的项目基础，通过创建和开发组件拼凑出最终的可视化大屏展示。
+- 模板库：可将开发完成的应用/组件分别上传到对应的模板库中，可在已有模板的基础上快速创建新的项目。
+- 数据源管理：可接入 MySQL、Http 等多个数据库数据生成对应数据源，供创建项目时组件对数据进行调用。
+- 数据查询：支持根据数据表进行 SQL 查询，精准定位数据源中具体数据并封装保存，也可将查询到的数据重新组合，供组件直接调用。
 
-- [gitee.com/CloudWise/fly-fish](https://gitee.com/CloudWise/fly-fish)
+| ![产品功能示例1](./doc/images/产品功能示例1.gif) | ![产品功能示例2](./doc/images/产品功能示例2.gif) |
+| ------------------------------------------------ | ------------------------------------------------ |
 
-## 背景知识
+## FlyFish 模版中心
 
-### 历史培训
+- **[模版中心](https://www.cloudwise.ai/flyFishComponents.html)**
+- **[源码下载](https://github.com/CloudWise-OpenSource/FlyFishComponents)**
 
-- [飞鱼平台讲解](http://docs.aiops.cloudwise.com/zh/flyfish)
-- [组件开发讲解](http://docs.aiops.cloudwise.com/zh/flyfish/component/develop.html)
+<img src="./doc/images/组件模版.gif" width="550px"/>
 
-### 相关培训
+## 快速上手
 
-- [官方文档](http://docs.aiops.cloudwise.com/zh/flyfish)
-- [架构及目录](http://docs.aiops.cloudwise.com/zh/flyfish/design.html)
-- [用户快速上手](http://docs.aiops.cloudwise.com/zh/flyfish/getting-started/)
-- [开发快速上手](http://docs.aiops.cloudwise.com/zh/flyfish/component/basic.html)
-- [AIOps 社区](https://www.cloudwise.ai/#/datalaker/dashboard)
+**国内镜像**：https://gitee.com/CloudWise/fly-fish
 
-## 安装说明
+**Demo 环境地址**：http://flyfish-demo.cloudwise.com
 
-### 分支说明
+## 本地部署
 
-| 分支 | 说明   |
-| ---- | ------ |
-| main | 主分支 |
+### 占用端口
 
-### 环境依赖
-
-| 环境    | 说明   |
-| ------- | ------ |
-| node    | 14.9.0 |
-| mongodb | 4.0.0  |
-| nginx   | 1.20.1 |
-
-### 开放端口
-
-| 服务台                              | 端口 |
-| ----------------------------------- | ---- |
-| FlyfishWeb 端口(nginx 静态资源代理) | 8089 |
-| FlyfishCodeServer(在线编辑器)端口   | 8081 |
-| FlyfishServer(主后端服务)端口       | 7001 |
+| 服务台                                | 端口  |
+| ------------------------------------- | ----- |
+| FlyfishWeb 端口(nginx 静态资源代理)   | 8089  |
+| FlyfishCodeServer(在线编辑器)端口     | 8081  |
+| FlyfishServer(主后端服务)端口         | 7001  |
+| FlyfishDataServer(数据源管理服务)端口 | 18532 |
 
 ### 部署流程
 
-> 推荐使用 doc 目录内 flyfish 部署文档，后续有关部署流程、学习资料、FAQ 等统一放置 doc 目录中管理。
+> 推荐使用 doc 目录内 flyfish dcoker 部署文档，后续有关部署流程、学习资料、FAQ 等统一放置 doc 目录中管理。
+
+[Flyfish docker 镜像使用指南](./doc/FlyFish_docker镜像使用指南.md)
+
+> 手动安装步骤：
 
 - [01-基础环境准备篇](./doc/01-基础环境准备篇.md)
-- [02-FlyFish 平台部署篇](./doc/02-FlyFish平台部署篇.md)
-- [03-code_server 部署篇](./doc/03-code_server部署篇.md)
+- [02-code_server 部署篇](./doc/02-code_server部署篇.md)
+- [03-FlyFish 平台部署篇](./doc/03-FlyFish平台部署篇.md)
 
 > 或执行一键脚本：
 
 ```bash
 # CentOS 7.5/7.6  x86-64
 # 须使用root账户
+# 可在任意有权限的目录下安装 FlyFish
+# 这里指定安装目录为 /data/app/
 mkdir -p /data/app/
 cd /data/app/
 
@@ -78,17 +81,12 @@ or
 git clone -b main https://gitee.com/CloudWise/fly-fish.git FlyFish
 
 cd /data/app/FlyFish
+# 一键安装
 bash flyfish.sh install
 
 # 一键卸载
 bash flyfish.sh uninstall
 
-# 一键更新
-# FlyFish-2.1.1 升级至 FlyFish-2.1.2
-git checkout main
-git pull origin main
-
-bash flyfish.sh update
 ```
 
 ## 升级流程
@@ -99,44 +97,57 @@ $ git checkout main
 $ git pull
 ```
 
-## Roadmap
+## 学习资料
 
-> FlyFish 2022 Roadmap
+- **[技术文档](http://docs.aiops.cloudwise.com/zh/flyfish)**
+- **[教学视频](http://docs.aiops.cloudwise.com/zh/flyfish/video-course/P1.html)**
+- **[官方论坛](http://bbs.aiops.cloudwise.com/t/FlyFish)**
 
-### 系统
+## 参与贡献
 
-- 支持创建网格化画布应用
-- 支持响应式布局
-- 新增表单类应用
+点击阅读 **[FlyFish 贡献指南](https://github.com/CloudWise-OpenSource/FlyFish/discussions/140)** 参与贡献，同时由衷感谢那些为 FlyFish 做出贡献的开发者，无论是 issue 问题、文档翻译、代码贡献，FlyFish 的发展离不开你的支持
 
-### 数据源
+## Contributors ✨
 
-- 增加数据源管理
-- 对接 MySQL、MongoDB、Redis、Postgres 等数据存储数据源
-- 对接 HTTP API 数据源
-- 支持对数据源进行模型建表
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
-### 数据处理
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center"><a href="https://github.com/soulferryman"><img src="https://avatars.githubusercontent.com/u/21328793?v=4?s=100" width="100px;" alt="soulferryman"/><br /><sub><b>soulferryman</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=soulferryman" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/YouYe"><img src="https://avatars.githubusercontent.com/u/17558799?v=4?s=100" width="100px;" alt="Cary Zhou"/><br /><sub><b>Cary Zhou</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=YouYe" title="Code">💻</a></td>
+      <td align="center"><a href="https://blog.csdn.net/xiaohu12685"><img src="https://avatars.githubusercontent.com/u/30620913?v=4?s=100" width="100px;" alt="tiger wang"/><br /><sub><b>tiger wang</b></sub></a><br /><a href="#design-xiaohu12685" title="Design">🎨</a> <a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=xiaohu12685" title="Code">💻</a> <a href="#question-xiaohu12685" title="Answering Questions">💬</a> <a href="#fundingFinding-xiaohu12685" title="Funding Finding">🔍</a></td>
+      <td align="center"><a href="https://github.com/jincheny"><img src="https://avatars.githubusercontent.com/u/54785820?v=4?s=100" width="100px;" alt="jincheny"/><br /><sub><b>jincheny</b></sub></a><br /><a href="#blog-jincheny" title="Blogposts">📝</a></td>
+      <td align="center"><a href="https://github.com/RiseHao1029"><img src="https://avatars.githubusercontent.com/u/102229441?v=4?s=100" width="100px;" alt="Rise.Hao（郝玉鹏）"/><br /><sub><b>Rise.Hao（郝玉鹏）</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/pulls?q=is%3Apr+reviewed-by%3ARiseHao1029" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center"><a href="https://github.com/Markuuuu"><img src="https://avatars.githubusercontent.com/u/52529445?v=4?s=100" width="100px;" alt="Crete.A"/><br /><sub><b>Crete.A</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=Markuuuu" title="Code">💻</a></td>
+      <td align="center"><a href="http://www.cloudwise.com"><img src="https://avatars.githubusercontent.com/u/1913308?v=4?s=100" width="100px;" alt="Neeke Gao"/><br /><sub><b>Neeke Gao</b></sub></a><br /><a href="#design-Neeke" title="Design">🎨</a></td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://github.com/maxDwq"><img src="https://avatars.githubusercontent.com/u/36149790?v=4?s=100" width="100px;" alt="dwq"/><br /><sub><b>dwq</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/pulls?q=is%3Apr+reviewed-by%3AmaxDwq" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center"><a href="https://github.com/sssssssugar"><img src="https://avatars.githubusercontent.com/u/95060336?v=4?s=100" width="100px;" alt="sugar"/><br /><sub><b>sugar</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=sssssssugar" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/772566741qqcom"><img src="https://avatars.githubusercontent.com/u/24228882?v=4?s=100" width="100px;" alt="haifeng.wang"/><br /><sub><b>haifeng.wang</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=772566741qqcom" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/imjaden"><img src="https://avatars.githubusercontent.com/u/68473857?v=4?s=100" width="100px;" alt="Jaden.Li"/><br /><sub><b>Jaden.Li</b></sub></a><br /><a href="#example-imjaden" title="Examples">💡</a></td>
+      <td align="center"><a href="https://github.com/osramywj"><img src="https://avatars.githubusercontent.com/u/26902133?v=4?s=100" width="100px;" alt="osramywj"/><br /><sub><b>osramywj</b></sub></a><br /><a href="#ideas-osramywj" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center"><a href="https://github.com/cw-jonny"><img src="https://avatars.githubusercontent.com/u/86347393?v=4?s=100" width="100px;" alt="cw-jonny"/><br /><sub><b>cw-jonny</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=cw-jonny" title="Code">💻</a></td>
+      <td align="center"><a href="http://readw.cn"><img src="https://avatars.githubusercontent.com/u/16408168?v=4?s=100" width="100px;" alt="aiwhj"/><br /><sub><b>aiwhj</b></sub></a><br /><a href="#audio-aiwhj" title="Audio">🔊</a></td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://github.com/Rosso-Wang"><img src="https://avatars.githubusercontent.com/u/59380115?v=4?s=100" width="100px;" alt="Rosso Wang"/><br /><sub><b>Rosso Wang</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=Rosso-Wang" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://github.com/ljy-life"><img src="https://avatars.githubusercontent.com/u/49783112?v=4?s=100" width="100px;" alt="余生"/><br /><sub><b>余生</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=ljy-life" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/lich-y"><img src="https://avatars.githubusercontent.com/u/51944841?v=4?s=100" width="100px;" alt="Edward.Li"/><br /><sub><b>Edward.Li</b></sub></a><br /><a href="https://github.com/CloudWise-OpenSource/FlyFish/commits?author=lich-y" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
 
-- 支持根据数据表进行 SQL 查询
-- 支持查询的可视化
-- 新增复杂数据处理
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
 
-### 用户管理
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
-- 用户管理和权限管控
-
-## 贡献者名单
-感谢那些为FlyFish做出贡献的开发者，无论是issue问题、文档翻译、代码贡献，FlyFish的发展离不开你的支持
-| 第一列    | 第二列   |  第三列   | 
-| :--------| :---------| :-------- |
-| [maxDwq](https://github.com/maxDwq)| [jincheny](https://github.com/jincheny) | [Neeke](https://github.com/Neeke) |
-| [tiger wang](https://github.com/xiaohu12685)| [Jaden.Li](https://github.com/imjaden) | [osramywj](https://github.com/osramywj)|
-| [suger](https://github.com/sssssssugar)| [Cary Zhou](https://github.com/YouYe) | [soulferryman](https://github.com/soulferryman) |
-| [aiwhj](https://github.com/aiwhj) | [zengqiu](https://github.com/zengqiu) | [Rise.Hao（郝玉鹏)](https://github.com/RiseHao1029) |
-| [Markuuuu](https://github.com/Markuuuu) | [郝少聪](https://github.com/laocong) | |
-
-## 欢迎加入
+## 开发者社群
 
 _获取更多关于 FlyFish 的技术资料，或加入 FlyFish 开发者交流群，可扫描下方二维码咨询。_
 
